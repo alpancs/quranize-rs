@@ -1,3 +1,7 @@
+#![feature(test)]
+
+extern crate test;
+
 use xml::attribute::OwnedAttribute;
 use xml::reader::XmlEvent::StartElement;
 use xml::EventReader;
@@ -61,6 +65,7 @@ fn get_text_from_attributes(attributes: &Vec<OwnedAttribute>) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use test::Bencher;
 
     #[test]
     fn test_build_location_map() {
@@ -68,5 +73,10 @@ mod tests {
         assert_eq!(location_map.len(), 77800);
         assert_eq!(*location_map.first().unwrap(), (1, 1, 0));
         assert_eq!(*location_map.last().unwrap(), (114, 6, 2));
+    }
+
+    #[bench]
+    fn bench_build_location_map(b: &mut Bencher) {
+        b.iter(build_location_map);
     }
 }
