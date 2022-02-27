@@ -43,7 +43,7 @@ pub fn build_location_map() -> Vec<(u8, u16, u8)> {
     location_map
 }
 
-fn get_index_from_attributes(attributes: &Vec<OwnedAttribute>) -> u16 {
+fn get_index_from_attributes(attributes: &[OwnedAttribute]) -> u16 {
     attributes
         .iter()
         .find(|a| a.name.to_string() == "index")
@@ -53,7 +53,7 @@ fn get_index_from_attributes(attributes: &Vec<OwnedAttribute>) -> u16 {
         .unwrap()
 }
 
-fn get_text_from_attributes(attributes: &Vec<OwnedAttribute>) -> String {
+fn get_text_from_attributes(attributes: &[OwnedAttribute]) -> String {
     attributes
         .iter()
         .find(|a| a.name.to_string() == "text")
