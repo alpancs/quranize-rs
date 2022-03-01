@@ -3,13 +3,14 @@
 extern crate test;
 
 use xml::attribute::OwnedAttribute;
-use xml::reader::XmlEvent::StartElement;
+use xml::reader::XmlEvent::{EndElement, StartElement};
 use xml::EventReader;
 
 mod quran_simple_clean;
 
 pub fn build_location_map() -> Vec<(u8, u16, u8)> {
-    let mut sura = 0;
+    let mut sura_number = 0;
+    let mut aya_number = 0;
     let mut location_map = vec![];
     for event in EventReader::new(quran_simple_clean::RAW_XML.as_bytes()) {
         match event {
@@ -17,23 +18,28 @@ pub fn build_location_map() -> Vec<(u8, u16, u8)> {
                 name, attributes, ..
             }) => match name.to_string().as_str() {
                 "sura" => {
-                    sura += 1;
+                    sura_number += 1;
                 }
                 "aya" => {
-                    let aya_number = get_index_from_attributes(&attributes);
-                    let mut word_index = 0;
-                    location_map.push((sura, aya_number, word_index));
+                    aya_number += 1;
+                    let mut word_number = 0;
+                    location_map.push((sura_number, aya_number, word_number));
 
-                    let aya_text = get_text_from_attributes(&attributes);
+                    let aya_text = get_text_from_attributes(attributes);
                     for c in aya_text.chars() {
                         if c == ' ' {
-                            word_index += 1;
-                            location_map.push((sura, aya_number, word_index));
+                            word_number += 1;
+                            location_map.push((sura_number, aya_number, word_number));
                         }
                     }
                 }
                 _ => {}
             },
+            Ok(EndElement { name }) => {
+                if name.to_string() == "sura" {
+                    aya_number = 0;
+                }
+            }
             Err(error) => {
                 println!("error: {}", error);
             }
@@ -43,17 +49,7 @@ pub fn build_location_map() -> Vec<(u8, u16, u8)> {
     location_map
 }
 
-fn get_index_from_attributes(attributes: &[OwnedAttribute]) -> u16 {
-    attributes
-        .iter()
-        .find(|a| a.name.to_string() == "index")
-        .unwrap()
-        .value
-        .parse::<u16>()
-        .unwrap()
-}
-
-fn get_text_from_attributes(attributes: &[OwnedAttribute]) -> String {
+fn get_text_from_attributes(attributes: Vec<OwnedAttribute>) -> String {
     attributes
         .iter()
         .find(|a| a.name.to_string() == "text")
