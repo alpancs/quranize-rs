@@ -12,7 +12,7 @@ pub fn build_location_map() -> Vec<(u8, u16, u8)> {
     let mut sura_number = 0;
     let mut aya_number = 0;
     let mut location_map = vec![];
-    for event in EventReader::new(quran_simple_clean::RAW_XML.as_bytes()) {
+    for event in EventReader::new(quran_simple_clean::RAW_XML) {
         match event {
             Ok(StartElement {
                 name, attributes, ..
