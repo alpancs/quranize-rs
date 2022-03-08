@@ -37,15 +37,7 @@ pub fn build_quran_index() -> Harf {
                             word_number += 1;
                             let mut node = &mut root;
                             for j in i..aya_chars.len() {
-                                let c = aya_chars[j];
-                                let pos = node.next_harfs.iter().position(|h| h.content == c);
-                                node = match pos {
-                                    Some(index) => node.next_harfs.get_mut(index).unwrap(),
-                                    None => {
-                                        node.next_harfs.push(Harf::new(c));
-                                        node.next_harfs.last_mut().unwrap()
-                                    }
-                                };
+                                node = node.get_or_add(aya_chars[j]);
                                 if j == aya_chars.len() - 1 || aya_chars[j + 1] == ' ' {
                                     let location = (sura_number, aya_number, word_number);
                                     node.locations.push(location);
