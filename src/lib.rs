@@ -81,6 +81,12 @@ mod tests {
         assert_eq!(quran_index.content, '*');
         assert_eq!(quran_index.next_harfs.len(), 31);
         assert_eq!(quran_index.locations.len(), 0);
+        let nun = quran_index
+            .next_harfs
+            .iter()
+            .find(|h| h.content == 'ن')
+            .unwrap();
+        assert_eq!(nun.locations.len(), 1);
     }
 
     #[bench]
