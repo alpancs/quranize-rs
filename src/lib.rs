@@ -2,16 +2,18 @@
 
 extern crate test;
 
-use xml::attribute::OwnedAttribute;
 use xml::reader::XmlEvent::{EndElement, StartElement};
 use xml::EventReader;
 
+mod harf;
+use harf::Harf;
 mod quran_simple_clean;
 
-pub fn build_location_map() -> Vec<(u8, u16, u8)> {
+pub fn build_quran_index() -> Harf {
+    let mut root = Harf::new('*');
     let mut sura_number = 0;
     let mut aya_number = 0;
-    let mut location_map = vec![];
+
     for event in EventReader::new(quran_simple_clean::RAW_XML) {
         match event {
             Ok(StartElement {
@@ -22,14 +24,36 @@ pub fn build_location_map() -> Vec<(u8, u16, u8)> {
                 }
                 "aya" => {
                     aya_number += 1;
+                    let aya_chars: Vec<_> = attributes
+                        .iter()
+                        .find(|a| a.name.to_string() == "text")
+                        .unwrap()
+                        .value
+                        .chars()
+                        .collect();
                     let mut word_number = 0;
-                    location_map.push((sura_number, aya_number, word_number));
-
-                    let aya_text = get_text_from_attributes(attributes);
-                    for c in aya_text.chars() {
-                        if c == ' ' {
+                    for i in 0..aya_chars.len() {
+                        if i == 0 || aya_chars[i - 1] == ' ' {
                             word_number += 1;
-                            location_map.push((sura_number, aya_number, word_number));
+                            let mut node = &mut root;
+                            for j in i..aya_chars.len() {
+                                let c = aya_chars[j];
+                                let found =
+                                    node.next_harfs.iter().filter(|h| h.content == c).count() > 0;
+                                node = match found {
+                                    true => {
+                                        node.next_harfs.iter_mut().find(|h| h.content == c).unwrap()
+                                    }
+                                    false => {
+                                        node.next_harfs.push(Harf::new(c));
+                                        node.next_harfs.last_mut().unwrap()
+                                    }
+                                };
+                                if j == aya_chars.len() - 1 || aya_chars[j + 1] == ' ' {
+                                    let location = (sura_number, aya_number, word_number);
+                                    node.locations.push(location);
+                                }
+                            }
                         }
                     }
                 }
@@ -46,16 +70,7 @@ pub fn build_location_map() -> Vec<(u8, u16, u8)> {
             _ => {}
         }
     }
-    location_map
-}
-
-fn get_text_from_attributes(attributes: Vec<OwnedAttribute>) -> String {
-    attributes
-        .iter()
-        .find(|a| a.name.to_string() == "text")
-        .unwrap()
-        .value
-        .to_string()
+    root
 }
 
 #[cfg(test)]
@@ -64,15 +79,15 @@ mod tests {
     use test::Bencher;
 
     #[test]
-    fn test_build_location_map() {
-        let location_map = build_location_map();
-        assert_eq!(location_map.len(), 77800);
-        assert_eq!(*location_map.first().unwrap(), (1, 1, 0));
-        assert_eq!(*location_map.last().unwrap(), (114, 6, 2));
+    fn test_build_quran_index() {
+        let quran_index = build_quran_index();
+        assert_eq!(quran_index.content, '*');
+        assert_eq!(quran_index.next_harfs.len(), 31);
+        assert_eq!(quran_index.locations.len(), 0);
     }
 
     #[bench]
-    fn bench_build_location_map(b: &mut Bencher) {
-        b.iter(build_location_map);
+    fn bench_build_quran_index(b: &mut Bencher) {
+        b.iter(build_quran_index);
     }
 }

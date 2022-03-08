@@ -1,7 +1,7 @@
 pub struct Harf {
     pub content: char,
-    next_harfs: Vec<Harf>,
-    locations: Vec<u16>,
+    pub next_harfs: Vec<Harf>,
+    pub locations: Vec<(u8, u16, u8)>,
 }
 
 impl Harf {
