@@ -40,7 +40,7 @@ pub fn build_quran_index() -> Harf {
                                 let c = aya_chars[j];
                                 let pos = node.next_harfs.iter().position(|h| h.content == c);
                                 node = match pos {
-                                    Some(index) => &mut node.next_harfs[index],
+                                    Some(index) => node.next_harfs.get_mut(index).unwrap(),
                                     None => {
                                         node.next_harfs.push(Harf::new(c));
                                         node.next_harfs.last_mut().unwrap()
