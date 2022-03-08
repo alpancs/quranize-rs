@@ -80,7 +80,14 @@ mod tests {
         let quran_index = build_quran_index();
         assert_eq!(quran_index.content, '*');
         assert_eq!(quran_index.next_harfs.len(), 31);
-        assert_eq!(quran_index.locations.len(), 0);
+
+        let ba = quran_index
+            .next_harfs
+            .iter()
+            .find(|h| h.content == 'ب')
+            .unwrap();
+        assert!(ba.locations.is_empty());
+
         let nun = quran_index
             .next_harfs
             .iter()
