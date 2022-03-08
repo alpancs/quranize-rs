@@ -1,4 +1,4 @@
-pub const RAW_XML: &[u8] = r#"
+pub const RAW_XML: &str = r#"
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
 
@@ -6498,4 +6498,4 @@ pub const RAW_XML: &[u8] = r#"
 		<aya index="6" text="من الجنة والناس" />
 	</sura>
 </quran>
-"#.as_bytes();
+"#;

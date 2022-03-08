@@ -14,7 +14,7 @@ pub fn build_quran_index() -> Harf {
     let mut sura_number = 0;
     let mut aya_number = 0;
 
-    for event in EventReader::new(quran_simple_clean::RAW_XML) {
+    for event in EventReader::new(quran_simple_clean::RAW_XML.as_bytes()) {
         match event {
             Ok(StartElement {
                 name, attributes, ..
