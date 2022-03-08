@@ -38,13 +38,10 @@ pub fn build_quran_index() -> Harf {
                             let mut node = &mut root;
                             for j in i..aya_chars.len() {
                                 let c = aya_chars[j];
-                                let found =
-                                    node.next_harfs.iter().filter(|h| h.content == c).count() > 0;
-                                node = match found {
-                                    true => {
-                                        node.next_harfs.iter_mut().find(|h| h.content == c).unwrap()
-                                    }
-                                    false => {
+                                let pos = node.next_harfs.iter().position(|h| h.content == c);
+                                node = match pos {
+                                    Some(index) => &mut node.next_harfs[index],
+                                    None => {
                                         node.next_harfs.push(Harf::new(c));
                                         node.next_harfs.last_mut().unwrap()
                                     }
