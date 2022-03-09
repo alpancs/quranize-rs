@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-pub fn build_quranize_map() -> HashMap<String, Vec<String>> {
+pub type QuranizeMap = HashMap<String, Vec<String>>;
+
+pub fn build_quranize_map() -> QuranizeMap {
     let transliteration_map_pairs = [
         ("ء", "' k a i u"),
         ("آ", "a aa"),
@@ -40,10 +42,10 @@ pub fn build_quranize_map() -> HashMap<String, Vec<String>> {
         ("ي", "y ya yi yu i iya iyi iyu"),
         ("ال", "a l la"),
     ];
-    let mut quranize_map = HashMap::new();
+    let mut quranize_map = QuranizeMap::new();
     for (quran, alphabets) in transliteration_map_pairs {
         for alphabet in alphabets.split_whitespace() {
-            let qurans = quranize_map.entry(alphabet.to_string()).or_insert(vec![]);
+            let qurans = quranize_map.entry(alphabet.to_string()).or_default();
             qurans.push(quran.to_string());
         }
     }

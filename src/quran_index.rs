@@ -4,7 +4,7 @@ use xml::reader::XmlEvent::{EndElement, StartElement};
 use xml::EventReader;
 
 mod harf;
-use harf::Harf;
+pub use harf::Harf;
 
 mod quran_simple_clean;
 

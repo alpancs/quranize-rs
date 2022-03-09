@@ -1,10 +1,23 @@
 #![feature(test)]
 
 mod quran_index;
-pub use quran_index::build_quran_index;
 
 mod quranize_map;
-pub use quranize_map::build_quranize_map;
 
-mod quranize;
-pub use quranize::build_quranize;
+pub struct Quranize {
+    _quran_index: quran_index::Harf,
+    _quranize_map: quranize_map::QuranizeMap,
+}
+
+pub fn build_quranize() -> Quranize {
+    Quranize {
+        _quran_index: quran_index::build_quran_index(),
+        _quranize_map: quranize_map::build_quranize_map(),
+    }
+}
+
+impl Quranize {
+    pub fn encode(_: &str) -> String {
+        String::new()
+    }
+}
