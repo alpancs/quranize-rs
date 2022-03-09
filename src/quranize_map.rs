@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-pub fn get_quranize_map() -> HashMap<String, Vec<String>> {
+pub fn build_quranize_map() -> HashMap<String, Vec<String>> {
     let transliteration_map_pairs = [
         ("ء", "' k a i u"),
         ("آ", "a aa"),
@@ -55,8 +55,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_get_quranize_map() {
-        let quranize_map = get_quranize_map();
+    fn test_build_quranize_map() {
+        let quranize_map = build_quranize_map();
         assert_eq!(quranize_map["ba"], vec!["ب"]);
         assert_eq!(
             quranize_map["ku"],

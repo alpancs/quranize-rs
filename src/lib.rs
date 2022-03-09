@@ -4,7 +4,7 @@ mod quran_index;
 pub use quran_index::build_quran_index;
 
 mod quranize_map;
-pub use quranize_map::get_quranize_map;
+pub use quranize_map::build_quranize_map;
 
 mod quranize;
-pub use quranize::encode;
+pub use quranize::build_quranize;

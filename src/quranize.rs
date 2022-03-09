@@ -1,3 +1,1 @@
-pub fn encode(_: &str) -> String {
-    String::new()
-}
+pub fn build_quranize() {}
