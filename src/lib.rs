@@ -12,7 +12,6 @@ pub fn build_quran_index() -> harf::Harf {
     let mut root = harf::Harf::new('\0');
     let mut sura_number = 0;
     let mut aya_number = 0;
-
     for event in EventReader::new(quran_simple_clean::get_raw().as_bytes()) {
         match event {
             Ok(StartElement { name, .. }) if name.local_name == "sura" => {
@@ -24,7 +23,7 @@ pub fn build_quran_index() -> harf::Harf {
                 aya_number += 1;
                 let aya_text = attributes
                     .into_iter()
-                    .find(|a| a.name.to_string() == "text")
+                    .find(|a| a.name.local_name == "text")
                     .unwrap()
                     .value;
                 root.update_tree(sura_number, aya_number, aya_text);
