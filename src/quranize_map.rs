@@ -45,11 +45,8 @@ pub fn build_quranize_map() -> QuranizeMap {
         for alphabet in alphabets.split_whitespace() {
             let quran = quran.to_string();
             let alphabet = alphabet.to_string();
-            match quranize_map
-                .iter_mut()
-                .find_map(|(k, v)| if *k == alphabet { Some(v) } else { None })
-            {
-                Some(qurans) => qurans.push(quran),
+            match quranize_map.iter_mut().find(|(k, _)| *k == alphabet) {
+                Some((_, qurans)) => qurans.push(quran),
                 None => quranize_map.push((alphabet, vec![quran])),
             }
         }
