@@ -6,40 +6,31 @@ use xml::reader::XmlEvent::{EndElement, StartElement};
 use xml::EventReader;
 
 mod harf;
-use harf::Harf;
 mod quran_simple_clean;
 
-pub fn build_quran_index() -> Harf {
-    let mut root = Harf::new('*');
+pub fn build_quran_index() -> harf::Harf {
+    let mut root = harf::Harf::new('*');
     let mut sura_number = 0;
     let mut aya_number = 0;
 
     for event in EventReader::new(quran_simple_clean::RAW_XML.as_bytes()) {
         match event {
+            Ok(StartElement { name, .. }) if name.local_name == "sura" => {
+                sura_number += 1;
+            }
             Ok(StartElement {
                 name, attributes, ..
-            }) => match name.to_string().as_str() {
-                "sura" => {
-                    sura_number += 1;
-                }
-                "aya" => {
-                    aya_number += 1;
-                    let aya_text = &attributes
-                        .iter()
-                        .find(|a| a.name.to_string() == "text")
-                        .unwrap()
-                        .value;
-                    root.update_tree(sura_number, aya_number, aya_text);
-                }
-                _ => {}
-            },
-            Ok(EndElement { name }) => {
-                if name.to_string() == "sura" {
-                    aya_number = 0;
-                }
+            }) if name.local_name == "aya" => {
+                aya_number += 1;
+                let aya_text = attributes
+                    .into_iter()
+                    .find(|a| a.name.to_string() == "text")
+                    .unwrap()
+                    .value;
+                root.update_tree(sura_number, aya_number, aya_text);
             }
-            Err(error) => {
-                println!("error: {}", error);
+            Ok(EndElement { name }) if name.local_name == "sura" => {
+                aya_number = 0;
             }
             _ => {}
         }
