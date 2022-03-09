@@ -1,6 +1,4 @@
-use std::collections::HashMap;
-
-pub type QuranizeMap = HashMap<String, Vec<String>>;
+pub type QuranizeMap = Vec<(String, Vec<String>)>;
 
 pub fn build_quranize_map() -> QuranizeMap {
     let transliteration_map_pairs = [
@@ -45,8 +43,15 @@ pub fn build_quranize_map() -> QuranizeMap {
     let mut quranize_map = QuranizeMap::new();
     for (quran, alphabets) in transliteration_map_pairs {
         for alphabet in alphabets.split_whitespace() {
-            let qurans = quranize_map.entry(alphabet.to_string()).or_default();
-            qurans.push(quran.to_string());
+            let quran = quran.to_string();
+            let alphabet = alphabet.to_string();
+            match quranize_map
+                .iter_mut()
+                .find_map(|(k, v)| if *k == alphabet { Some(v) } else { None })
+            {
+                Some(qurans) => qurans.push(quran),
+                None => quranize_map.push((alphabet, vec![quran])),
+            }
         }
     }
     quranize_map
@@ -59,14 +64,16 @@ mod tests {
     #[test]
     fn test_build_quranize_map() {
         let quranize_map = build_quranize_map();
-        assert_eq!(quranize_map["ba"], vec!["ب"]);
-        assert_eq!(
-            quranize_map["ku"],
-            "ق ك".split_whitespace().collect::<Vec<_>>()
-        );
-        assert_eq!(
-            quranize_map["'"],
-            "ء أ ؤ ئ ع".split_whitespace().collect::<Vec<_>>()
-        );
+        assert_eq!(join_values_by_key(&quranize_map, "ba"), "ب");
+        assert_eq!(join_values_by_key(&quranize_map, "ku"), "ق ك");
+        assert_eq!(join_values_by_key(&quranize_map, "'"), "ء أ ؤ ئ ع");
+    }
+
+    fn join_values_by_key(quranize_map: &QuranizeMap, key: &str) -> String {
+        quranize_map
+            .iter()
+            .find_map(|(k, v)| if k == key { Some(v) } else { None })
+            .unwrap()
+            .join(" ")
     }
 }
