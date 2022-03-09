@@ -1,4 +1,5 @@
-pub const RAW_XML: &str = r#"
+pub fn get_raw() -> String {
+    r#"
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
 
@@ -6498,4 +6499,5 @@ pub const RAW_XML: &str = r#"
 		<aya index="6" text="من الجنة والناس" />
 	</sura>
 </quran>
-"#;
+	"#.to_string()
+}
