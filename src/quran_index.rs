@@ -4,10 +4,12 @@ use xml::reader::XmlEvent::{EndElement, StartElement};
 use xml::EventReader;
 
 mod harf;
+use harf::Harf;
+
 mod quran_simple_clean;
 
-pub fn build_quran_index() -> harf::Harf {
-    let mut root = harf::Harf::new('\0');
+pub fn build_quran_index() -> Harf {
+    let mut root = Harf::new('\0');
     let mut sura_number = 0;
     let mut aya_number = 0;
     for event in EventReader::new(quran_simple_clean::get_raw().as_bytes()) {
