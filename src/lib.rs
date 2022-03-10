@@ -3,8 +3,8 @@
 mod quran_index;
 use quran_index::{build_quran_index, Harf};
 
-mod quranize_map;
-use quranize_map::{build_transliteration_map, TransliterationMap};
+mod transliteration_map;
+use transliteration_map::{build_transliteration_map, TransliterationMap};
 
 pub struct Quranize {
     quran_index: Harf,
@@ -33,9 +33,9 @@ impl Quranize {
                 let mut results = vec![];
                 for subnode in node.next_harfs.iter() {
                     for trs in self.transliteration_map[&subnode.content].iter() {
-                        if text.starts_with(trs) {
+                        if let Some(subtext) = text.strip_prefix(trs) {
                             let subresults = self
-                                .encode_with_context(subnode, &text[trs.len()..])
+                                .encode_with_context(subnode, subtext)
                                 .into_iter()
                                 .map(|(q, l)| (subnode.content.to_string() + &q, l));
                             results.append(&mut subresults.collect());

@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
-pub type TransliterationMap = HashMap<char, Vec<String>>;
+pub type TransliterationMap = HashMap<char, Vec<&'static str>>;
 
 pub fn build_transliteration_map() -> TransliterationMap {
     let mut map = HashMap::new();
-    map.insert(' ', vec!["".to_string()]);
+    map.insert(' ', vec![""]);
     map.insert('ء', split("' k a i u"));
     map.insert('آ', split("a aa"));
     map.insert('أ', split("a u ' k"));
@@ -44,6 +44,6 @@ pub fn build_transliteration_map() -> TransliterationMap {
     map
 }
 
-fn split(text: &str) -> Vec<String> {
-    text.split_whitespace().map(String::from).collect()
+fn split(text: &str) -> Vec<&str> {
+    text.split_whitespace().collect()
 }
