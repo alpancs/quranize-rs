@@ -26,31 +26,29 @@ impl Quranize {
     }
 
     fn encode_with_context(&self, text: &str, context: &Harf) -> EncodeResult {
-        if text.is_empty() {
-            return if context.locations.is_empty() {
-                vec![]
-            } else {
-                vec![("".to_string(), context.locations.to_vec())]
-            };
-        }
-
-        let mut results = vec![];
-        for next_harf in context.next_harfs.iter() {
-            let content = next_harf.content;
-            for transliteration in self.transliteration_map[&content].iter() {
-                if text.starts_with(transliteration) {
-                    let subtext = &text[transliteration.len()..];
-                    let subresults = self.encode_with_context(subtext, next_harf);
-                    results.append(
-                        &mut subresults
-                            .into_iter()
-                            .map(|(q, l)| (content.to_string() + &q, l))
-                            .collect(),
-                    );
+        match (text, &context.locations) {
+            ("", locations) if locations.is_empty() => vec![],
+            ("", locations) => vec![("".to_string(), locations.to_vec())],
+            _ => {
+                let mut results = vec![];
+                for next_harf in context.next_harfs.iter() {
+                    let content = next_harf.content;
+                    for transliteration in self.transliteration_map[&content].iter() {
+                        if text.starts_with(transliteration) {
+                            let subtext = &text[transliteration.len()..];
+                            let subresults = self.encode_with_context(subtext, next_harf);
+                            results.append(
+                                &mut subresults
+                                    .into_iter()
+                                    .map(|(q, l)| (content.to_string() + &q, l))
+                                    .collect(),
+                            );
+                        }
+                    }
                 }
+                results
             }
         }
-        results
     }
 }
 
