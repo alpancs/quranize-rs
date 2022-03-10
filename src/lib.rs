@@ -33,16 +33,13 @@ impl Quranize {
                 let mut results = vec![];
                 for next_harf in context.next_harfs.iter() {
                     let content = next_harf.content;
-                    for transliteration in self.transliteration_map[&content].iter() {
-                        if text.starts_with(transliteration) {
-                            let subtext = &text[transliteration.len()..];
-                            let subresults = self.encode_with_context(subtext, next_harf);
-                            results.append(
-                                &mut subresults
-                                    .into_iter()
-                                    .map(|(q, l)| (content.to_string() + &q, l))
-                                    .collect(),
-                            );
+                    for trs in self.transliteration_map[&content].iter() {
+                        if text.starts_with(trs) {
+                            let subresults = self
+                                .encode_with_context(&text[trs.len()..], next_harf)
+                                .into_iter()
+                                .map(|(q, l)| (content.to_string() + &q, l));
+                            results.append(&mut subresults.collect());
                         }
                     }
                 }
