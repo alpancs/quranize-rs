@@ -11,8 +11,8 @@ pub fn build_quran_index() -> Harf {
         let sura_number: u8 = splitted_line.next().unwrap().parse().unwrap();
         let aya_number: u16 = splitted_line.next().unwrap().parse().unwrap();
         let mut aya_text = splitted_line.next().unwrap();
-        if (sura_number, aya_number) != (1, 1) {
-            aya_text = aya_text.trim_start_matches("بسم الله الرحمن الرحيم ");
+        if sura_number != 1 && sura_number != 9 && aya_number == 1 {
+            aya_text = aya_text.strip_prefix("بسم الله الرحمن الرحيم ").unwrap();
         }
         root.update_tree(sura_number, aya_number, aya_text);
     }
