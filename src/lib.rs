@@ -29,17 +29,25 @@ impl Quranize {
         match (text, &context.locations) {
             ("", locations) if locations.is_empty() => vec![],
             ("", locations) => vec![("".to_string(), locations.to_vec())],
-            _ => context
-                .next_harfs
-                .iter()
-                .flat_map(|nh| {
-                    self.transliteration_map[&nh.content]
-                        .iter()
-                        .filter(|t| text.starts_with(*t))
-                        .flat_map(move |t| self.encode_with_context(&text[t.len()..], nh))
-                        .map(move |(q, l)| (nh.content.to_string() + &q, l))
-                })
-                .collect(),
+            _ => {
+                let mut results = vec![];
+                for next_harf in context.next_harfs.iter() {
+                    let content = next_harf.content;
+                    for transliteration in self.transliteration_map[&content].iter() {
+                        if text.starts_with(transliteration) {
+                            let subtext = &text[transliteration.len()..];
+                            let subresults = self.encode_with_context(subtext, next_harf);
+                            results.append(
+                                &mut subresults
+                                    .into_iter()
+                                    .map(|(q, l)| (content.to_string() + &q, l))
+                                    .collect(),
+                            );
+                        }
+                    }
+                }
+                results
+            }
         }
     }
 }
