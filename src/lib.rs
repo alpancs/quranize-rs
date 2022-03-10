@@ -22,23 +22,22 @@ type EncodeResult = Vec<(String, Vec<(u8, u16, u8)>)>;
 
 impl Quranize {
     pub fn encode(&self, text: &str) -> EncodeResult {
-        self.encode_with_context(text, &self.quran_index)
+        self.encode_with_context(&self.quran_index, text)
     }
 
-    fn encode_with_context(&self, text: &str, context: &Harf) -> EncodeResult {
-        match (text, &context.locations) {
+    fn encode_with_context(&self, node: &Harf, text: &str) -> EncodeResult {
+        match (text, &node.locations) {
             ("", locations) if locations.is_empty() => vec![],
             ("", locations) => vec![("".to_string(), locations.to_vec())],
             _ => {
                 let mut results = vec![];
-                for next_harf in context.next_harfs.iter() {
-                    let content = next_harf.content;
-                    for trs in self.transliteration_map[&content].iter() {
+                for subnode in node.next_harfs.iter() {
+                    for trs in self.transliteration_map[&subnode.content].iter() {
                         if text.starts_with(trs) {
                             let subresults = self
-                                .encode_with_context(&text[trs.len()..], next_harf)
+                                .encode_with_context(subnode, &text[trs.len()..])
                                 .into_iter()
-                                .map(|(q, l)| (content.to_string() + &q, l));
+                                .map(|(q, l)| (subnode.content.to_string() + &q, l));
                             results.append(&mut subresults.collect());
                         }
                     }
