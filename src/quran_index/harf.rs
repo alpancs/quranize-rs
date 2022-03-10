@@ -13,7 +13,7 @@ impl Harf {
         }
     }
 
-    pub fn update_tree(&mut self, sura_number: u8, aya_number: u16, aya_text: String) {
+    pub fn update_tree(&mut self, sura_number: u8, aya_number: u16, aya_text: &str) {
         let aya_chars: Vec<_> = aya_text.chars().collect();
         let mut word_number = 0;
         for i in 0..aya_chars.len() {

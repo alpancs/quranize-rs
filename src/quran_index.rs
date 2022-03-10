@@ -1,6 +1,3 @@
-use xml::reader::XmlEvent::{EndElement, StartElement};
-use xml::EventReader;
-
 mod harf;
 pub use harf::Harf;
 
@@ -8,29 +5,16 @@ mod quran_simple_clean;
 
 pub fn build_quran_index() -> Harf {
     let mut root = Harf::new('\0');
-    let mut sura_number = 0;
-    let mut aya_number = 0;
-    for event in EventReader::new(quran_simple_clean::get_raw().as_bytes()) {
-        match event {
-            Ok(StartElement { name, .. }) if name.local_name == "sura" => {
-                sura_number += 1;
-            }
-            Ok(StartElement {
-                name, attributes, ..
-            }) if name.local_name == "aya" => {
-                aya_number += 1;
-                let aya_text = attributes
-                    .into_iter()
-                    .find(|a| a.name.local_name == "text")
-                    .unwrap()
-                    .value;
-                root.update_tree(sura_number, aya_number, aya_text);
-            }
-            Ok(EndElement { name }) if name.local_name == "sura" => {
-                aya_number = 0;
-            }
-            _ => {}
+    let lines = quran_simple_clean::RAW.trim_start().split('\n');
+    for line in lines.take_while(|l| !l.is_empty()) {
+        let mut splitted_line = line.split('|');
+        let sura_number: u8 = splitted_line.next().unwrap().parse().unwrap();
+        let aya_number: u16 = splitted_line.next().unwrap().parse().unwrap();
+        let mut aya_text = splitted_line.next().unwrap();
+        if (sura_number, aya_number) != (1, 1) {
+            aya_text = aya_text.trim_start_matches("بسم الله الرحمن الرحيم ");
         }
+        root.update_tree(sura_number, aya_number, aya_text);
     }
     root
 }
