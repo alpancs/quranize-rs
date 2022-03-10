@@ -81,6 +81,10 @@ mod tests {
             vec!["بسم الله"],
         );
         assert_eq!(
+            quranize.encode("bismillah").first().unwrap().1,
+            vec![(1, 1, 1), (11, 41, 4), (27, 30, 5)],
+        );
+        assert_eq!(
             quranize
                 .encode("bisyimaalihi")
                 .iter()
