@@ -62,7 +62,7 @@ mod tests {
     use test::Bencher;
 
     #[test]
-    fn test_quranize_bismi() {
+    fn test_quranize_normal() {
         let quranize = build_quranize();
         assert_eq!(
             quranize
@@ -72,11 +72,6 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec!["باسم", "بعصم", "بئسما", "بإثمي", "بسم"],
         );
-    }
-
-    #[test]
-    fn test_quranize_bismillah() {
-        let quranize = build_quranize();
         assert_eq!(
             quranize
                 .encode("bismillah")
@@ -84,6 +79,14 @@ mod tests {
                 .map(|(q, _)| q)
                 .collect::<Vec<_>>(),
             vec!["بسم الله"],
+        );
+        assert_eq!(
+            quranize
+                .encode("bisyimaalihi")
+                .iter()
+                .map(|(q, _)| q)
+                .collect::<Vec<_>>(),
+            vec!["بشماله"],
         );
     }
 
