@@ -32,13 +32,23 @@ impl Quranize {
             _ => {
                 let mut results = vec![];
                 for subnode in node.next_harfs.iter() {
+                    let mut subresults = vec![];
                     for trs in self.transliteration_map[&subnode.content].iter() {
                         if let Some(subtext) = text.strip_prefix(trs) {
-                            let subresults = self
-                                .encode_with_context(subnode, subtext)
-                                .into_iter()
-                                .map(|(q, l)| (subnode.content.to_string() + &q, l));
-                            results.append(&mut subresults.collect());
+                            subresults.append(&mut self.encode_with_context(subnode, subtext));
+                        }
+                    }
+                    if subnode.content == 'ا' || (node.content == 'ا' && subnode.content == 'ل')
+                    {
+                        subresults.append(&mut self.encode_with_context(subnode, text));
+                    }
+
+                    for (subq, subl) in subresults
+                        .into_iter()
+                        .map(|(q, l)| (subnode.content.to_string() + &q, l))
+                    {
+                        if results.iter().filter(|(q, _)| *q == subq).count() == 0 {
+                            results.push((subq, subl));
                         }
                     }
                 }
@@ -64,7 +74,7 @@ mod tests {
                 .iter()
                 .map(|(q, _)| q)
                 .collect::<Vec<_>>(),
-            vec!["باسم", "بعصم", "بئسما", "بإثمي", "بسم"],
+            vec!["باسم", "بالإثم", "بعصم", "بئسما", "بإثمي", "بسم"],
         );
         assert_eq!(
             quranize
@@ -85,6 +95,14 @@ mod tests {
                 .map(|(q, _)| q)
                 .collect::<Vec<_>>(),
             vec!["بشماله"],
+        );
+        assert_eq!(
+            quranize
+                .encode("bismillahirohmanirohim")
+                .iter()
+                .map(|(q, _)| q)
+                .collect::<Vec<_>>(),
+            vec!["بسم الله الرحمن الرحيم"],
         );
     }
 
