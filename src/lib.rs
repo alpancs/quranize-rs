@@ -97,6 +97,6 @@ mod tests {
     #[bench]
     fn bench_quranize(b: &mut Bencher) {
         let quranize = build_quranize();
-        b.iter(|| quranize.encode("bismi"));
+        b.iter(|| quranize.encode("bismillah"));
     }
 }
