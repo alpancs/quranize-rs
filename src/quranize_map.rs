@@ -1,77 +1,49 @@
-pub type QuranizeMap = Vec<(String, Vec<char>)>;
+use std::collections::HashMap;
 
-pub fn build_quranize_map() -> QuranizeMap {
-    let transliteration_map_pairs = [
-        ('ء', "' k a i u"),
-        ('آ', "a aa"),
-        ('أ', "a u ' k"),
-        ('ؤ', "' k u"),
-        ('إ', "i"),
-        ('ئ', "' k i"),
-        ('ا', "a i u"),
-        ('ب', "b ba bi bu"),
-        ('ة', "h ta ti tu t"),
-        ('ت', "t ta ti tu"),
-        ('ث', "ts tsa tsi tsu s sa si su"),
-        ('ج', "j ja ji ju"),
-        ('ح', "h ha hi hu ch cha chi chu kh kha khi khu"),
-        ('خ', "kh kho khi khu h ho hi hu kha ha"),
-        ('د', "d da di du"),
-        ('ذ', "d da di du dh dha dhi dhu dz dza dzi dzu"),
-        ('ر', "r ro ri ru ra"),
-        ('ز', "z za zi zu"),
-        ('س', "s sa si su"),
-        ('ش', "s sa si su sy sya syi syu sh sha shi shu"),
-        ('ص', "s so si su sh sho shi shu sa sha"),
-        ('ض', "d do di du dh dho dhi dhu dz dzo dzi dzu"),
-        ('ط', "t to ti tu th tho thi thu ta tha"),
-        ('ظ', "d do di du dh dho dhi dhu dz dzo dzi dzu"),
-        ('ع', "' 'a 'i 'u k a i u"),
-        ('غ', "g go gi gu gh gho ghi ghu ga gha"),
-        ('ف', "f fa fi fu"),
-        ('ق', "k ko ki ku q qo qi qu qa"),
-        ('ك', "k ka ki ku"),
-        ('ل', "l la li lu"),
-        ('م', "m ma mi mu"),
-        ('ن', "n na ni nu"),
-        ('ه', "h ha hi hu"),
-        ('و', "w wa wi wu u"),
-        ('ى', "a"),
-        ('ي', "y ya yi yu i iya iyi iyu"),
-    ];
-    let mut quranize_map = QuranizeMap::new();
-    for (quran, alphabets) in transliteration_map_pairs {
-        for alphabet in alphabets.split_whitespace() {
-            match quranize_map.iter_mut().find(|(k, _)| *k == alphabet) {
-                Some((_, qurans)) => qurans.push(quran),
-                None => quranize_map.push((alphabet.to_string(), vec![quran])),
-            }
-        }
-    }
-    quranize_map
+pub type TransliterationMap = HashMap<char, Vec<String>>;
+
+pub fn build_transliteration_map() -> TransliterationMap {
+    let mut map = HashMap::new();
+    map.insert(' ', vec!["".to_string()]);
+    map.insert('ء', split("' k a i u"));
+    map.insert('آ', split("a aa"));
+    map.insert('أ', split("a u ' k"));
+    map.insert('ؤ', split("' k u"));
+    map.insert('إ', split("i"));
+    map.insert('ئ', split("' k i"));
+    map.insert('ا', split("a i u"));
+    map.insert('ب', split("b ba bi bu"));
+    map.insert('ة', split("h ta ti tu t"));
+    map.insert('ت', split("t ta ti tu"));
+    map.insert('ث', split("ts tsa tsi tsu s sa si su"));
+    map.insert('ج', split("j ja ji ju"));
+    map.insert('ح', split("h ha hi hu ch cha chi chu kh kha khi khu"));
+    map.insert('خ', split("kh kho khi khu h ho hi hu kha ha"));
+    map.insert('د', split("d da di du"));
+    map.insert('ذ', split("d da di du dh dha dhi dhu dz dza dzi dzu"));
+    map.insert('ر', split("r ro ri ru ra"));
+    map.insert('ز', split("z za zi zu"));
+    map.insert('س', split("s sa si su"));
+    map.insert('ش', split("s sa si su sy sya syi syu sh sha shi shu"));
+    map.insert('ص', split("s so si su sh sho shi shu sa sha"));
+    map.insert('ض', split("d do di du dh dho dhi dhu dz dzo dzi dzu"));
+    map.insert('ط', split("t to ti tu th tho thi thu ta tha"));
+    map.insert('ظ', split("d do di du dh dho dhi dhu dz dzo dzi dzu"));
+    map.insert('ع', split("' 'a 'i 'u k a i u"));
+    map.insert('غ', split("g go gi gu gh gho ghi ghu ga gha"));
+    map.insert('ف', split("f fa fi fu"));
+    map.insert('ق', split("k ko ki ku q qo qi qu qa"));
+    map.insert('ك', split("k ka ki ku"));
+    map.insert('ل', split("l la li lu"));
+    map.insert('م', split("m ma mi mu"));
+    map.insert('ن', split("n na ni nu"));
+    map.insert('ه', split("h ha hi hu"));
+    map.insert('و', split("w wa wi wu u"));
+    map.insert('ى', split("a"));
+    map.insert('ي', split("y ya yi yu i iya iyi iyu"));
+    map
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_build_quranize_map() {
-        let quranize_map = build_quranize_map();
-        assert_eq!(find_values(&quranize_map, "ba"), split_to_chars("ب"));
-        assert_eq!(find_values(&quranize_map, "ku"), split_to_chars("ق ك"));
-        assert_eq!(find_values(&quranize_map, "'"), split_to_chars("ء أ ؤ ئ ع"));
-    }
-
-    fn find_values(quranize_map: &QuranizeMap, key: &str) -> Vec<char> {
-        quranize_map
-            .iter()
-            .find_map(|(k, v)| if k == key { Some(v) } else { None })
-            .unwrap()
-            .to_vec()
-    }
-
-    fn split_to_chars(text: &str) -> Vec<char> {
-        text.chars().filter(|c| *c != ' ').collect()
-    }
+fn split(text: &str) -> Vec<String> {
+    text.split_whitespace().map(String::from).collect()
 }

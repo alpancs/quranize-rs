@@ -1,5 +1,3 @@
-extern crate test;
-
 use xml::reader::XmlEvent::{EndElement, StartElement};
 use xml::EventReader;
 
@@ -40,6 +38,8 @@ pub fn build_quran_index() -> Harf {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    extern crate test;
     use test::Bencher;
 
     #[test]
