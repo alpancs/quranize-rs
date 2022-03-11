@@ -34,29 +34,23 @@ impl Quranize {
                 for subnode in node.next_harfs.iter() {
                     for prefix in self.transliteration_map[&subnode.content].iter() {
                         if let Some(subtext) = text.strip_prefix(prefix) {
-                            results.append(
-                                &mut self
-                                    .encode_with_context(subnode, subtext)
-                                    .into_iter()
-                                    .map(|(q, l)| (subnode.content.to_string() + &q, l))
-                                    .collect(),
-                            );
+                            results.append(&mut self.encode_subnode(subnode, subtext));
                         }
                     }
-
                     if node.content == 'ا' && subnode.content == 'ل' {
-                        results.append(
-                            &mut self
-                                .encode_with_context(subnode, text)
-                                .into_iter()
-                                .map(|(q, l)| (subnode.content.to_string() + &q, l))
-                                .collect(),
-                        );
+                        results.append(&mut self.encode_subnode(subnode, text));
                     }
                 }
                 results
             }
         }
+    }
+
+    fn encode_subnode(&self, subnode: &Harf, subtext: &str) -> EncodeResult {
+        self.encode_with_context(subnode, subtext)
+            .into_iter()
+            .map(|(q, l)| (subnode.content.to_string() + &q, l))
+            .collect()
     }
 }
 
