@@ -65,41 +65,23 @@ mod tests {
     fn test_quranize_normal() {
         let quranize = build_quranize();
         assert_eq!(
-            quranize
-                .encode("bismi")
-                .iter()
-                .map(|(q, _)| q)
-                .collect::<Vec<_>>(),
-            vec!["باسم", "بعصم", "بئسما", "بإثمي", "بسم"],
+            get_encoded_quran(&quranize, "bismi"),
+            vec!["باسم", "بعصم", "بئسما", "بإثمي", "بسم"]
         );
-        assert_eq!(
-            quranize
-                .encode("bismillah")
-                .iter()
-                .map(|(q, _)| q)
-                .collect::<Vec<_>>(),
-            vec!["بسم الله"],
-        );
+        assert_eq!(get_encoded_quran(&quranize, "bismillah"), vec!["بسم الله"]);
         assert_eq!(
             quranize.encode("bismillah").first().unwrap().1,
-            vec![(1, 1, 1), (11, 41, 4), (27, 30, 5)],
+            vec![(1, 1, 1), (11, 41, 4), (27, 30, 5)]
         );
+        assert_eq!(get_encoded_quran(&quranize, "bisyimaalihi"), vec!["بشماله"]);
         assert_eq!(
-            quranize
-                .encode("bisyimaalihi")
-                .iter()
-                .map(|(q, _)| q)
-                .collect::<Vec<_>>(),
-            vec!["بشماله"],
+            get_encoded_quran(&quranize, "bismillahirohmanirohim"),
+            vec!["بسم الله الرحمن الرحيم"]
         );
-        assert_eq!(
-            quranize
-                .encode("bismillahirohmanirohim")
-                .iter()
-                .map(|(q, _)| q)
-                .collect::<Vec<_>>(),
-            vec!["بسم الله الرحمن الرحيم"],
-        );
+    }
+
+    fn get_encoded_quran(quranize: &Quranize, text: &str) -> Vec<String> {
+        quranize.encode(text).into_iter().map(|(q, _)| q).collect()
     }
 
     #[test]
