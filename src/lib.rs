@@ -62,7 +62,7 @@ fn normalize(text: &str) -> String {
             _ => None,
         })
         .collect();
-    text.dedup();
+    text.dedup_by(|a, b| a == b && *a != 'l');
     String::from_iter(text)
 }
 
@@ -87,7 +87,7 @@ mod tests {
         );
         assert_eq!(get_encoded_quran(&quranize, "bisyimaalihi"), vec!["بشماله"]);
         assert_eq!(
-            get_encoded_quran(&quranize, "bismillahirohmanirohim"),
+            get_encoded_quran(&quranize, "bismilla hirrohmaan nirrohiim"),
             vec!["بسم الله الرحمن الرحيم"]
         );
     }
