@@ -22,7 +22,7 @@ type EncodeResult = Vec<(String, Vec<(u8, u16, u8)>)>;
 
 impl Quranize {
     pub fn encode(&self, text: &str) -> EncodeResult {
-        self.encode_with_context(&self.quran_index, text)
+        self.encode_with_context(&self.quran_index, &normalize(text))
     }
 
     fn encode_with_context(&self, node: &Harf, text: &str) -> EncodeResult {
@@ -52,6 +52,18 @@ impl Quranize {
             .map(|(q, l)| (subnode.content.to_string() + &q, l))
             .collect()
     }
+}
+
+fn normalize(text: &str) -> String {
+    let mut text: Vec<_> = text
+        .chars()
+        .filter_map(|c| match c.to_ascii_lowercase() {
+            c @ ('a'..='z' | '\'') => Some(c),
+            _ => None,
+        })
+        .collect();
+    text.dedup();
+    String::from_iter(text)
 }
 
 #[cfg(test)]
@@ -89,6 +101,13 @@ mod tests {
         let quranize = build_quranize();
         assert!(quranize.encode("").is_empty());
         assert!(quranize.encode("gsquw").is_empty());
+    }
+
+    #[test]
+    fn test_normalize() {
+        assert_eq!(normalize("bismi"), "bismi");
+        assert_eq!(normalize("'aalimul ghoibi"), "'alimulghoibi");
+        assert_eq!(normalize("Qul A'udzu"), "qula'udzu");
     }
 
     #[bench]
