@@ -87,7 +87,7 @@ pub struct Location {
 impl EncodeResult {
     fn new(locations: &[(u8, u16, u8)]) -> Self {
         Self {
-            quran: "".to_string(),
+            quran: String::new(),
             locations: locations
                 .iter()
                 .map(|&(sura_number, aya_number, word_number)| Location {
