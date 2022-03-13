@@ -1,7 +1,7 @@
 pub struct Harf {
     pub content: char,
     pub next_harfs: Vec<Harf>,
-    pub locations: Vec<Location>,
+    pub locations: Vec<(u8, u16, u8)>,
 }
 
 impl Harf {
@@ -23,8 +23,7 @@ impl Harf {
                 for j in i..aya_chars.len() {
                     node = node.get_or_add(aya_chars[j]);
                     if j == aya_chars.len() - 1 || aya_chars[j + 1] == ' ' {
-                        let location = Location::new(sura_number, aya_number, word_number);
-                        node.locations.push(location);
+                        node.locations.push((sura_number, aya_number, word_number));
                     }
                 }
             }
@@ -39,23 +38,6 @@ impl Harf {
                 self.next_harfs.push(Harf::new(content));
                 self.next_harfs.last_mut().unwrap()
             }
-        }
-    }
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct Location {
-    sura_number: u8,
-    aya_number: u16,
-    word_number: u8,
-}
-
-impl Location {
-    pub fn new(sura_number: u8, aya_number: u16, word_number: u8) -> Self {
-        Self {
-            sura_number,
-            aya_number,
-            word_number,
         }
     }
 }

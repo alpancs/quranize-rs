@@ -1,26 +1,25 @@
 #![feature(test)]
 
+use serde::Serialize;
+use wasm_bindgen::prelude::*;
+
 mod quran_index;
-use quran_index::{build_quran_index, Harf, Location};
+use quran_index::{build_quran_index, Harf};
 
 mod transliteration_map;
 use transliteration_map::{build_transliteration_map, TransliterationMap};
-
-pub struct Quranize {
-    quran_index: Harf,
-    transliteration_map: TransliterationMap,
-}
-
-pub struct EncodeResult {
-    quran: String,
-    locations: Vec<Location>,
-}
 
 pub fn build_quranize() -> Quranize {
     Quranize {
         quran_index: build_quran_index(),
         transliteration_map: build_transliteration_map(),
     }
+}
+
+#[wasm_bindgen]
+pub struct Quranize {
+    quran_index: Harf,
+    transliteration_map: TransliterationMap,
 }
 
 impl Quranize {
@@ -31,10 +30,7 @@ impl Quranize {
     fn encode_with_context(&self, node: &Harf, text: &str) -> Vec<EncodeResult> {
         match (text, &node.locations) {
             ("", locations) if locations.is_empty() => vec![],
-            ("", locations) => vec![EncodeResult {
-                quran: "".to_string(),
-                locations: locations.to_vec(),
-            }],
+            ("", locations) => vec![EncodeResult::new(locations)],
             _ => {
                 let mut results = vec![];
                 for subnode in node.next_harfs.iter() {
@@ -75,6 +71,50 @@ fn normalize(text: &str) -> String {
     String::from_iter(text)
 }
 
+#[derive(Serialize)]
+pub struct EncodeResult {
+    quran: String,
+    locations: Vec<Location>,
+}
+
+#[derive(Serialize)]
+pub struct Location {
+    sura_number: u8,
+    aya_number: u16,
+    word_number: u8,
+}
+
+impl EncodeResult {
+    fn new(locations: &[(u8, u16, u8)]) -> Self {
+        Self {
+            quran: "".to_string(),
+            locations: locations
+                .iter()
+                .map(|&(sura_number, aya_number, word_number)| Location {
+                    sura_number,
+                    aya_number,
+                    word_number,
+                })
+                .collect(),
+        }
+    }
+}
+
+#[allow(clippy::unused_unit)]
+#[wasm_bindgen]
+impl Quranize {
+    #[allow(clippy::new_without_default)]
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> Self {
+        build_quranize()
+    }
+
+    #[wasm_bindgen(js_name = encode)]
+    pub fn js_encode(&self, text: &str) -> JsValue {
+        JsValue::from_serde(&self.encode(text)).unwrap()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -90,12 +130,7 @@ mod tests {
             vec!["باسم", "بعصم", "بئسما", "بإثمي", "بسم"]
         );
         assert_eq!(get_encoded_quran(&quranize, "bismillah"), vec!["بسم الله"]);
-        assert_eq!(
-            quranize.encode("bismillah").first().unwrap().locations,
-            [(1, 1, 1), (11, 41, 4), (27, 30, 5)]
-                .map(|(s, a, w)| Location::new(s, a, w))
-                .to_vec()
-        );
+        assert_eq!(quranize.encode("bismillah")[0].locations.len(), 3);
         assert_eq!(get_encoded_quran(&quranize, "bisyimaalihi"), vec!["بشماله"]);
         assert_eq!(
             get_encoded_quran(&quranize, "bismilla hirrohmaan nirrohiim"),
