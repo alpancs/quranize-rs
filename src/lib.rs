@@ -1,7 +1,7 @@
 #![feature(test)]
 
 mod quran_index;
-use quran_index::{build_quran_index, Harf};
+use quran_index::{build_quran_index, Harf, Location};
 
 mod transliteration_map;
 use transliteration_map::{build_transliteration_map, TransliterationMap};
@@ -11,6 +11,11 @@ pub struct Quranize {
     transliteration_map: TransliterationMap,
 }
 
+pub struct EncodeResult {
+    quran: String,
+    locations: Vec<Location>,
+}
+
 pub fn build_quranize() -> Quranize {
     Quranize {
         quran_index: build_quran_index(),
@@ -18,17 +23,18 @@ pub fn build_quranize() -> Quranize {
     }
 }
 
-type EncodeResult = Vec<(String, Vec<(u8, u16, u8)>)>;
-
 impl Quranize {
-    pub fn encode(&self, text: &str) -> EncodeResult {
+    pub fn encode(&self, text: &str) -> Vec<EncodeResult> {
         self.encode_with_context(&self.quran_index, &normalize(text))
     }
 
-    fn encode_with_context(&self, node: &Harf, text: &str) -> EncodeResult {
+    fn encode_with_context(&self, node: &Harf, text: &str) -> Vec<EncodeResult> {
         match (text, &node.locations) {
             ("", locations) if locations.is_empty() => vec![],
-            ("", locations) => vec![("".to_string(), locations.to_vec())],
+            ("", locations) => vec![EncodeResult {
+                quran: "".to_string(),
+                locations: locations.to_vec(),
+            }],
             _ => {
                 let mut results = vec![];
                 for subnode in node.next_harfs.iter() {
@@ -46,10 +52,13 @@ impl Quranize {
         }
     }
 
-    fn encode_subnode(&self, subnode: &Harf, subtext: &str) -> EncodeResult {
+    fn encode_subnode(&self, subnode: &Harf, subtext: &str) -> Vec<EncodeResult> {
         self.encode_with_context(subnode, subtext)
             .into_iter()
-            .map(|(q, l)| (subnode.content.to_string() + &q, l))
+            .map(|r| EncodeResult {
+                quran: subnode.content.to_string() + &r.quran,
+                ..r
+            })
             .collect()
     }
 }
@@ -82,8 +91,10 @@ mod tests {
         );
         assert_eq!(get_encoded_quran(&quranize, "bismillah"), vec!["بسم الله"]);
         assert_eq!(
-            quranize.encode("bismillah").first().unwrap().1,
-            vec![(1, 1, 1), (11, 41, 4), (27, 30, 5)]
+            quranize.encode("bismillah").first().unwrap().locations,
+            [(1, 1, 1), (11, 41, 4), (27, 30, 5)]
+                .map(|(s, a, w)| Location::new(s, a, w))
+                .to_vec()
         );
         assert_eq!(get_encoded_quran(&quranize, "bisyimaalihi"), vec!["بشماله"]);
         assert_eq!(
@@ -93,7 +104,7 @@ mod tests {
     }
 
     fn get_encoded_quran(quranize: &Quranize, text: &str) -> Vec<String> {
-        quranize.encode(text).into_iter().map(|(q, _)| q).collect()
+        quranize.encode(text).into_iter().map(|r| r.quran).collect()
     }
 
     #[test]

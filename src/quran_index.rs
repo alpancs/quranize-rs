@@ -1,5 +1,5 @@
 mod harf;
-pub use harf::Harf;
+pub use harf::{Harf, Location};
 
 mod quran_simple_clean;
 
