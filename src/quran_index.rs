@@ -4,6 +4,10 @@ pub use harf::Harf;
 mod quran_simple_clean;
 
 pub fn build_quran_index() -> Harf {
+    build_quran_index_with_limit(u8::MAX)
+}
+
+pub fn build_quran_index_with_limit(word_count_limit: u8) -> Harf {
     let mut root = Harf::new('\0');
     let lines = quran_simple_clean::RAW.trim_start().split('\n');
     for line in lines.take_while(|l| !l.is_empty()) {
@@ -14,7 +18,7 @@ pub fn build_quran_index() -> Harf {
         if aya_number == 1 && !(sura_number == 1 || sura_number == 9) {
             aya_text = aya_text.strip_prefix("بسم الله الرحمن الرحيم ").unwrap();
         }
-        root.update_tree(sura_number, aya_number, aya_text);
+        root.update_tree(sura_number, aya_number, aya_text, word_count_limit);
     }
     root
 }

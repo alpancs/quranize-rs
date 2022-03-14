@@ -13,20 +13,20 @@ impl Harf {
         }
     }
 
-    pub fn update_tree(&mut self, sura_number: u8, aya_number: u16, aya_text: &str) {
+    pub fn update_tree(&mut self, sura_number: u8, aya_number: u16, aya_text: &str, wc_limit: u8) {
         let aya_chars: Vec<_> = aya_text.chars().collect();
         let mut word_number = 0;
         for i in 0..aya_chars.len() {
             if i == 0 || aya_chars[i - 1] == ' ' {
                 word_number += 1;
                 let mut node = &mut *self;
-                let mut word_count = 0u8;
+                let mut word_count = 0;
                 for j in i..aya_chars.len() {
                     node = node.get_or_add(aya_chars[j]);
                     if j == aya_chars.len() - 1 || aya_chars[j + 1] == ' ' {
                         node.locations.push((sura_number, aya_number, word_number));
                         word_count += 1;
-                        if word_count > 11 {
+                        if word_count >= wc_limit {
                             break;
                         }
                     }

@@ -4,7 +4,7 @@ use serde::Serialize;
 use wasm_bindgen::prelude::*;
 
 mod quran_index;
-use quran_index::{build_quran_index, Harf};
+use quran_index::{build_quran_index, build_quran_index_with_limit, Harf};
 
 mod transliteration_map;
 use transliteration_map::{build_transliteration_map, TransliterationMap};
@@ -105,10 +105,12 @@ impl EncodeResult {
 #[allow(clippy::unused_unit)]
 #[wasm_bindgen]
 impl Quranize {
-    #[allow(clippy::new_without_default)]
     #[wasm_bindgen(constructor)]
-    pub fn new() -> Self {
-        build_quranize()
+    pub fn new(word_count_limit: u8) -> Self {
+        Quranize {
+            quran_index: build_quran_index_with_limit(word_count_limit),
+            transliteration_map: build_transliteration_map(),
+        }
     }
 
     #[wasm_bindgen(js_name = encode)]
