@@ -20,10 +20,15 @@ impl Harf {
             if i == 0 || aya_chars[i - 1] == ' ' {
                 word_number += 1;
                 let mut node = &mut *self;
+                let mut word_count = 0u8;
                 for j in i..aya_chars.len() {
                     node = node.get_or_add(aya_chars[j]);
                     if j == aya_chars.len() - 1 || aya_chars[j + 1] == ' ' {
                         node.locations.push((sura_number, aya_number, word_number));
+                        word_count += 1;
+                        if word_count > 11 {
+                            break;
+                        }
                     }
                 }
             }
