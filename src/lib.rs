@@ -148,12 +148,16 @@ mod tests {
     fn test_quranize_zero() {
         let quranize = build_quranize();
         assert!(quranize.encode("").is_empty());
-        assert!(quranize.encode("gsquw").is_empty());
+        assert!(quranize.encode("bbb").is_empty());
     }
 
     #[test]
     fn test_normalize() {
         assert_eq!(normalize("bismi"), "bismi");
+        assert_eq!(
+            normalize("bismilla hirrohmaan nirrohiim"),
+            "bismillahirohmanirohim"
+        );
         assert_eq!(normalize("'aalimul ghoibi"), "'alimulghoibi");
         assert_eq!(normalize("Qul A'udzu"), "qula'udzu");
     }
