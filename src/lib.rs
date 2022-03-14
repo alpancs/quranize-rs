@@ -24,10 +24,14 @@ pub struct Quranize {
 
 impl Quranize {
     pub fn encode(&self, text: &str) -> Vec<EncodeResult> {
-        self.encode_with_context(&self.quran_index, &normalize(text))
+        let mut results = self.rev_encode(&self.quran_index, &normalize(text));
+        for r in results.iter_mut() {
+            r.quran = r.quran.chars().rev().collect();
+        }
+        results
     }
 
-    fn encode_with_context(&self, node: &Harf, text: &str) -> Vec<EncodeResult> {
+    fn rev_encode(&self, node: &Harf, text: &str) -> Vec<EncodeResult> {
         match (text, &node.locations) {
             ("", locations) if locations.is_empty() => vec![],
             ("", locations) => vec![EncodeResult::new(locations)],
@@ -36,11 +40,11 @@ impl Quranize {
                 for subnode in node.next_harfs.iter() {
                     for prefix in self.transliteration_map[&subnode.content].iter() {
                         if let Some(subtext) = text.strip_prefix(prefix) {
-                            results.append(&mut self.encode_subnode(subnode, subtext));
+                            results.append(&mut self.rev_encode_subnode(subnode, subtext));
                         }
                     }
                     if node.content == 'ا' && subnode.content == 'ل' {
-                        results.append(&mut self.encode_subnode(subnode, text));
+                        results.append(&mut self.rev_encode_subnode(subnode, text));
                     }
                 }
                 results
@@ -48,14 +52,12 @@ impl Quranize {
         }
     }
 
-    fn encode_subnode(&self, subnode: &Harf, subtext: &str) -> Vec<EncodeResult> {
-        self.encode_with_context(subnode, subtext)
-            .into_iter()
-            .map(|r| EncodeResult {
-                quran: subnode.content.to_string() + &r.quran,
-                ..r
-            })
-            .collect()
+    fn rev_encode_subnode(&self, subnode: &Harf, subtext: &str) -> Vec<EncodeResult> {
+        let mut results = self.rev_encode(subnode, subtext);
+        for r in results.iter_mut() {
+            r.quran.push(subnode.content);
+        }
+        results
     }
 }
 
