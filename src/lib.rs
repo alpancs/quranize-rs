@@ -28,6 +28,7 @@ impl Quranize {
         for r in results.iter_mut() {
             r.quran = r.quran.chars().rev().collect();
         }
+        results.dedup_by(|a, b| a.quran == b.quran);
         results
     }
 
@@ -133,12 +134,18 @@ mod tests {
             get_encoded_quran(&quranize, "bismi"),
             vec!["باسم", "بعصم", "بئسما", "بإثمي", "بسم"]
         );
-        assert_eq!(get_encoded_quran(&quranize, "bismillah"), vec!["بسم الله"]);
+        assert_eq!(
+            get_encoded_quran(&quranize, "bismillah"),
+            vec!["بسم الله", "بشماله"]
+        );
         assert_eq!(quranize.encode("bismillah")[0].locations.len(), 3);
-        assert_eq!(get_encoded_quran(&quranize, "bisyimaalihi"), vec!["بشماله"]);
         assert_eq!(
             get_encoded_quran(&quranize, "bismilla hirrohmaan nirrohiim"),
             vec!["بسم الله الرحمن الرحيم"]
+        );
+        assert_eq!(
+            get_encoded_quran(&quranize, "alhamdulilla hirobbil 'alamiin"),
+            vec!["الحمد لله رب العالمين"]
         );
     }
 

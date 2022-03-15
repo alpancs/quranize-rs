@@ -34,7 +34,7 @@ pub fn build_transliteration_map() -> TransliterationMap {
     map.insert('ف', split("f fa fi fu"));
     map.insert('ق', split("k ko ki ku q qo qi qu qa"));
     map.insert('ك', split("k ka ki ku"));
-    map.insert('ل', split("l la li lu"));
+    map.insert('ل', split("l lla la li lu"));
     map.insert('م', split("m ma mi mu"));
     map.insert('ن', split("n na ni nu"));
     map.insert('ه', split("h ha hi hu"));
