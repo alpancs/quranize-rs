@@ -46,6 +46,9 @@ impl Quranize {
             if node.content == 'ا' && subnode.content == 'ل' {
                 results.append(&mut self.rev_encode_subnode(subnode, text));
             }
+            if node.content == 'و' && subnode.content == 'ا' {
+                results.append(&mut self.rev_encode_subnode(subnode, text));
+            }
         }
         results
     }
@@ -143,6 +146,10 @@ mod tests {
         assert_eq!(
             get_encoded_quran(&quranize, "alhamdulilla hirobbil 'alamiin"),
             vec!["الحمد لله رب العالمين"]
+        );
+        assert_eq!(
+            get_encoded_quran(&quranize, "wa'tasimu bihablillah"),
+            vec!["واعتصموا بحبل الله"]
         );
     }
 
