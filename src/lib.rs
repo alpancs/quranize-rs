@@ -33,24 +33,21 @@ impl Quranize {
     }
 
     fn rev_encode(&self, node: &Harf, text: &str) -> Vec<EncodeResult> {
-        match (text, &node.locations) {
-            ("", locations) if locations.is_empty() => vec![],
-            ("", locations) => vec![EncodeResult::new(locations)],
-            _ => {
-                let mut results = vec![];
-                for subnode in node.next_harfs.iter() {
-                    for prefix in self.transliteration_map[&subnode.content].iter() {
-                        if let Some(subtext) = text.strip_prefix(prefix) {
-                            results.append(&mut self.rev_encode_subnode(subnode, subtext));
-                        }
-                    }
-                    if node.content == 'ا' && subnode.content == 'ل' {
-                        results.append(&mut self.rev_encode_subnode(subnode, text));
-                    }
+        let mut results = vec![];
+        if text.is_empty() && !node.locations.is_empty() {
+            results.push(EncodeResult::new(&node.locations));
+        }
+        for subnode in node.next_harfs.iter() {
+            for prefix in self.transliteration_map[&subnode.content].iter() {
+                if let Some(subtext) = text.strip_prefix(prefix) {
+                    results.append(&mut self.rev_encode_subnode(subnode, subtext));
                 }
-                results
+            }
+            if node.content == 'ا' && subnode.content == 'ل' {
+                results.append(&mut self.rev_encode_subnode(subnode, text));
             }
         }
+        results
     }
 
     fn rev_encode_subnode(&self, subnode: &Harf, subtext: &str) -> Vec<EncodeResult> {
