@@ -28,7 +28,7 @@ impl Quranize {
         for r in results.iter_mut() {
             r.quran = r.quran.chars().rev().collect();
         }
-        results.dedup_by(|a, b| a.quran == b.quran);
+        results.dedup();
         results
     }
 
@@ -74,13 +74,13 @@ fn normalize(text: &str) -> String {
     String::from_iter(text)
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, PartialEq)]
 pub struct EncodeResult {
     quran: String,
     locations: Vec<Location>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, PartialEq)]
 pub struct Location {
     sura_number: u8,
     aya_number: u16,
