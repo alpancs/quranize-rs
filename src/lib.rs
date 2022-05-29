@@ -70,7 +70,7 @@ fn normalize(text: &str) -> String {
             _ => None,
         })
         .collect();
-    text.dedup_by(|a, b| a == b && *a != 'l');
+    text.dedup_by(|a, b| a == b && *a != 'l' && *a != 'a' && *a != 'i' && *a != 'u');
     String::from_iter(text)
 }
 
@@ -140,7 +140,7 @@ mod tests {
         );
         assert_eq!(quranize.encode("bismillah")[0].locations.len(), 3);
         assert_eq!(
-            get_encoded_quran(&quranize, "bismilla hirrohmaan nirrohiim"),
+            get_encoded_quran(&quranize, "bismilla hirrohman nirrohiim"),
             vec!["بسم الله الرحمن الرحيم"]
         );
         assert_eq!(
@@ -150,6 +150,10 @@ mod tests {
         assert_eq!(
             get_encoded_quran(&quranize, "wa'tasimu bihablillah"),
             vec!["واعتصموا بحبل الله"]
+        );
+        assert_eq!(
+            get_encoded_quran(&quranize, "inna anzalna"),
+            vec!["إنا أنزلنا"]
         );
     }
 
@@ -168,16 +172,16 @@ mod tests {
     fn test_normalize() {
         assert_eq!(normalize("bismi"), "bismi");
         assert_eq!(
-            normalize("bismilla hirrohmaan nirrohiim"),
-            "bismillahirohmanirohim"
+            normalize("bismilla hirrohman nirrohiim"),
+            "bismillahirohmanirohiim"
         );
-        assert_eq!(normalize("'aalimul ghoibi"), "'alimulghoibi");
+        assert_eq!(normalize("'aalimul ghoibi"), "'aalimulghoibi");
         assert_eq!(normalize("Qul A'udzu"), "qula'udzu");
     }
 
     #[bench]
     fn bench_quranize(b: &mut Bencher) {
         let quranize = build_quranize();
-        b.iter(|| quranize.encode("bismilla hirrohmaan nirrohiim"));
+        b.iter(|| quranize.encode("bismilla hirrohman nirrohiim"));
     }
 }
