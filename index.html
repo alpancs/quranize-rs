@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quranize ٢</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script src="https://unpkg.com/vue@3.2.36/dist/vue.global.prod.js"></script>
+    <script type="module">
+        import init, { Quranize } from "./pkg/quranize.js";
+        await init();
+        const quranize = new Quranize(5);
+        Vue.createApp({
+            data() {
+                return { transliteration: "" };
+            },
+            computed: {
+                encodeResults() {
+                    return quranize.encode(this.transliteration);
+                }
+            },
+            mounted() {
+                this.$refs.transliteration.focus();
+            },
+        }).mount('#app');
+    </script>
+</head>
+
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title has-text-centered">
+                Quranize ٢
+            </h1>
+            <p class="subtitle has-text-centered">
+                alphabet text ➡️ quran text
+                <br>
+                (reverse-transliteration)
+            </p>
+        </div>
+        <div class="column" id="app">
+            <div class="column">
+                <input v-model="transliteration" ref="transliteration" class="input" type="text"
+                    placeholder="walaqod yassarna">
+            </div>
+            <div class="column">
+                <ul>
+                    <li v-for="result in encodeResults">
+                        {{ result.quran }}
+                        <ul>
+                            <li v-for="location in result.locations"> {{ location }} </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
