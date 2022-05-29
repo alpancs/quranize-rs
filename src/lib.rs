@@ -74,13 +74,13 @@ fn normalize(text: &str) -> String {
     String::from_iter(text)
 }
 
-#[derive(Serialize, PartialEq)]
+#[derive(Serialize, PartialEq, Eq)]
 pub struct EncodeResult {
     quran: String,
     locations: Vec<Location>,
 }
 
-#[derive(Serialize, PartialEq)]
+#[derive(Serialize, PartialEq, Eq)]
 pub struct Location {
     sura_number: u8,
     aya_number: u16,
