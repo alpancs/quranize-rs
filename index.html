@@ -41,8 +41,8 @@
         </div>
         <div class="column" id="app">
             <div class="column">
-                <input v-model="transliteration" ref="transliteration" class="input" type="text"
-                    placeholder="walaqod yassarna">
+                <input :value="transliteration" @input="transliteration = $event.target.value" ref="transliteration"
+                    class="input" type="text" placeholder="walaqod yassarna">
             </div>
             <div class="column">
                 <ul>
