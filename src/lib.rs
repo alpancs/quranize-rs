@@ -1,5 +1,3 @@
-#![feature(test)]
-
 use serde::Serialize;
 use wasm_bindgen::prelude::*;
 
@@ -124,9 +122,6 @@ impl Quranize {
 mod tests {
     use super::*;
 
-    extern crate test;
-    use test::Bencher;
-
     #[test]
     fn test_quranize_normal() {
         let quranize = build_quranize();
@@ -177,11 +172,5 @@ mod tests {
         );
         assert_eq!(normalize("'aalimul ghoibi"), "'aalimulghoibi");
         assert_eq!(normalize("Qul A'udzu"), "qula'udzu");
-    }
-
-    #[bench]
-    fn bench_quranize(b: &mut Bencher) {
-        let quranize = build_quranize();
-        b.iter(|| quranize.encode("bismilla hirrohman nirrohiim"));
     }
 }

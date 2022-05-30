@@ -27,9 +27,6 @@ pub fn build_quran_index_with_limit(word_count_limit: u8) -> Harf {
 mod tests {
     use super::*;
 
-    extern crate test;
-    use test::Bencher;
-
     #[test]
     fn test_build_quran_index() {
         let quran_index = build_quran_index();
@@ -49,10 +46,5 @@ mod tests {
             .find(|h| h.content == 'ن')
             .unwrap();
         assert_eq!(nun.locations, vec![(68, 1, 1)]);
-    }
-
-    #[bench]
-    fn bench_build_quran_index(b: &mut Bencher) {
-        b.iter(build_quran_index);
     }
 }
