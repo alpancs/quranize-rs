@@ -1,4 +1,3 @@
-use serde::Serialize;
 use wasm_bindgen::prelude::*;
 
 mod quran_index;
@@ -78,7 +77,7 @@ fn normalize(text: &str) -> String {
     String::from_iter(text)
 }
 
-#[derive(Serialize, PartialEq, Eq)]
+#[derive(PartialEq, Eq, serde::Serialize)]
 pub struct EncodeResult {
     quran: String,
     locations: Vec<Location>,
