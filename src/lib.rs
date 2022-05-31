@@ -105,7 +105,10 @@ impl EncodeResult {
 #[wasm_bindgen]
 impl Quranize {
     #[wasm_bindgen(constructor)]
-    pub fn new(word_count_limit: u8) -> Self {
+    pub fn js_new(mut word_count_limit: u8) -> Self {
+        if word_count_limit == 0 {
+            word_count_limit = 5;
+        }
         Quranize {
             quran_index: build_quran_index_with_limit(word_count_limit),
             transliteration_map: build_transliteration_map(),
