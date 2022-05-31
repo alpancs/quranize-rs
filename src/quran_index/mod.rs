@@ -3,8 +3,8 @@ use std::collections::HashMap;
 mod harf;
 pub use harf::{Harf, Location};
 
+mod quran_simple;
 mod quran_simple_clean;
-mod quran_uthmani;
 
 pub fn build_quran_index(word_count_limit: u8) -> Harf {
     let mut root = Harf::new('\0');
@@ -26,7 +26,7 @@ pub fn build_quran_index(word_count_limit: u8) -> Harf {
 
 pub fn build_aya_index() -> HashMap<(u8, u16), String> {
     let mut aya_index = HashMap::new();
-    let lines = quran_uthmani::RAW.trim_start().split('\n');
+    let lines = quran_simple::RAW.trim_start().split('\n');
     for line in lines.take_while(|l| !l.is_empty()) {
         let mut splitted_line = line.split('|');
         let sura_number: u8 = splitted_line.next().unwrap().parse().unwrap();
@@ -34,7 +34,7 @@ pub fn build_aya_index() -> HashMap<(u8, u16), String> {
         let mut aya_text = splitted_line.next().unwrap();
         if aya_number == 1 {
             aya_text = aya_text
-                .strip_prefix("بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيمِ ")
+                .strip_prefix("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ ")
                 .unwrap_or(aya_text);
         }
         aya_index.insert((sura_number, aya_number), aya_text.to_string());
