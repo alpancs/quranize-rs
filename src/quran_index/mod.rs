@@ -1,5 +1,5 @@
 mod harf;
-pub use harf::Harf;
+pub use harf::{Harf, Location};
 
 mod quran_simple_clean;
 
@@ -41,6 +41,6 @@ mod tests {
             .iter()
             .find(|h| h.content == 'ن')
             .unwrap();
-        assert_eq!(nun.locations, vec![(68, 1, 1)]);
+        assert_eq!(nun.locations, vec![Location::new(68, 1, 1)]);
     }
 }

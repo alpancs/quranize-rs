@@ -1,7 +1,7 @@
 pub struct Harf {
     pub content: char,
     pub next_harfs: Vec<Harf>,
-    pub locations: Vec<(u8, u16, u8)>,
+    pub locations: Vec<Location>,
 }
 
 impl Harf {
@@ -28,7 +28,8 @@ impl Harf {
                         if word_count > wc_limit {
                             break;
                         }
-                        node.locations.push((sura_number, aya_number, word_number));
+                        let location = Location::new(sura_number, aya_number, word_number);
+                        node.locations.push(location);
                     }
                 }
             }
@@ -43,6 +44,23 @@ impl Harf {
                 self.next_harfs.push(Harf::new(content));
                 self.next_harfs.last_mut().unwrap()
             }
+        }
+    }
+}
+
+#[derive(serde::Serialize, PartialEq, Eq, Debug, Clone)]
+pub struct Location {
+    sura_number: u8,
+    aya_number: u16,
+    word_number: u8,
+}
+
+impl Location {
+    pub fn new(sura_number: u8, aya_number: u16, word_number: u8) -> Self {
+        Self {
+            sura_number,
+            aya_number,
+            word_number,
         }
     }
 }
