@@ -2,14 +2,14 @@ use serde::Serialize;
 use wasm_bindgen::prelude::*;
 
 mod quran_index;
-use quran_index::{build_quran_index, build_quran_index_with_limit, Harf};
+use quran_index::{build_quran_index, Harf};
 
 mod transliteration_map;
 use transliteration_map::{build_transliteration_map, TransliterationMap};
 
 pub fn build_quranize() -> Quranize {
     Quranize {
-        quran_index: build_quran_index(),
+        quran_index: build_quran_index(u8::MAX),
         transliteration_map: build_transliteration_map(),
     }
 }
@@ -110,7 +110,7 @@ impl Quranize {
             word_count_limit = 5;
         }
         Quranize {
-            quran_index: build_quran_index_with_limit(word_count_limit),
+            quran_index: build_quran_index(word_count_limit),
             transliteration_map: build_transliteration_map(),
         }
     }
