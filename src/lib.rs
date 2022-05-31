@@ -1,7 +1,9 @@
+use std::collections::HashMap;
+
 use wasm_bindgen::prelude::*;
 
 mod quran_index;
-use quran_index::{build_quran_index, Harf, Location};
+use quran_index::{build_aya_index, build_quran_index, Harf, Location};
 
 mod transliteration_map;
 use transliteration_map::{build_transliteration_map, TransliterationMap};
@@ -10,6 +12,7 @@ use transliteration_map::{build_transliteration_map, TransliterationMap};
 pub struct Quranize {
     quran_index: Harf,
     transliteration_map: TransliterationMap,
+    aya_index: HashMap<(u8, u16), String>,
 }
 
 impl Default for Quranize {
@@ -23,6 +26,7 @@ impl Quranize {
         Self {
             quran_index: build_quran_index(word_count_limit),
             transliteration_map: build_transliteration_map(),
+            aya_index: build_aya_index(),
         }
     }
 
@@ -38,7 +42,7 @@ impl Quranize {
     fn rev_encode(&self, node: &Harf, text: &str) -> Vec<EncodeResult> {
         let mut results = vec![];
         if text.is_empty() && !node.locations.is_empty() {
-            results.push(EncodeResult::new(&node.locations));
+            results.push(EncodeResult::new(&node.locations, &self.aya_index));
         }
         for subnode in node.next_harfs.iter() {
             for prefix in self.transliteration_map[&subnode.content].iter() {
@@ -80,14 +84,25 @@ fn normalize(text: &str) -> String {
 #[derive(PartialEq, Eq, serde::Serialize)]
 pub struct EncodeResult {
     quran: String,
-    locations: Vec<Location>,
+    locations: Vec<(Location, String)>,
 }
 
 impl EncodeResult {
-    fn new(locations: &[Location]) -> Self {
+    fn new(locations: &[Location], aya_index: &HashMap<(u8, u16), String>) -> Self {
         Self {
             quran: String::new(),
-            locations: locations.to_vec(),
+            locations: locations
+                .iter()
+                .map(|&l| {
+                    (
+                        l,
+                        aya_index
+                            .get(&(l.sura_number, l.aya_number))
+                            .unwrap()
+                            .clone(),
+                    )
+                })
+                .collect(),
         }
     }
 }

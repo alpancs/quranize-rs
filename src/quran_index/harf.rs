@@ -49,9 +49,9 @@ impl Harf {
 
 #[derive(PartialEq, Eq, Clone, Copy, Debug, serde::Serialize)]
 pub struct Location {
-    sura_number: u8,
-    aya_number: u16,
-    word_number: u8,
+    pub sura_number: u8,
+    pub aya_number: u16,
+    pub word_number: u8,
 }
 
 impl Location {
