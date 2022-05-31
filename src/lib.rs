@@ -2,7 +2,7 @@ use serde::Serialize;
 use wasm_bindgen::prelude::*;
 
 mod quran_index;
-use quran_index::{build_quran_index, Harf};
+use quran_index::{build_quran_index, Harf, Location};
 
 mod transliteration_map;
 use transliteration_map::{build_transliteration_map, TransliterationMap};
@@ -84,25 +84,11 @@ pub struct EncodeResult {
     locations: Vec<Location>,
 }
 
-#[derive(Serialize, PartialEq, Eq)]
-pub struct Location {
-    sura_number: u8,
-    aya_number: u16,
-    word_number: u8,
-}
-
 impl EncodeResult {
-    fn new(locations: &[(u8, u16, u8)]) -> Self {
+    fn new(locations: &[Location]) -> Self {
         Self {
             quran: String::new(),
-            locations: locations
-                .iter()
-                .map(|&(sura_number, aya_number, word_number)| Location {
-                    sura_number,
-                    aya_number,
-                    word_number,
-                })
-                .collect(),
+            locations: locations.to_vec(),
         }
     }
 }
