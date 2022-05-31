@@ -107,7 +107,7 @@ impl Quranize {
     #[wasm_bindgen(constructor)]
     pub fn js_new(mut word_count_limit: u8) -> Self {
         if word_count_limit == 0 {
-            word_count_limit = 5;
+            word_count_limit = u8::MAX;
         }
         Quranize {
             quran_index: build_quran_index(word_count_limit),
