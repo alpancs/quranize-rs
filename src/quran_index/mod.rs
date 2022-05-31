@@ -34,7 +34,7 @@ pub fn build_aya_index() -> HashMap<(u8, u16), String> {
         let mut aya_text = splitted_line.next().unwrap();
         if aya_number == 1 {
             aya_text = aya_text
-                .strip_prefix("بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ ")
+                .strip_prefix("بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيمِ ")
                 .unwrap_or(aya_text);
         }
         aya_index.insert((sura_number, aya_number), aya_text.to_string());
