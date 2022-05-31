@@ -7,20 +7,26 @@ use quran_index::{build_quran_index, Harf};
 mod transliteration_map;
 use transliteration_map::{build_transliteration_map, TransliterationMap};
 
-pub fn build_quranize() -> Quranize {
-    Quranize {
-        quran_index: build_quran_index(u8::MAX),
-        transliteration_map: build_transliteration_map(),
-    }
-}
-
 #[wasm_bindgen]
 pub struct Quranize {
     quran_index: Harf,
     transliteration_map: TransliterationMap,
 }
 
+impl Default for Quranize {
+    fn default() -> Self {
+        Self::new(u8::MAX)
+    }
+}
+
 impl Quranize {
+    pub fn new(word_count_limit: u8) -> Self {
+        Self {
+            quran_index: build_quran_index(word_count_limit),
+            transliteration_map: build_transliteration_map(),
+        }
+    }
+
     pub fn encode(&self, text: &str) -> Vec<EncodeResult> {
         let mut results = self.rev_encode(&self.quran_index, &normalize(text));
         for r in results.iter_mut() {
@@ -105,13 +111,11 @@ impl EncodeResult {
 #[wasm_bindgen]
 impl Quranize {
     #[wasm_bindgen(constructor)]
-    pub fn js_new(mut word_count_limit: u8) -> Self {
+    pub fn js_new(word_count_limit: u8) -> Self {
         if word_count_limit == 0 {
-            word_count_limit = u8::MAX;
-        }
-        Quranize {
-            quran_index: build_quran_index(word_count_limit),
-            transliteration_map: build_transliteration_map(),
+            Default::default()
+        } else {
+            Quranize::new(word_count_limit)
         }
     }
 
@@ -127,7 +131,7 @@ mod tests {
 
     #[test]
     fn test_quranize_normal() {
-        let quranize = build_quranize();
+        let quranize: Quranize = Default::default();
         assert_eq!(
             get_encoded_quran(&quranize, "bismi"),
             vec!["باسم", "بعصم", "بئسما", "بإثمي", "بسم"]
@@ -161,7 +165,7 @@ mod tests {
 
     #[test]
     fn test_quranize_zero() {
-        let quranize = build_quranize();
+        let quranize: Quranize = Default::default();
         assert!(quranize.encode("").is_empty());
         assert!(quranize.encode("bbb").is_empty());
     }
