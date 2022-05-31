@@ -24,11 +24,11 @@ impl Harf {
                 for j in i..aya_chars.len() {
                     node = node.get_or_add(aya_chars[j]);
                     if j == aya_chars.len() - 1 || aya_chars[j + 1] == ' ' {
-                        node.locations.push((sura_number, aya_number, word_number));
                         word_count += 1;
-                        if word_count >= wc_limit {
+                        if word_count > wc_limit {
                             break;
                         }
+                        node.locations.push((sura_number, aya_number, word_number));
                     }
                 }
             }

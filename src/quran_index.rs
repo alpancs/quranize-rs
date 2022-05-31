@@ -3,11 +3,7 @@ pub use harf::Harf;
 
 mod quran_simple_clean;
 
-pub fn build_quran_index() -> Harf {
-    build_quran_index_with_limit(u8::MAX)
-}
-
-pub fn build_quran_index_with_limit(word_count_limit: u8) -> Harf {
+pub fn build_quran_index(word_count_limit: u8) -> Harf {
     let mut root = Harf::new('\0');
     let lines = quran_simple_clean::RAW.trim_start().split('\n');
     for line in lines.take_while(|l| !l.is_empty()) {
@@ -29,7 +25,7 @@ mod tests {
 
     #[test]
     fn test_build_quran_index() {
-        let quran_index = build_quran_index();
+        let quran_index = build_quran_index(u8::MAX);
         assert_eq!(quran_index.content, '\0');
         assert_eq!(quran_index.next_harfs.len(), 31);
 
