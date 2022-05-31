@@ -1,5 +1,3 @@
-#![feature(test)]
-
 use serde::Serialize;
 use wasm_bindgen::prelude::*;
 
@@ -107,7 +105,10 @@ impl EncodeResult {
 #[wasm_bindgen]
 impl Quranize {
     #[wasm_bindgen(constructor)]
-    pub fn new(word_count_limit: u8) -> Self {
+    pub fn js_new(mut word_count_limit: u8) -> Self {
+        if word_count_limit == 0 {
+            word_count_limit = 5;
+        }
         Quranize {
             quran_index: build_quran_index_with_limit(word_count_limit),
             transliteration_map: build_transliteration_map(),
@@ -123,9 +124,6 @@ impl Quranize {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    extern crate test;
-    use test::Bencher;
 
     #[test]
     fn test_quranize_normal() {
@@ -177,11 +175,5 @@ mod tests {
         );
         assert_eq!(normalize("'aalimul ghoibi"), "'aalimulghoibi");
         assert_eq!(normalize("Qul A'udzu"), "qula'udzu");
-    }
-
-    #[bench]
-    fn bench_quranize(b: &mut Bencher) {
-        let quranize = build_quranize();
-        b.iter(|| quranize.encode("bismilla hirrohman nirrohiim"));
     }
 }
