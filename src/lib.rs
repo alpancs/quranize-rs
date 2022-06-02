@@ -3,10 +3,12 @@ use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
 
 mod quran_index;
-use quran_index::{build_aya_index, build_quran_index, Harf, Location};
+use quran_index::{build_aya_index, build_quran_index, Harf};
 
 mod transliteration_map;
 use transliteration_map::{build_transliteration_map, TransliterationMap};
+
+type EncodeResults = Vec<(String, Vec<(u8, u16, u8)>)>;
 
 #[wasm_bindgen]
 pub struct Quranize {
@@ -30,19 +32,19 @@ impl Quranize {
         }
     }
 
-    pub fn encode(&self, text: &str) -> Vec<EncodeResult> {
+    pub fn encode(&self, text: &str) -> EncodeResults {
         let mut results = self.rev_encode(&self.quran_index, &normalize(text));
-        for r in results.iter_mut() {
-            r.quran = r.quran.chars().rev().collect();
-        }
-        results.dedup();
+        results.dedup_by(|(q1, _), (q2, _)| q1 == q2);
         results
+            .into_iter()
+            .map(|(q, ls)| (q.chars().rev().collect(), ls))
+            .collect()
     }
 
-    fn rev_encode(&self, node: &Harf, text: &str) -> Vec<EncodeResult> {
+    fn rev_encode(&self, node: &Harf, text: &str) -> EncodeResults {
         let mut results = vec![];
         if text.is_empty() && !node.locations.is_empty() {
-            results.push(EncodeResult::new(&node.locations, &self.aya_index));
+            results.push((String::new(), node.locations.clone()));
         }
         for subnode in node.next_harfs.iter() {
             for prefix in self.transliteration_map[&subnode.content].iter() {
@@ -60,10 +62,10 @@ impl Quranize {
         results
     }
 
-    fn rev_encode_subnode(&self, subnode: &Harf, subtext: &str) -> Vec<EncodeResult> {
+    fn rev_encode_subnode(&self, subnode: &Harf, subtext: &str) -> EncodeResults {
         let mut results = self.rev_encode(subnode, subtext);
-        for r in results.iter_mut() {
-            r.quran.push(subnode.content);
+        for (q, _) in results.iter_mut() {
+            q.push(subnode.content);
         }
         results
     }
@@ -81,32 +83,6 @@ fn normalize(text: &str) -> String {
     String::from_iter(text)
 }
 
-#[derive(PartialEq, Eq, serde::Serialize)]
-pub struct EncodeResult {
-    quran: String,
-    locations: Vec<(Location, String)>,
-}
-
-impl EncodeResult {
-    fn new(locations: &[Location], aya_index: &HashMap<(u8, u16), String>) -> Self {
-        Self {
-            quran: String::new(),
-            locations: locations
-                .iter()
-                .map(|&l| {
-                    (
-                        l,
-                        aya_index
-                            .get(&(l.sura_number, l.aya_number))
-                            .unwrap()
-                            .clone(),
-                    )
-                })
-                .collect(),
-        }
-    }
-}
-
 #[allow(clippy::unused_unit)]
 #[wasm_bindgen]
 impl Quranize {
@@ -121,8 +97,38 @@ impl Quranize {
 
     #[wasm_bindgen(js_name = encode)]
     pub fn js_encode(&self, text: &str) -> JsValue {
-        JsValue::from_serde(&self.encode(text)).unwrap()
+        let encode_results: Vec<JsEncodeResult> = self
+            .encode(text)
+            .into_iter()
+            .map(|(q, ls)| JsEncodeResult {
+                locations: ls
+                    .into_iter()
+                    .map(|(s, a, w)| JsLocation {
+                        sura_number: s,
+                        aya_number: a,
+                        word_number: w,
+                        enhanced_quran: self.aya_index.get(&(s, a)).unwrap().to_string(),
+                    })
+                    .collect(),
+                quran: q,
+            })
+            .collect();
+        JsValue::from_serde(&encode_results).unwrap()
     }
+}
+
+#[derive(serde::Serialize)]
+struct JsEncodeResult {
+    quran: String,
+    locations: Vec<JsLocation>,
+}
+
+#[derive(serde::Serialize)]
+struct JsLocation {
+    sura_number: u8,
+    aya_number: u16,
+    word_number: u8,
+    enhanced_quran: String,
 }
 
 #[cfg(test)]
@@ -140,7 +146,7 @@ mod tests {
             get_encoded_quran(&quranize, "bismillah"),
             vec!["بسم الله", "بشماله"]
         );
-        assert_eq!(quranize.encode("bismillah")[0].locations.len(), 3);
+        assert_eq!(quranize.encode("bismillah")[0].1.len(), 3);
         assert_eq!(
             get_encoded_quran(&quranize, "bismilla hirrohman nirrohiim"),
             vec!["بسم الله الرحمن الرحيم"]
@@ -160,7 +166,7 @@ mod tests {
     }
 
     fn get_encoded_quran(quranize: &Quranize, text: &str) -> Vec<String> {
-        quranize.encode(text).into_iter().map(|r| r.quran).collect()
+        quranize.encode(text).into_iter().map(|(q, _)| q).collect()
     }
 
     #[test]
