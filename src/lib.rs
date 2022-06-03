@@ -203,4 +203,11 @@ mod tests {
         assert_eq!(normalize("'aalimul ghoibi"), "'aalimulghoibi");
         assert_eq!(normalize("Qul A'udzu"), "qula'udzu");
     }
+
+    #[test]
+    fn test_get_subword() {
+        assert_eq!(get_subword("ab cd ef gh", 1, 2), String::from("cd ef"));
+        assert_eq!(get_subword("ab cd ef gh", 2, 1), String::from("ef"));
+        assert_eq!(get_subword("ab cd ef", 2, usize::MAX), String::from("ef"));
+    }
 }
