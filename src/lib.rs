@@ -100,17 +100,38 @@ impl Quranize {
         let encode_results: Vec<JsEncodeResult> = self
             .encode(text)
             .into_iter()
-            .map(|(q, ls)| JsEncodeResult {
-                locations: ls
-                    .into_iter()
-                    .map(|(s, a, w)| JsLocation {
-                        sura_number: s,
-                        aya_number: a,
-                        word_number: w,
-                        enhanced_quran: self.aya_index.get(&(s, a)).unwrap().to_string(),
-                    })
-                    .collect(),
-                quran: q,
+            .map(|(q, ls)| {
+                let word_count = q.split_whitespace().count();
+                JsEncodeResult {
+                    quran: q,
+                    locations: ls
+                        .into_iter()
+                        .map(|(s, a, w)| {
+                            let w = w as usize;
+                            let aya_text = self.aya_index.get(&(s, a)).unwrap();
+                            JsLocation {
+                                sura_number: s,
+                                aya_number: a,
+                                before_text: aya_text
+                                    .split_whitespace()
+                                    .take(w - 1)
+                                    .collect::<Vec<_>>()
+                                    .join(" "),
+                                text: aya_text
+                                    .split_whitespace()
+                                    .skip(w - 1)
+                                    .take(word_count)
+                                    .collect::<Vec<_>>()
+                                    .join(" "),
+                                after_text: aya_text
+                                    .split_whitespace()
+                                    .skip(w + word_count - 1)
+                                    .collect::<Vec<_>>()
+                                    .join(" "),
+                            }
+                        })
+                        .collect(),
+                }
             })
             .collect();
         JsValue::from_serde(&encode_results).unwrap()
@@ -127,8 +148,9 @@ struct JsEncodeResult {
 struct JsLocation {
     sura_number: u8,
     aya_number: u16,
-    word_number: u8,
-    enhanced_quran: String,
+    before_text: String,
+    text: String,
+    after_text: String,
 }
 
 #[cfg(test)]
