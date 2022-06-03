@@ -112,22 +112,9 @@ impl Quranize {
                             JsLocation {
                                 sura_number: s,
                                 aya_number: a,
-                                before_text: aya_text
-                                    .split_whitespace()
-                                    .take(w - 1)
-                                    .collect::<Vec<_>>()
-                                    .join(" "),
-                                text: aya_text
-                                    .split_whitespace()
-                                    .skip(w - 1)
-                                    .take(word_count)
-                                    .collect::<Vec<_>>()
-                                    .join(" "),
-                                after_text: aya_text
-                                    .split_whitespace()
-                                    .skip(w + word_count - 1)
-                                    .collect::<Vec<_>>()
-                                    .join(" "),
+                                before_text: get_subword(aya_text, 0, w - 1),
+                                text: get_subword(aya_text, w - 1, word_count),
+                                after_text: get_subword(aya_text, w - 1 + word_count, usize::MAX),
                             }
                         })
                         .collect(),
@@ -136,6 +123,14 @@ impl Quranize {
             .collect();
         JsValue::from_serde(&encode_results).unwrap()
     }
+}
+
+fn get_subword(text: &str, n_skip: usize, n_take: usize) -> String {
+    text.split_whitespace()
+        .skip(n_skip)
+        .take(n_take)
+        .collect::<Vec<_>>()
+        .join(" ")
 }
 
 #[derive(serde::Serialize)]
