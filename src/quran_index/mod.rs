@@ -71,13 +71,13 @@ mod tests {
             .trim_start()
             .split('\n')
             .take_while(|l| !l.is_empty())
-            .map(|l| l.split_whitespace().count())
+            .map(|l| l.split('|').nth(2).unwrap().split_whitespace().count())
             .sum();
         let enhanched_word_count: usize = quran_simple_enhanched::RAW
             .trim_start()
             .split('\n')
             .take_while(|l| !l.is_empty())
-            .map(|l| l.split_whitespace().count())
+            .map(|l| l.split('|').nth(2).unwrap().split_whitespace().count())
             .sum();
         assert_eq!(clean_word_count, enhanched_word_count);
     }
