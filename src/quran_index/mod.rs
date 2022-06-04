@@ -4,7 +4,7 @@ mod harf;
 pub use harf::Harf;
 
 mod quran_simple_clean;
-mod quran_simple_plain;
+mod quran_simple_enhanched;
 
 pub fn build_quran_index(word_count_limit: u8) -> Harf {
     let mut root = Harf::new('\0');
@@ -26,7 +26,7 @@ pub fn build_quran_index(word_count_limit: u8) -> Harf {
 pub fn build_aya_index() -> HashMap<(u8, u16), String> {
     let mut aya_index = HashMap::new();
     let mut basmalah = String::new();
-    let lines = quran_simple_plain::RAW.trim_start().split('\n');
+    let lines = quran_simple_enhanched::RAW.trim_start().split('\n');
     for line in lines.take_while(|l| !l.is_empty()) {
         let mut splitted_line = line.split('|');
         let sura_number: u8 = splitted_line.next().unwrap().parse().unwrap();
@@ -63,5 +63,22 @@ mod tests {
             .find(|h| h.content == 'ن')
             .unwrap();
         assert_eq!(nun.locations, vec![(68, 1, 1)]);
+    }
+
+    #[test]
+    fn validate_quran_versions() {
+        let clean_word_count: usize = quran_simple_clean::RAW
+            .trim_start()
+            .split('\n')
+            .take_while(|l| !l.is_empty())
+            .map(|l| l.split_whitespace().count())
+            .sum();
+        let enhanched_word_count: usize = quran_simple_enhanched::RAW
+            .trim_start()
+            .split('\n')
+            .take_while(|l| !l.is_empty())
+            .map(|l| l.split_whitespace().count())
+            .sum();
+        assert_eq!(clean_word_count, enhanched_word_count);
     }
 }
