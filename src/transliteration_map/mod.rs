@@ -11,7 +11,7 @@ pub fn build_transliteration_map() -> TransliterationMap {
     map.insert('ؤ', split("' k u"));
     map.insert('إ', split("i"));
     map.insert('ئ', split("' k i"));
-    map.insert('ا', split("a i u"));
+    map.insert('ا', split("a i u n"));
     map.insert('ب', split("b ba bi bu"));
     map.insert('ة', split("h ta ti tu t"));
     map.insert('ت', split("t ta ti tu"));

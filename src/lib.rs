@@ -180,6 +180,7 @@ mod tests {
             get_encoded_quran(&quranize, "inna anzalna"),
             vec!["إنا أنزلنا"]
         );
+        assert_eq!(get_encoded_quran(&quranize, "wabarron"), vec!["وبرا"]);
     }
 
     fn get_encoded_quran(quranize: &Quranize, text: &str) -> Vec<String> {
@@ -191,6 +192,7 @@ mod tests {
         let quranize: Quranize = Default::default();
         assert!(quranize.encode("").is_empty());
         assert!(quranize.encode("bbb").is_empty());
+        assert!(quranize.encode("1+2=3").is_empty());
     }
 
     #[test]
