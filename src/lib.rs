@@ -180,7 +180,8 @@ mod tests {
             get_encoded_quran(&quranize, "inna anzalna"),
             vec!["إنا أنزلنا"]
         );
-        assert_eq!(get_encoded_quran(&quranize, "wabarron"), vec!["وبرا"]);
+        assert_eq!(get_encoded_quran(&quranize, "wabarro"), vec!["وبرا"]);
+        assert_eq!(get_encoded_quran(&quranize, "idza qodho"), vec!["إذا قضى"]);
     }
 
     fn get_encoded_quran(quranize: &Quranize, text: &str) -> Vec<String> {
