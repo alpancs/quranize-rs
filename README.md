@@ -1,6 +1,6 @@
 # quranize-rs
 
-Encoding transliterations into Quran form.
+Encoding transliterations into Quran forms.
 
 ## License
 
