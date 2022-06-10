@@ -21,4 +21,4 @@ dual licensed as above, without any additional terms or conditions.
 
 ## Related Project
 
-<https://github.com/alpancs/mini-quranize>
+<https://github.com/alpancs/quranize>
