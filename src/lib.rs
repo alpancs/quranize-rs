@@ -34,6 +34,7 @@ impl Quranize {
 
     pub fn encode(&self, text: &str) -> EncodeResults {
         let mut results = self.rev_encode(&self.quran_index, &normalize(text));
+        results.sort_unstable_by(|(q1, _), (q2, _)| q1.cmp(q2));
         results.dedup_by(|(q1, _), (q2, _)| q1 == q2);
         results
             .into_iter()
@@ -51,6 +52,9 @@ impl Quranize {
                 if let Some(subtext) = text.strip_prefix(prefix) {
                     results.append(&mut self.rev_encode_subnode(subnode, subtext));
                 }
+            }
+            if subnode.content == 'ا' {
+                results.append(&mut self.rev_encode_subnode(subnode, text));
             }
             if node.content == 'ا' && subnode.content == 'ل' {
                 results.append(&mut self.rev_encode_subnode(subnode, text));
@@ -157,13 +161,13 @@ mod tests {
         let q: Quranize = Default::default();
         assert_eq!(
             get_encoded_quran(&q, "bismi"),
-            vec!["باسم", "بعصم", "بئسما", "بإثمي", "بسم"]
+            vec!["بئسما", "بالإثم", "باسم", "بسم", "بعصم", "بإثمي"]
         );
         assert_eq!(
             get_encoded_quran(&q, "bismillah"),
-            vec!["بسم الله", "بشماله"]
+            vec!["بشماله", "بسم الله"]
         );
-        assert_eq!(q.encode("bismillah")[0].1.len(), 3);
+        assert_eq!(q.encode("subhanallah")[0].1.len(), 5);
         assert_eq!(
             get_encoded_quran(&q, "bismilla hirrohman nirrohiim"),
             vec!["بسم الله الرحمن الرحيم"]
@@ -179,6 +183,7 @@ mod tests {
         assert_eq!(get_encoded_quran(&q, "inna anzalna"), vec!["إنا أنزلنا"]);
         assert_eq!(get_encoded_quran(&q, "wabarro"), vec!["وبرا"]);
         assert_eq!(get_encoded_quran(&q, "idza qodho"), vec!["إذا قضى"]);
+        assert_eq!(get_encoded_quran(&q, "masyaallah"), vec!["ما شاء الله"]);
     }
 
     fn get_encoded_quran(quranize: &Quranize, text: &str) -> Vec<String> {
@@ -189,7 +194,8 @@ mod tests {
     fn test_quranize_zero() {
         let quranize: Quranize = Default::default();
         assert!(quranize.encode("").is_empty());
-        assert!(quranize.encode("bbb").is_empty());
+        assert!(quranize.encode("aaa").is_empty());
+        assert!(quranize.encode("abcd").is_empty());
         assert!(quranize.encode("1+2=3").is_empty());
     }
 
