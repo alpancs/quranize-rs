@@ -34,7 +34,7 @@ impl Quranize {
 
     pub fn encode(&self, text: &str) -> EncodeResults {
         let mut results = self.rev_encode(&self.quran_index, &normalize(text));
-        results.sort_unstable_by(|(q1, _), (q2, _)| q1.cmp(q2));
+        results.sort_unstable_by(|(q1, _), (q2, _)| q2.cmp(q1));
         results.dedup_by(|(q1, _), (q2, _)| q1 == q2);
         results
             .into_iter()
@@ -161,11 +161,11 @@ mod tests {
         let q: Quranize = Default::default();
         assert_eq!(
             get_encoded_quran(&q, "bismi"),
-            vec!["بئسما", "بالإثم", "باسم", "بسم", "بعصم", "بإثمي"]
+            vec!["بإثمي", "بعصم", "بسم", "باسم", "بالإثم", "بئسما"]
         );
         assert_eq!(
             get_encoded_quran(&q, "bismillah"),
-            vec!["بشماله", "بسم الله"]
+            vec!["بسم الله", "بشماله"]
         );
         assert_eq!(q.encode("subhanallah")[0].1.len(), 5);
         assert_eq!(
