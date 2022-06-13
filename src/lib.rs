@@ -43,7 +43,7 @@ impl Quranize {
     fn rev_encode(&self, node: &Harf, text: &str) -> EncodeResults {
         let mut results = vec![];
         if text.is_empty() && !node.locations.is_empty() {
-            results.push((String::new(), node.locations.clone()));
+            results.push((String::new(), node.locations.to_owned()));
         }
         for subnode in node.next_harfs.iter() {
             for prefix in self.transliteration_map[&subnode.content].iter() {
