@@ -10,32 +10,27 @@ pub type AyaMap = HashMap<(u8, u16), String>;
 
 pub fn build_quran_index(word_count_limit: u8) -> Harf {
     let mut root = Harf::new('\0');
-    let mut basmalah = String::new();
-    for line in split_line_quran(quran_simple_clean::RAW) {
-        let (sura_number, aya_number, aya_text) = split_aya_line(line, &basmalah);
+    for (sura_number, aya_number, aya_text) in get_aya_iterator(quran_simple_clean::RAW) {
         root.update_tree(sura_number, aya_number, aya_text, word_count_limit);
-        if sura_number == 1 && aya_number == 1 {
-            basmalah = aya_text.to_owned() + " ";
-        }
     }
     root
 }
 
 pub fn build_aya_map() -> AyaMap {
     let mut aya_map = HashMap::new();
-    let mut basmalah = String::new();
-    for line in split_line_quran(quran_simple_enhanched::RAW) {
-        let (sura_number, aya_number, aya_text) = split_aya_line(line, &basmalah);
-        aya_map.insert((sura_number, aya_number), String::from(aya_text));
-        if sura_number == 1 && aya_number == 1 {
-            basmalah = aya_text.to_owned() + " ";
-        }
+    for (sura_number, aya_number, aya_text) in get_aya_iterator(quran_simple_enhanched::RAW) {
+        aya_map.insert((sura_number, aya_number), aya_text.to_owned());
     }
     aya_map
 }
 
-fn split_line_quran(raw: &str) -> impl Iterator<Item = &str> {
-    raw.trim_start().split('\n').take_while(|l| !l.is_empty())
+fn get_aya_iterator(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
+    let raw = raw.trim_start();
+    let basmalah = raw.split('\n').next().unwrap().split('|').nth(2).unwrap();
+    let basmalah = basmalah.to_owned() + " ";
+    raw.split('\n')
+        .take_while(|l| !l.is_empty())
+        .map(move |l| split_aya_line(l, &basmalah))
 }
 
 fn split_aya_line<'a>(line: &'a str, basmalah: &str) -> (u8, u16, &'a str) {
@@ -80,7 +75,10 @@ mod tests {
     }
 
     fn count_words(quran: &str) -> usize {
-        split_line_quran(quran)
+        quran
+            .trim_start()
+            .split('\n')
+            .take_while(|l| !l.is_empty())
             .map(|l| l.split('|').nth(2).unwrap().split_whitespace().count())
             .sum()
     }
