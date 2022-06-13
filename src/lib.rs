@@ -185,6 +185,7 @@ mod tests {
         assert_eq!(get_encoded_quran(&q, "wabarro"), vec!["وبرا"]);
         assert_eq!(get_encoded_quran(&q, "idza qodho"), vec!["إذا قضى"]);
         assert_eq!(get_encoded_quran(&q, "masyaallah"), vec!["ما شاء الله"]);
+        assert_eq!(get_encoded_quran(&q, "illa man taaba"), vec!["إلا من تاب"]);
     }
 
     fn get_encoded_quran(quranize: &Quranize, text: &str) -> Vec<String> {
