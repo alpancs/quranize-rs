@@ -83,7 +83,7 @@ fn normalize(text: &str) -> String {
             _ => None,
         })
         .collect();
-    text.dedup_by(|a, b| a == b && *a != 'l' && *a != 'a' && *a != 'i' && *a != 'u');
+    text.dedup_by(|a, b| a == b && *a != 'l' && *a != 'a' && *a != 'o' && *a != 'i' && *a != 'u');
     String::from_iter(text)
 }
 
