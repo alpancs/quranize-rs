@@ -53,14 +53,16 @@ impl Quranize {
                     results.append(&mut self.rev_encode_subnode(subnode, subtext));
                 }
             }
-            if node.content == ' ' && subnode.content == 'ا' {
-                results.append(&mut self.rev_encode_subnode(subnode, text));
-            }
-            if node.content == 'ا' && subnode.content == 'ل' {
-                results.append(&mut self.rev_encode_subnode(subnode, text));
-            }
-            if node.content == 'و' && subnode.content == 'ا' {
-                results.append(&mut self.rev_encode_subnode(subnode, text));
+            if results.is_empty() {
+                if node.content == ' ' && subnode.content == 'ا' {
+                    results.append(&mut self.rev_encode_subnode(subnode, text));
+                }
+                if node.content == 'ا' && subnode.content == 'ل' {
+                    results.append(&mut self.rev_encode_subnode(subnode, text));
+                }
+                if node.content == 'و' && subnode.content == 'ا' {
+                    results.append(&mut self.rev_encode_subnode(subnode, text));
+                }
             }
         }
         results
@@ -176,6 +178,7 @@ mod tests {
             get_encoded_quran(&q, "alhamdulilla hirobbil 'alamiin"),
             vec!["الحمد لله رب العالمين"]
         );
+        assert_eq!(get_encoded_quran(&q, "birobbinnas"), vec!["برب الناس"]);
         assert_eq!(
             get_encoded_quran(&q, "wa'tasimu bihablillah"),
             vec!["واعتصموا بحبل الله"]
