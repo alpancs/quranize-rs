@@ -53,7 +53,7 @@ impl Quranize {
                     results.append(&mut self.rev_encode_subnode(subnode, subtext));
                 }
             }
-            if subnode.content == 'ا' {
+            if node.content == ' ' && subnode.content == 'ا' {
                 results.append(&mut self.rev_encode_subnode(subnode, text));
             }
             if node.content == 'ا' && subnode.content == 'ل' {
@@ -161,7 +161,7 @@ mod tests {
         let q: Quranize = Default::default();
         assert_eq!(
             get_encoded_quran(&q, "bismi"),
-            vec!["بإثمي", "بعصم", "بسم", "باسم", "بالإثم", "بئسما"]
+            vec!["بإثمي", "بعصم", "بسم", "باسم", "بئسما"]
         );
         assert_eq!(
             get_encoded_quran(&q, "bismillah"),
