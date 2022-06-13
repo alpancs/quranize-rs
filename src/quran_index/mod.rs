@@ -73,18 +73,15 @@ mod tests {
 
     #[test]
     fn validate_quran_versions() {
-        let clean_word_count: usize = quran_simple_clean::RAW
-            .trim_start()
-            .split('\n')
-            .take_while(|l| !l.is_empty())
+        assert_eq!(
+            count_words(quran_simple_clean::RAW),
+            count_words(quran_simple_enhanched::RAW)
+        );
+    }
+
+    fn count_words(quran: &str) -> usize {
+        split_line_quran(quran)
             .map(|l| l.split('|').nth(2).unwrap().split_whitespace().count())
-            .sum();
-        let enhanched_word_count: usize = quran_simple_enhanched::RAW
-            .trim_start()
-            .split('\n')
-            .take_while(|l| !l.is_empty())
-            .map(|l| l.split('|').nth(2).unwrap().split_whitespace().count())
-            .sum();
-        assert_eq!(clean_word_count, enhanched_word_count);
+            .sum()
     }
 }
