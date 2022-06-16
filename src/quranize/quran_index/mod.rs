@@ -8,27 +8,31 @@ pub type AyaMap = HashMap<(u8, u16), &'static str>;
 
 pub fn build_quran_index(word_count_limit: u8) -> Node {
     let mut root = Node::new('\0');
-    for (sura_number, aya_number, aya_text) in get_aya_iterator(SIMPLE_CLEAN) {
-        root.update_tree(sura_number, aya_number, aya_text, word_count_limit);
-    }
+    iterate_quran(SIMPLE_CLEAN, |(s, a, t)| {
+        root.update_tree(s, a, t, word_count_limit);
+    });
     root
 }
 
 pub fn build_aya_map() -> AyaMap {
     let mut aya_map = HashMap::new();
-    for (sura_number, aya_number, aya_text) in get_aya_iterator(SIMPLE_PLAIN) {
-        aya_map.insert((sura_number, aya_number), aya_text);
-    }
+    iterate_quran(SIMPLE_PLAIN, |(s, a, t)| {
+        aya_map.insert((s, a), t);
+    });
     aya_map
 }
 
-fn get_aya_iterator(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
+fn iterate_quran<F>(raw: &'static str, f: F)
+where
+    F: FnMut((u8, u16, &'static str)),
+{
     let raw = raw.trim_start();
     let basmalah = raw.split('\n').next().unwrap().split('|').nth(2).unwrap();
     let basmalah = basmalah.to_owned() + " ";
     raw.split('\n')
         .take_while(|l| !l.is_empty())
-        .map(move |l| split_aya_line(l, &basmalah))
+        .map(|l| split_aya_line(l, &basmalah))
+        .for_each(f);
 }
 
 fn split_aya_line<'a>(line: &'a str, basmalah: &str) -> (u8, u16, &'a str) {

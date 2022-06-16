@@ -31,7 +31,6 @@ impl Quranize {
 
     pub fn encode(&self, text: &str) -> EncodeResults {
         let mut results = self.rev_encode(&self.root, &normalize(text));
-        results.sort_unstable_by(|(q1, _), (q2, _)| q2.cmp(q1));
         results.dedup_by(|(q1, _), (q2, _)| q1 == q2);
         results
             .into_iter()
@@ -67,9 +66,8 @@ impl Quranize {
 
     fn rev_encode_subnode<'a>(&'a self, subnode: &'a Node, subtext: &str) -> EncodeResults {
         let mut results = self.rev_encode(subnode, subtext);
-        for (q, _) in results.iter_mut() {
-            q.push(subnode.content);
-        }
+        let content = subnode.content;
+        results.iter_mut().for_each(|(q, _)| q.push(content));
         results
     }
 
@@ -99,7 +97,7 @@ mod tests {
         let q: Quranize = Default::default();
         assert_eq!(
             get_encoded_quran(&q, "bismi"),
-            vec!["بإثمي", "بعصم", "بسم", "باسم", "بئسما"]
+            vec!["باسم", "بعصم", "بئسما", "بإثمي", "بسم"]
         );
         assert_eq!(
             get_encoded_quran(&q, "bismillah"),
