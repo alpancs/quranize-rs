@@ -48,16 +48,14 @@ impl Quranize {
                     results.append(&mut self.rev_encode_subnode(subnode, subtext));
                 }
             }
-            if results.is_empty() {
-                if node.content == ' ' && subnode.content == 'ا' {
-                    results.append(&mut self.rev_encode_subnode(subnode, text));
-                }
-                if node.content == 'ا' && subnode.content == 'ل' {
-                    results.append(&mut self.rev_encode_subnode(subnode, text));
-                }
-                if node.content == 'و' && subnode.content == 'ا' {
-                    results.append(&mut self.rev_encode_subnode(subnode, text));
-                }
+            if node.content == ' ' && subnode.content == 'ا' {
+                results.append(&mut self.rev_encode_subnode(subnode, text));
+            }
+            if node.content == 'ا' && subnode.content == 'ل' {
+                results.append(&mut self.rev_encode_subnode(subnode, text));
+            }
+            if node.content == 'و' && subnode.content == 'ا' {
+                results.append(&mut self.rev_encode_subnode(subnode, text));
             }
         }
         results
