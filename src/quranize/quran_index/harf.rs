@@ -15,7 +15,7 @@ impl Harf {
 
     pub fn update_tree(&mut self, sura_number: u8, aya_number: u16, aya_text: &str, wc_limit: u8) {
         let mut word_number = 0;
-        let aya_chars: Vec<_> = aya_text.chars().collect();
+        let aya_chars = aya_text.chars().collect::<Vec<_>>();
         for i in 0..aya_chars.len() {
             if i == 0 || aya_chars[i - 1] == ' ' {
                 word_number += 1;

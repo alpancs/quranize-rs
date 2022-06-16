@@ -6,8 +6,7 @@ use quran_index::Node;
 
 type EncodeResults<'a> = Vec<(String, &'a [(u8, u16, u8)])>;
 
-use wasm_bindgen::prelude::*;
-#[wasm_bindgen]
+#[wasm_bindgen::prelude::wasm_bindgen]
 pub struct Quranize {
     root: Node,
     transliteration_map: transliteration_map::Map,
