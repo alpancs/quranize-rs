@@ -4,7 +4,7 @@ use super::quran::{SIMPLE_CLEAN, SIMPLE_PLAIN};
 pub use harf::Harf as Node;
 use std::collections::HashMap;
 
-pub type AyaMap = HashMap<(u8, u16), String>;
+pub type AyaMap = HashMap<(u8, u16), &'static str>;
 
 pub fn build_quran_index(word_count_limit: u8) -> Node {
     let mut root = Node::new('\0');
@@ -17,7 +17,7 @@ pub fn build_quran_index(word_count_limit: u8) -> Node {
 pub fn build_aya_map() -> AyaMap {
     let mut aya_map = HashMap::new();
     for (sura_number, aya_number, aya_text) in get_aya_iterator(SIMPLE_PLAIN) {
-        aya_map.insert((sura_number, aya_number), aya_text.to_owned());
+        aya_map.insert((sura_number, aya_number), aya_text);
     }
     aya_map
 }

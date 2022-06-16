@@ -71,7 +71,7 @@ impl Quranize {
         results
     }
 
-    pub fn get_aya(&self, sura_number: u8, aya_number: u16) -> &String {
+    pub fn get_aya(&self, sura_number: u8, aya_number: u16) -> &str {
         self.aya_index.get(&(sura_number, aya_number)).unwrap()
     }
 }
