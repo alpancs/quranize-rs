@@ -1,8 +1,9 @@
 mod harf;
 
+use std::collections::HashMap;
+
 use super::quran::{SIMPLE_CLEAN, SIMPLE_PLAIN};
 pub use harf::Harf as Node;
-use std::collections::HashMap;
 
 pub type AyaMap = HashMap<(u8, u16), &'static str>;
 
@@ -49,22 +50,17 @@ mod tests {
 
     #[test]
     fn test_build_quran_index() {
-        let quran_index = build_quran_index(u8::MAX);
-        assert_eq!(quran_index.content, '\0');
-        assert_eq!(quran_index.next_harfs.len(), 31);
+        let root = build_quran_index(u8::MAX);
+        assert_eq!(root.content, '\0');
+        assert_eq!(root.next_harfs.len(), 31);
+        assert!(find_next(&root, 'ب').locations.is_empty());
+        assert_eq!(find_next(&root, 'ن').locations, vec![(68, 1, 1)]);
+    }
 
-        let ba = quran_index
-            .next_harfs
+    fn find_next(node: &Node, target: char) -> &Node {
+        node.next_harfs
             .iter()
-            .find(|h| h.content == 'ب')
-            .unwrap();
-        assert!(ba.locations.is_empty());
-
-        let nun = quran_index
-            .next_harfs
-            .iter()
-            .find(|h| h.content == 'ن')
-            .unwrap();
-        assert_eq!(nun.locations, vec![(68, 1, 1)]);
+            .find(|h| h.content == target)
+            .unwrap()
     }
 }
