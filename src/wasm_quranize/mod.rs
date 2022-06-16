@@ -23,8 +23,8 @@ impl Quranize {
                 JsEncodeResult {
                     quran: q,
                     locations: ls
-                        .into_iter()
-                        .map(|(s, a, w)| {
+                        .iter()
+                        .map(|&(s, a, w)| {
                             let w = w as usize;
                             let aya_text = self.get_aya(s, a);
                             JsLocation {

@@ -2,12 +2,14 @@ mod quran;
 mod quran_index;
 mod transliteration_map;
 
-type EncodeResults = Vec<(String, Vec<(u8, u16, u8)>)>;
+use quran_index::Node;
+
+type EncodeResults<'a> = Vec<(String, &'a [(u8, u16, u8)])>;
 
 use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 pub struct Quranize {
-    root: quran_index::Node,
+    root: Node,
     transliteration_map: transliteration_map::Map,
     aya_index: quran_index::AyaMap,
 }
@@ -37,10 +39,10 @@ impl Quranize {
             .collect()
     }
 
-    fn rev_encode(&self, node: &quran_index::Node, text: &str) -> EncodeResults {
-        let mut results = vec![];
+    fn rev_encode<'a>(&'a self, node: &'a Node, text: &str) -> EncodeResults {
+        let mut results = EncodeResults::new();
         if text.is_empty() && !node.locations.is_empty() {
-            results.push((String::new(), node.locations.to_owned()));
+            results.push((String::new(), &node.locations));
         }
         for subnode in node.next_harfs.iter() {
             for prefix in self.transliteration_map[&subnode.content].iter() {
@@ -63,7 +65,7 @@ impl Quranize {
         results
     }
 
-    fn rev_encode_subnode(&self, subnode: &quran_index::Node, subtext: &str) -> EncodeResults {
+    fn rev_encode_subnode<'a>(&'a self, subnode: &'a Node, subtext: &str) -> EncodeResults {
         let mut results = self.rev_encode(subnode, subtext);
         for (q, _) in results.iter_mut() {
             q.push(subnode.content);
