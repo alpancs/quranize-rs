@@ -1,16 +1,14 @@
-use std::collections::HashMap;
-
 mod harf;
-pub use harf::Harf;
 
-mod quran_simple_clean;
-mod quran_simple_enhanched;
+use super::quran::{SIMPLE_CLEAN, SIMPLE_PLAIN};
+pub use harf::Harf as Node;
+use std::collections::HashMap;
 
 pub type AyaMap = HashMap<(u8, u16), String>;
 
-pub fn build_quran_index(word_count_limit: u8) -> Harf {
-    let mut root = Harf::new('\0');
-    for (sura_number, aya_number, aya_text) in get_aya_iterator(quran_simple_clean::RAW) {
+pub fn build_quran_index(word_count_limit: u8) -> Node {
+    let mut root = Node::new('\0');
+    for (sura_number, aya_number, aya_text) in get_aya_iterator(SIMPLE_CLEAN) {
         root.update_tree(sura_number, aya_number, aya_text, word_count_limit);
     }
     root
@@ -18,7 +16,7 @@ pub fn build_quran_index(word_count_limit: u8) -> Harf {
 
 pub fn build_aya_map() -> AyaMap {
     let mut aya_map = HashMap::new();
-    for (sura_number, aya_number, aya_text) in get_aya_iterator(quran_simple_enhanched::RAW) {
+    for (sura_number, aya_number, aya_text) in get_aya_iterator(SIMPLE_PLAIN) {
         aya_map.insert((sura_number, aya_number), aya_text.to_owned());
     }
     aya_map
@@ -64,22 +62,5 @@ mod tests {
             .find(|h| h.content == 'ن')
             .unwrap();
         assert_eq!(nun.locations, vec![(68, 1, 1)]);
-    }
-
-    #[test]
-    fn validate_quran_versions() {
-        assert_eq!(
-            count_words(quran_simple_clean::RAW),
-            count_words(quran_simple_enhanched::RAW)
-        );
-    }
-
-    fn count_words(quran: &str) -> usize {
-        quran
-            .trim_start()
-            .split('\n')
-            .take_while(|l| !l.is_empty())
-            .map(|l| l.split('|').nth(2).unwrap().split_whitespace().count())
-            .sum()
     }
 }

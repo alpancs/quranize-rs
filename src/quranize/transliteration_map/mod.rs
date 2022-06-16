@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
-pub type TransliterationMap = HashMap<char, Vec<&'static str>>;
+pub type Map = HashMap<char, Vec<&'static str>>;
 
-pub fn build_transliteration_map() -> TransliterationMap {
+pub fn build_map() -> Map {
     let mut map = HashMap::new();
     map.insert(' ', vec![""]);
     map.insert('ء', split("' k a i u"));

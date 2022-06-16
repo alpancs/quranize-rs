@@ -1,4 +1,4 @@
-pub const RAW: &str = r#"
+pub const SIMPLE_CLEAN: &str = r#"
 1|1|بسم الله الرحمن الرحيم
 1|2|الحمد لله رب العالمين
 1|3|الرحمن الرحيم
