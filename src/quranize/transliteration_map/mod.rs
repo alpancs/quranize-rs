@@ -7,10 +7,10 @@ pub fn build_map() -> Map {
     map.insert(' ', vec![""]);
     map.insert('ء', split("' k a i u"));
     map.insert('آ', split("a aa"));
-    map.insert('أ', split("a u ' k al"));
+    map.insert('أ', split("' k a u al"));
     map.insert('ؤ', split("' k u"));
     map.insert('إ', split("i il"));
-    map.insert('ئ', split("' k i"));
+    map.insert('ئ', split("' k a i"));
     map.insert('ا', split("a o i u"));
     map.insert('ب', split("b ba bi bu"));
     map.insert('ة', split("h ta ti tu t"));

@@ -97,11 +97,12 @@ mod tests {
         assert_eq!(encode(&q, "bismillah"), vec!["بسم الله", "بشماله"]);
         assert_eq!(encode(&q, "birobbinnas"), vec!["برب الناس"]);
         assert_eq!(encode(&q, "inna anzalnahu"), vec!["إنا أنزلناه"]);
-        assert_eq!(encode(&q, "wabarro"), vec!["وبرا"]);
+        assert_eq!(encode(&q, "wabarro"), vec!["وبئر", "وبرا"]);
         assert_eq!(encode(&q, "idza qodho"), vec!["إذا قضى"]);
         assert_eq!(encode(&q, "masyaallah"), vec!["ما شاء الله"]);
         assert_eq!(encode(&q, "illa man taaba"), vec!["إلا من تاب"]);
         assert_eq!(encode(&q, "alla tahzani"), vec!["ألا تحزني"]);
+        assert_eq!(encode(&q, "innasya niaka"), vec!["إن شانئك"]);
     }
 
     #[test]
