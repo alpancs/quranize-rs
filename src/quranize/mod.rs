@@ -92,59 +92,58 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_quranize_normal() {
-        let q: Quranize = Default::default();
+    fn test_quranize_short() {
+        let q = Quranize::default();
+        assert_eq!(encode(&q, "bismillah"), vec!["بسم الله", "بشماله"]);
+        assert_eq!(encode(&q, "birobbinnas"), vec!["برب الناس"]);
+        assert_eq!(encode(&q, "inna anzalnahu"), vec!["إنا أنزلناه"]);
+        assert_eq!(encode(&q, "wabarro"), vec!["وبرا"]);
+        assert_eq!(encode(&q, "idza qodho"), vec!["إذا قضى"]);
+        assert_eq!(encode(&q, "masyaallah"), vec!["ما شاء الله"]);
+        assert_eq!(encode(&q, "illa man taaba"), vec!["إلا من تاب"]);
+        assert_eq!(encode(&q, "alla tahzani"), vec!["ألا تحزني"]);
+    }
+
+    #[test]
+    fn test_quranize_full() {
+        let q = Quranize::default();
         assert_eq!(
-            get_encoded_quran(&q, "bismi"),
-            vec!["باسم", "بعصم", "بئسما", "بإثمي", "بسم"]
-        );
-        assert_eq!(
-            get_encoded_quran(&q, "bismillah"),
-            vec!["بسم الله", "بشماله"]
-        );
-        assert_eq!(q.encode("subhanallah")[0].1.len(), 5);
-        assert_eq!(
-            get_encoded_quran(&q, "bismilla hirrohman nirrohiim"),
+            encode(&q, "bismilla hirrohman nirrohiim"),
             vec!["بسم الله الرحمن الرحيم"]
         );
         assert_eq!(
-            get_encoded_quran(&q, "alhamdulilla hirobbil 'alamiin"),
+            encode(&q, "alhamdulilla hirobbil 'alamiin"),
             vec!["الحمد لله رب العالمين"]
         );
-        assert_eq!(get_encoded_quran(&q, "birobbinnas"), vec!["برب الناس"]);
         assert_eq!(
-            get_encoded_quran(&q, "wa'tasimu bihablillah"),
+            encode(&q, "wa'tasimu bihablillah"),
             vec!["واعتصموا بحبل الله"]
         );
-        assert_eq!(get_encoded_quran(&q, "inna anzalna"), vec!["إنا أنزلنا"]);
-        assert_eq!(get_encoded_quran(&q, "wabarro"), vec!["وبرا"]);
-        assert_eq!(get_encoded_quran(&q, "idza qodho"), vec!["إذا قضى"]);
-        assert_eq!(get_encoded_quran(&q, "masyaallah"), vec!["ما شاء الله"]);
-        assert_eq!(get_encoded_quran(&q, "illa man taaba"), vec!["إلا من تاب"]);
-        assert_eq!(get_encoded_quran(&q, "alla tahzani"), vec!["ألا تحزني"]);
     }
 
-    fn get_encoded_quran(quranize: &Quranize, text: &str) -> Vec<String> {
+    fn encode(quranize: &Quranize, text: &str) -> Vec<String> {
         quranize.encode(text).into_iter().map(|(q, _)| q).collect()
     }
 
     #[test]
-    fn test_quranize_zero() {
-        let quranize: Quranize = Default::default();
-        assert!(quranize.encode("").is_empty());
-        assert!(quranize.encode("aaa").is_empty());
-        assert!(quranize.encode("abcd").is_empty());
-        assert!(quranize.encode("1+2=3").is_empty());
+    fn test_quranize_empty_result() {
+        let q = Quranize::default();
+        assert!(q.encode("").is_empty());
+        assert!(q.encode("aaa").is_empty());
+        assert!(q.encode("bbb").is_empty());
+        assert!(q.encode("abcd").is_empty());
+        assert!(q.encode("1+2=3").is_empty());
     }
 
     #[test]
     fn test_normalize() {
+        assert_eq!(normalize(""), "");
         assert_eq!(normalize("bismi"), "bismi");
+        assert_eq!(normalize("'aalimul ghoibi"), "'aalimulghoibi");
+        assert_eq!(normalize("Qul A'udzu"), "qula'udzu");
         assert_eq!(
             normalize("bismilla hirrohman nirrohiim"),
             "bismillahirohmanirohiim"
         );
-        assert_eq!(normalize("'aalimul ghoibi"), "'aalimulghoibi");
-        assert_eq!(normalize("Qul A'udzu"), "qula'udzu");
     }
 }
