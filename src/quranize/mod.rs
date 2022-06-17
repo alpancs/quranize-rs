@@ -101,6 +101,7 @@ mod tests {
         assert_eq!(encode(&q, "illa man taaba"), vec!["إلا من تاب"]);
         assert_eq!(encode(&q, "alla tahzani"), vec!["ألا تحزني"]);
         assert_eq!(encode(&q, "innasya niaka"), vec!["إن شانئك"]);
+        assert_eq!(encode(&q, "wasalamun alaihi"), vec!["وسلام عليه"]);
     }
 
     #[test]

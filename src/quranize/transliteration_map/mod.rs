@@ -4,7 +4,7 @@ pub type Map = HashMap<char, Vec<&'static str>>;
 
 pub fn build_map() -> Map {
     let mut map = HashMap::new();
-    map.insert(' ', vec![""]);
+    map.insert(' ', vec!["", "n"]);
     map.insert('ء', split("' k a i u"));
     map.insert('آ', split("a aa"));
     map.insert('أ', split("' k a u al"));
