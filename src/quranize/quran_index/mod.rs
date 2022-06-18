@@ -23,9 +23,9 @@ pub fn build_aya_map() -> AyaMap {
     aya_map
 }
 
-fn iterate_quran<F>(raw: &'static str, f: F)
+fn iterate_quran<'a, F>(raw: &'a str, f: F)
 where
-    F: FnMut((u8, u16, &'static str)),
+    F: FnMut((u8, u16, &'a str)),
 {
     let raw = raw.trim_start();
     let basmalah = raw.split('\n').next().unwrap().split('|').nth(2).unwrap();
