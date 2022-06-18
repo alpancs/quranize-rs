@@ -142,6 +142,8 @@ mod tests {
             q.encode("masyaallah")[0].2,
             vec!["m", "a", "", "sy", "a", "a", "", "", "l", "la", "h"]
         );
+        let result = &q.encode("masyaallah")[0];
+        assert_eq!(result.0.chars().count(), result.2.len());
     }
 
     #[test]
