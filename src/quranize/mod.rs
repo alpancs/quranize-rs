@@ -43,7 +43,7 @@ impl Quranize {
             results.push((String::new(), &node.locations, vec![]));
         }
         for subnode in node.next_harfs.iter() {
-            for prefix in self.transliteration_map[&subnode.content].iter() {
+            for prefix in self.transliteration_map[&subnode.content].iter().rev() {
                 if let Some(subtext) = text.strip_prefix(prefix) {
                     results.append(&mut self.rev_encode_sub(subnode, subtext, prefix));
                 }
@@ -97,7 +97,7 @@ mod tests {
         assert_eq!(encode(&q, "bismillah"), vec!["بسم الله", "بشماله"]);
         assert_eq!(encode(&q, "birobbinnas"), vec!["برب الناس"]);
         assert_eq!(encode(&q, "inna anzalnahu"), vec!["إنا أنزلناه"]);
-        assert_eq!(encode(&q, "wabarro"), vec!["وبئر", "وبرا"]);
+        assert_eq!(encode(&q, "wabarro"), vec!["وبرا", "وبئر"]);
         assert_eq!(encode(&q, "idza qodho"), vec!["إذا قضى"]);
         assert_eq!(encode(&q, "masyaallah"), vec!["ما شاء الله"]);
         assert_eq!(encode(&q, "illa man taaba"), vec!["إلا من تاب"]);
