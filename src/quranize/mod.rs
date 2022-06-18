@@ -102,6 +102,7 @@ mod tests {
         assert_eq!(encode(&q, "alla tahzani"), vec!["ألا تحزني"]);
         assert_eq!(encode(&q, "innasya niaka"), vec!["إن شانئك"]);
         assert_eq!(encode(&q, "wasalamun alaihi"), vec!["وسلام عليه"]);
+        assert_eq!(q.encode("subhanallah")[0].1.len(), 5);
     }
 
     #[test]
