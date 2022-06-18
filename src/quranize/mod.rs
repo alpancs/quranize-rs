@@ -33,7 +33,7 @@ impl Quranize {
         results.dedup_by(|r1, r2| r1.0 == r2.0);
         results
             .into_iter()
-            .map(|(q, l, a)| (q.chars().rev().collect(), l, a.into_iter().rev().collect()))
+            .map(|(q, l, e)| (q.chars().rev().collect(), l, e.into_iter().rev().collect()))
             .collect()
     }
 
@@ -61,11 +61,11 @@ impl Quranize {
         results
     }
 
-    fn rev_encode_sub<'a>(&'a self, node: &'a Node, text: &str, prefix: &'a str) -> EncodeResults {
+    fn rev_encode_sub<'a>(&'a self, node: &'a Node, text: &str, expl: &'a str) -> EncodeResults {
         let mut results = self.rev_encode(node, text);
-        for (q, _, a) in results.iter_mut() {
+        for (q, _, e) in results.iter_mut() {
             q.push(node.content);
-            a.push(prefix);
+            e.push(expl);
         }
         results
     }
