@@ -48,13 +48,7 @@ impl Quranize {
                     results.append(&mut self.rev_encode_sub(subnode, subtext, prefix));
                 }
             }
-            if node.content == ' ' && subnode.content == 'ا' {
-                results.append(&mut self.rev_encode_sub(subnode, text, ""));
-            }
-            if node.content == 'ا' && subnode.content == 'ل' {
-                results.append(&mut self.rev_encode_sub(subnode, text, ""));
-            }
-            if node.content == 'و' && subnode.content == 'ا' {
+            if is_special_case(node.content, subnode.content) {
                 results.append(&mut self.rev_encode_sub(subnode, text, ""));
             }
         }
@@ -87,6 +81,13 @@ fn normalize(text: &str) -> String {
     String::from_iter(text)
 }
 
+fn is_special_case(node_content: char, subnode_content: char) -> bool {
+    (node_content == ' ' && subnode_content == 'ا')
+        || (node_content == 'ا' && subnode_content == 'ل')
+        || (node_content == 'و' && subnode_content == 'ا')
+        || (node_content == 'أ' && subnode_content == 'و')
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -104,6 +105,7 @@ mod tests {
         assert_eq!(encode(&q, "alla tahzani"), vec!["ألا تحزني"]);
         assert_eq!(encode(&q, "innasya niaka"), vec!["إن شانئك"]);
         assert_eq!(encode(&q, "wasalamun alaihi"), vec!["وسلام عليه"]);
+        assert_eq!(encode(&q, "ulaika hum"), vec!["أولئك هم"]);
         assert_eq!(encode(&q, "qulhuwallahuahad"), Vec::<String>::new());
     }
 
