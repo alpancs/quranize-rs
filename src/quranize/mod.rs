@@ -4,7 +4,7 @@ mod transliteration_map;
 
 use quran_index::Node;
 
-type EncodeResults<'a> = Vec<(String, &'a [(u8, u16, u8)])>;
+type EncodeResults<'a> = Vec<(String, &'a [(u8, u16, u8)], Vec<&'a str>)>;
 
 #[wasm_bindgen::prelude::wasm_bindgen]
 pub struct Quranize {
@@ -30,41 +30,43 @@ impl Quranize {
 
     pub fn encode(&self, text: &str) -> EncodeResults {
         let mut results = self.rev_encode(&self.root, &normalize(text));
-        results.dedup_by(|(q1, _), (q2, _)| q1 == q2);
+        results.dedup_by(|r1, r2| r1.0 == r2.0);
         results
             .into_iter()
-            .map(|(q, ls)| (q.chars().rev().collect(), ls))
+            .map(|(q, l, a)| (q.chars().rev().collect(), l, a.into_iter().rev().collect()))
             .collect()
     }
 
     fn rev_encode<'a>(&'a self, node: &'a Node, text: &str) -> EncodeResults {
         let mut results = EncodeResults::new();
         if text.is_empty() && !node.locations.is_empty() {
-            results.push((String::new(), &node.locations));
+            results.push((String::new(), &node.locations, vec![]));
         }
         for subnode in node.next_harfs.iter() {
             for prefix in self.transliteration_map[&subnode.content].iter() {
                 if let Some(subtext) = text.strip_prefix(prefix) {
-                    results.append(&mut self.rev_encode_subnode(subnode, subtext));
+                    results.append(&mut self.rev_encode_sub(subnode, subtext, prefix));
                 }
             }
             if node.content == ' ' && subnode.content == 'ا' {
-                results.append(&mut self.rev_encode_subnode(subnode, text));
+                results.append(&mut self.rev_encode_sub(subnode, text, ""));
             }
             if node.content == 'ا' && subnode.content == 'ل' {
-                results.append(&mut self.rev_encode_subnode(subnode, text));
+                results.append(&mut self.rev_encode_sub(subnode, text, ""));
             }
             if node.content == 'و' && subnode.content == 'ا' {
-                results.append(&mut self.rev_encode_subnode(subnode, text));
+                results.append(&mut self.rev_encode_sub(subnode, text, ""));
             }
         }
         results
     }
 
-    fn rev_encode_subnode<'a>(&'a self, subnode: &'a Node, subtext: &str) -> EncodeResults {
-        let mut results = self.rev_encode(subnode, subtext);
-        let content = subnode.content;
-        results.iter_mut().for_each(|(q, _)| q.push(content));
+    fn rev_encode_sub<'a>(&'a self, node: &'a Node, text: &str, prefix: &'a str) -> EncodeResults {
+        let mut results = self.rev_encode(node, text);
+        for (q, _, a) in results.iter_mut() {
+            q.push(node.content);
+            a.push(prefix);
+        }
         results
     }
 
@@ -102,7 +104,6 @@ mod tests {
         assert_eq!(encode(&q, "alla tahzani"), vec!["ألا تحزني"]);
         assert_eq!(encode(&q, "innasya niaka"), vec!["إن شانئك"]);
         assert_eq!(encode(&q, "wasalamun alaihi"), vec!["وسلام عليه"]);
-        assert_eq!(q.encode("subhanallah")[0].1.len(), 5);
     }
 
     #[test]
@@ -123,7 +124,22 @@ mod tests {
     }
 
     fn encode(quranize: &Quranize, text: &str) -> Vec<String> {
-        quranize.encode(text).into_iter().map(|(q, _)| q).collect()
+        quranize.encode(text).into_iter().map(|r| r.0).collect()
+    }
+
+    #[test]
+    fn test_quranize_misc() {
+        let q = Quranize::new(3);
+        assert_eq!(q.encode("subhanallah")[0].1.len(), 5);
+        assert_eq!(q.encode("alhamdu")[0].2, vec!["a", "l", "ha", "m", "du"]);
+        assert_eq!(
+            q.encode("arrohman")[0].2,
+            vec!["a", "", "ro", "h", "ma", "n"]
+        );
+        assert_eq!(
+            q.encode("masyaallah")[0].2,
+            vec!["m", "a", "", "sy", "a", "a", "", "", "l", "la", "h"]
+        );
     }
 
     #[test]

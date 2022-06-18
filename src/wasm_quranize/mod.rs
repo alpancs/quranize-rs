@@ -17,7 +17,7 @@ impl Quranize {
         let encode_results = self
             .encode(text)
             .into_iter()
-            .map(|(q, ls)| {
+            .map(|(q, ls, _)| {
                 let word_count = q.split_whitespace().count();
                 JsEncodeResult {
                     quran: q,
