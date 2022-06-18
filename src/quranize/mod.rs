@@ -104,6 +104,7 @@ mod tests {
         assert_eq!(encode(&q, "alla tahzani"), vec!["ألا تحزني"]);
         assert_eq!(encode(&q, "innasya niaka"), vec!["إن شانئك"]);
         assert_eq!(encode(&q, "wasalamun alaihi"), vec!["وسلام عليه"]);
+        assert_eq!(encode(&q, "qulhuwallahuahad"), Vec::<String>::new());
     }
 
     #[test]
@@ -121,6 +122,7 @@ mod tests {
             encode(&q, "wa'tasimu bihablillah"),
             vec!["واعتصموا بحبل الله"]
         );
+        assert_eq!(encode(&q, "qulhuwallahuahad"), vec!["قل هو الله أحد"]);
     }
 
     fn encode(quranize: &Quranize, text: &str) -> Vec<String> {
