@@ -17,26 +17,27 @@ impl Quranize {
         let encode_results = self
             .encode(text)
             .into_iter()
-            .map(|(q, ls, _)| {
-                let word_count = q.split_whitespace().count();
+            .map(|(quran, locations, explanations)| {
+                let word_count = quran.split_whitespace().count();
                 JsEncodeResult {
-                    quran: q,
-                    locations: self.map_locations(ls, word_count),
+                    quran,
+                    locations: self.to_js_locations(locations, word_count),
+                    explanations,
                 }
             })
             .collect::<Vec<_>>();
         JsValue::from_serde(&encode_results).unwrap()
     }
 
-    fn map_locations(&self, locations: &[(u8, u16, u8)], word_count: usize) -> Vec<JsLocation> {
+    fn to_js_locations(&self, locations: &[(u8, u16, u8)], word_count: usize) -> Vec<JsLocation> {
         locations
             .iter()
-            .map(|&(s, a, w)| {
-                let w = w as usize;
-                let aya_text = self.get_aya(s, a);
+            .map(|&(sura_number, aya_number, word_number)| {
+                let w = word_number as usize;
+                let aya_text = self.get_aya(sura_number, aya_number);
                 JsLocation {
-                    sura_number: s,
-                    aya_number: a,
+                    sura_number,
+                    aya_number,
                     before_text: get_subword(aya_text, 0, w - 1),
                     text: get_subword(aya_text, w - 1, word_count),
                     after_text: get_subword(aya_text, w - 1 + word_count, usize::MAX),
@@ -55,9 +56,10 @@ fn get_subword(text: &str, n_skip: usize, n_take: usize) -> String {
 }
 
 #[derive(serde::Serialize)]
-struct JsEncodeResult {
+struct JsEncodeResult<'a> {
     quran: String,
     locations: Vec<JsLocation>,
+    explanations: Vec<&'a str>,
 }
 
 #[derive(serde::Serialize)]
