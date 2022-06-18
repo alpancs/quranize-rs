@@ -138,12 +138,12 @@ mod tests {
             q.encode("arrohman")[0].2,
             vec!["a", "", "ro", "h", "ma", "n"]
         );
-        assert_eq!(
-            q.encode("masyaallah")[0].2,
-            vec!["m", "a", "", "sy", "a", "a", "", "", "l", "la", "h"]
-        );
         let result = &q.encode("masyaallah")[0];
         assert_eq!(result.0.chars().count(), result.2.len());
+        assert_eq!(
+            result.2,
+            vec!["m", "a", "", "sy", "a", "a", "", "", "l", "la", "h"]
+        );
     }
 
     #[test]
