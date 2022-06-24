@@ -34,7 +34,7 @@ impl Quranize {
             .iter()
             .map(|&(sura_number, aya_number, word_number)| {
                 let w = word_number as usize;
-                let aya_text = self.get_aya(sura_number, aya_number);
+                let aya_text = self.get_aya_simple_plain(sura_number, aya_number);
                 JsLocation {
                     sura_number,
                     aya_number,

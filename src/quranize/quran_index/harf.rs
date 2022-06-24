@@ -1,10 +1,10 @@
-pub struct Harf {
+pub struct HarfNode {
     pub content: char,
-    pub next_harfs: Vec<Harf>,
+    pub next_harfs: Vec<HarfNode>,
     pub locations: Vec<(u8, u16, u8)>,
 }
 
-impl Harf {
+impl HarfNode {
     pub fn new(content: char) -> Self {
         Self {
             content,
@@ -40,7 +40,7 @@ impl Harf {
         match pos {
             Some(index) => self.next_harfs.get_mut(index).unwrap(),
             None => {
-                self.next_harfs.push(Harf::new(content));
+                self.next_harfs.push(HarfNode::new(content));
                 self.next_harfs.last_mut().unwrap()
             }
         }

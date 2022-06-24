@@ -3,7 +3,7 @@ mod harf;
 use std::collections::HashMap;
 
 use super::quran::{SIMPLE_CLEAN, SIMPLE_PLAIN};
-pub use harf::Harf as Node;
+pub use harf::HarfNode as Node;
 
 pub type AyaMap = HashMap<(u8, u16), &'static str>;
 
@@ -15,7 +15,7 @@ pub fn build_quran_index(word_count_limit: u8) -> Node {
     root
 }
 
-pub fn build_aya_map() -> AyaMap {
+pub fn build_aya_simple_plain_map() -> AyaMap {
     let mut aya_map = HashMap::new();
     iterate_quran(SIMPLE_PLAIN, |(s, a, t)| {
         aya_map.insert((s, a), t);
