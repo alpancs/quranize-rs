@@ -33,26 +33,22 @@ impl Quranize {
         locations
             .iter()
             .map(|&(sura_number, aya_number, word_number)| {
-                let w = word_number as usize;
                 let aya_text = self.get_aya_simple_plain(sura_number, aya_number);
+                let mut words = aya_text.split_whitespace();
                 JsLocation {
                     sura_number,
                     aya_number,
-                    before_text: get_subword(aya_text, 0, w - 1),
-                    text: get_subword(aya_text, w - 1, word_count),
-                    after_text: get_subword(aya_text, w - 1 + word_count, usize::MAX),
+                    before_text: take_join(&mut words, (word_number - 1).into()),
+                    text: take_join(&mut words, word_count),
+                    after_text: take_join(&mut words, usize::MAX),
                 }
             })
             .collect()
     }
 }
 
-fn get_subword(text: &str, n_skip: usize, n_take: usize) -> String {
-    text.split_whitespace()
-        .skip(n_skip)
-        .take(n_take)
-        .collect::<Vec<_>>()
-        .join(" ")
+fn take_join<'a>(words: &mut impl Iterator<Item = &'a str>, n_take: usize) -> String {
+    words.take(n_take).collect::<Vec<_>>().join(" ")
 }
 
 #[derive(serde::Serialize)]
@@ -76,9 +72,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_get_subword() {
-        assert_eq!(&get_subword("ab cd ef gh", 1, 2), "cd ef");
-        assert_eq!(&get_subword("ab cd ef gh", 2, 1), "ef");
-        assert_eq!(&get_subword("ab cd ef gh", 2, usize::MAX), "ef gh");
+    fn test_take_join() {
+        let mut words = "ab cd ef g".split_whitespace();
+        assert_eq!(&take_join(&mut words, 0), "");
+        assert_eq!(&take_join(&mut words, 2), "ab cd");
+        assert_eq!(&take_join(&mut words, usize::MAX), "ef g");
     }
 }
