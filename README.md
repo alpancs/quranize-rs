@@ -21,4 +21,6 @@ dual licensed as above, without any additional terms or conditions.
 
 ## Related Project
 
-<https://github.com/alpancs/quranize>
+* <https://github.com/quranize/quranize.github.io>
+* <https://github.com/alpancs/quranize-service>
+* <https://github.com/alpancs/quranize>
