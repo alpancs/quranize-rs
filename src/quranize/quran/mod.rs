@@ -11,11 +11,11 @@ mod tests {
 
     #[test]
     fn validate_quran_versions() {
-        for (wc_1, wc_2) in zip(word_counts(SIMPLE_CLEAN), word_counts(SIMPLE_PLAIN)) {
+        for (wc_a, wc_b) in zip(word_counts(SIMPLE_CLEAN), word_counts(SIMPLE_PLAIN)) {
             assert_eq!(
-                wc_1.3, wc_2.3,
-                "sura_number = {}, aya_number = {}, word count = {} and {}, aya_text = {} and {}",
-                wc_1.0, wc_1.1, wc_1.3, wc_2.3, wc_1.2, wc_2.2
+                wc_a.3, wc_b.3,
+                "sura_number = {}, aya_number = {}, aya_text = {} and {}, word count = {} and {}",
+                wc_a.0, wc_a.1, wc_a.2, wc_b.2, wc_a.3, wc_b.3
             );
         }
         assert_same_basmalah(SIMPLE_CLEAN);
