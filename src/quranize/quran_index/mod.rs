@@ -9,7 +9,7 @@ pub type AyaMap = HashMap<(u8, u16), &'static str>;
 
 pub fn build_quran_index(word_count_limit: u8) -> Node {
     let mut root = Node::new('\0');
-    iterate_quran(SIMPLE_CLEAN, |(s, a, t)| {
+    for_each_aya(SIMPLE_CLEAN, |(s, a, t)| {
         root.update_tree(s, a, t, word_count_limit);
     });
     root
@@ -17,17 +17,14 @@ pub fn build_quran_index(word_count_limit: u8) -> Node {
 
 pub fn build_aya_simple_plain_map() -> AyaMap {
     let mut aya_map = HashMap::new();
-    iterate_quran(SIMPLE_PLAIN, |(s, a, t)| {
+    for_each_aya(SIMPLE_PLAIN, |(s, a, t)| {
         aya_map.insert((s, a), t);
     });
     aya_map
 }
 
-fn iterate_quran<'a, F>(raw: &'a str, f: F)
-where
-    F: FnMut((u8, u16, &'a str)),
-{
-    let raw = raw.trim_start();
+fn for_each_aya<'a>(raw_quran: &'a str, f: impl FnMut((u8, u16, &'a str))) {
+    let raw = raw_quran.trim_start();
     let basmalah = raw.split('\n').next().unwrap().split('|').nth(2).unwrap();
     let basmalah = basmalah.to_owned() + " ";
     raw.split('\n')
