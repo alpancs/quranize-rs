@@ -9,18 +9,20 @@ mod tests {
     use super::*;
     use std::iter::zip;
 
-    type WordCount = (u8, u16, usize);
-
     #[test]
     fn validate_quran_versions() {
         for (wc_1, wc_2) in zip(word_counts(SIMPLE_CLEAN), word_counts(SIMPLE_PLAIN)) {
-            assert_eq!(wc_1, wc_2);
+            assert_eq!(
+                wc_1.3, wc_2.3,
+                "sura_number = {}, aya_number = {}, word count = {} and {}, aya_text = {} and {}",
+                wc_1.0, wc_1.1, wc_1.3, wc_2.3, wc_1.2, wc_2.2
+            );
         }
         assert_same_basmalah(SIMPLE_CLEAN);
         assert_same_basmalah(SIMPLE_PLAIN);
     }
 
-    fn word_counts(raw: &str) -> impl Iterator<Item = WordCount> + '_ {
+    fn word_counts(raw: &str) -> impl Iterator<Item = (u8, u16, &str, usize)> + '_ {
         raw.trim_start()
             .split('\n')
             .take_while(|l| !l.is_empty())
@@ -28,8 +30,9 @@ mod tests {
                 let mut parts = line.split('|');
                 let sura_number = parts.next().unwrap().parse().unwrap();
                 let aya_number = parts.next().unwrap().parse().unwrap();
-                let word_count = parts.next().unwrap().split_whitespace().count();
-                (sura_number, aya_number, word_count)
+                let aya_text = parts.next().unwrap();
+                let word_count = aya_text.split_whitespace().count();
+                (sura_number, aya_number, aya_text, word_count)
             })
     }
 
