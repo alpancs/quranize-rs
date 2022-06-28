@@ -21,7 +21,7 @@ mod tests {
         assert_same_basmalah(SIMPLE_PLAIN);
     }
 
-    fn word_counts(raw: &str) -> impl Iterator<Item = (u8, u16, &str, usize)> + '_ {
+    fn word_counts(raw: &str) -> impl Iterator<Item = (u8, u16, &str, usize)> {
         raw.trim_start()
             .split('\n')
             .take_while(|l| !l.is_empty())

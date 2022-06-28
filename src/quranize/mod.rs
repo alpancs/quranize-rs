@@ -108,7 +108,7 @@ mod tests {
         assert_eq!(encode(&q, "innasya niaka"), vec!["إن شانئك"]);
         assert_eq!(encode(&q, "wasalamun alaihi"), vec!["وسلام عليه"]);
         assert_eq!(encode(&q, "ulaika hum"), vec!["أولئك هم"]);
-        assert_eq!(encode(&q, "qulhuwallahuahad"), Vec::<String>::new());
+        assert_eq!(encode(&q, "qulhuwallahuahad").len(), 0);
     }
 
     #[test]
