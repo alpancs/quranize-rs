@@ -1,15 +1,12 @@
 mod simple_clean;
-use simple_clean::SIMPLE_CLEAN;
-
 mod simple_plain;
-use simple_plain::SIMPLE_PLAIN;
 
 pub fn simple_clean_iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
-    quran_iter(SIMPLE_CLEAN)
+    quran_iter(simple_clean::RAW_QURAN)
 }
 
 pub fn simple_plain_iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
-    quran_iter(SIMPLE_PLAIN)
+    quran_iter(simple_plain::RAW_QURAN)
 }
 
 fn quran_iter(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
@@ -31,29 +28,20 @@ mod tests {
 
     #[test]
     fn validate_quran_versions() {
-        for (wc_a, wc_b) in word_counts(SIMPLE_CLEAN).zip(word_counts(SIMPLE_PLAIN)) {
+        for ((s1, a1, t1, c1), (_, _, t2, c2)) in
+            word_counts(simple_clean::RAW_QURAN).zip(word_counts(simple_plain::RAW_QURAN))
+        {
             assert_eq!(
-                wc_a.3, wc_b.3,
-                "sura_number = {}, aya_number = {}, aya_text = {} and {}, word count = {} and {}",
-                wc_a.0, wc_a.1, wc_a.2, wc_b.2, wc_a.3, wc_b.3
+                c1,c2,
+                "sura_number = {s1}, aya_number = {a1},\naya_text = {t1} and {t2},\nword count = {c1} and {c2}",
             );
         }
-        assert_same_basmalah(SIMPLE_CLEAN);
-        assert_same_basmalah(SIMPLE_PLAIN);
+        assert_same_basmalah(simple_clean::RAW_QURAN);
+        assert_same_basmalah(simple_plain::RAW_QURAN);
     }
 
     fn word_counts(raw: &str) -> impl Iterator<Item = (u8, u16, &str, usize)> {
-        raw.trim_start()
-            .split('\n')
-            .take_while(|l| !l.is_empty())
-            .map(|line| {
-                let mut parts = line.split('|');
-                let sura_number = parts.next().unwrap().parse().unwrap();
-                let aya_number = parts.next().unwrap().parse().unwrap();
-                let aya_text = parts.next().unwrap();
-                let word_count = aya_text.split_whitespace().count();
-                (sura_number, aya_number, aya_text, word_count)
-            })
+        quran_iter(raw).map(|(s, a, t)| (s, a, t, t.split_whitespace().count()))
     }
 
     fn assert_same_basmalah(raw: &str) {
@@ -68,10 +56,7 @@ mod tests {
             if aya_number == 1 && sura_number != 9 {
                 assert!(
                     aya_text.starts_with(&basmalah),
-                    "sura_number = {}, aya_number = {}, aya_text = {}",
-                    sura_number,
-                    aya_number,
-                    aya_text
+                    "sura_number = {sura_number}, aya_number = {aya_number},\naya_text = {aya_text}"
                 );
             }
         }
