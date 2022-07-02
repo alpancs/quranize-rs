@@ -126,6 +126,7 @@ mod tests {
     #[test]
     fn test_quranize_misc() {
         let q = Quranize::new(3);
+        assert_eq!(q.encode("bismillah")[0].1[0], (1, 1, 1));
         assert_eq!(q.encode("subhanallah")[0].1.len(), 5);
         assert_eq!(q.encode("alhamdu")[0].2, vec!["a", "l", "ha", "m", "du"]);
         assert_eq!(

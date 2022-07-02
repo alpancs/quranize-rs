@@ -14,11 +14,13 @@ fn quran_iter(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     let basmalah = raw.split('\n').next().unwrap().split('|').nth(2).unwrap();
     raw.split('\n').take_while(|l| !l.is_empty()).map(move |l| {
         let mut it = l.split('|');
-        (
-            it.next().unwrap().parse().unwrap(),
-            it.next().unwrap().parse().unwrap(),
-            it.next().unwrap().trim_start_matches(basmalah).trim_start(),
-        )
+        let sura_number = it.next().unwrap().parse().unwrap();
+        let aya_number = it.next().unwrap().parse().unwrap();
+        let mut aya_text = it.next().unwrap();
+        if sura_number > 1 && aya_number == 1 {
+            aya_text = aya_text.trim_start_matches(basmalah).trim_start();
+        }
+        (sura_number, aya_number, aya_text)
     })
 }
 
