@@ -1,5 +1,3 @@
-pub use HarfNode as Node;
-
 pub fn build_quran_index(word_count_limit: u8) -> Node {
     let mut root = Node::new('\0');
     for (s, a, t) in crate::quran::simple_clean_iter() {
@@ -8,13 +6,13 @@ pub fn build_quran_index(word_count_limit: u8) -> Node {
     root
 }
 
-pub struct HarfNode {
+pub struct Node {
     pub content: char,
-    pub next_harfs: Vec<HarfNode>,
+    pub next_harfs: Vec<Node>,
     pub locations: Vec<(u8, u16, u8)>,
 }
 
-impl HarfNode {
+impl Node {
     fn new(content: char) -> Self {
         Self {
             content,
@@ -25,7 +23,7 @@ impl HarfNode {
 
     fn update_tree(&mut self, sura_number: u8, aya_number: u16, aya_text: &str, wc_limit: u8) {
         let mut word_number = 0;
-        let aya_chars = aya_text.chars().collect::<Vec<_>>();
+        let aya_chars = Vec::from_iter(aya_text.chars());
         for i in 0..aya_chars.len() {
             if i == 0 || aya_chars[i - 1] == ' ' {
                 word_number += 1;
@@ -50,7 +48,7 @@ impl HarfNode {
         match pos {
             Some(index) => self.next_harfs.get_mut(index).unwrap(),
             None => {
-                self.next_harfs.push(HarfNode::new(content));
+                self.next_harfs.push(Node::new(content));
                 self.next_harfs.last_mut().unwrap()
             }
         }

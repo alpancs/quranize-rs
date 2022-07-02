@@ -62,15 +62,12 @@ impl Quranize {
 }
 
 fn normalize(text: &str) -> String {
-    let mut text: Vec<_> = text
-        .chars()
-        .filter_map(|c| match c.to_ascii_lowercase() {
-            c @ ('a'..='z' | '\'') => Some(c),
-            _ => None,
-        })
-        .collect();
-    text.dedup_by(|a, b| a == b && *a != 'l' && *a != 'a' && *a != 'o' && *a != 'i' && *a != 'u');
-    String::from_iter(text)
+    let mut chars = Vec::from_iter(text.chars().filter_map(|c| match c.to_ascii_lowercase() {
+        c @ ('a'..='z' | '\'') => Some(c),
+        _ => None,
+    }));
+    chars.dedup_by(|a, b| a == b && *a != 'l' && *a != 'a' && *a != 'o' && *a != 'i' && *a != 'u');
+    String::from_iter(chars)
 }
 
 fn is_special_case(node_content: char, subnode_content: char) -> bool {
