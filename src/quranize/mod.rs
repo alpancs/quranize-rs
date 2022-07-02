@@ -1,4 +1,3 @@
-mod quran;
 mod quran_index;
 mod transliteration_map;
 
@@ -6,11 +5,9 @@ use quran_index::Node;
 
 type EncodeResults<'a> = Vec<(String, &'a [(u8, u16, u8)], Vec<&'a str>)>;
 
-#[wasm_bindgen::prelude::wasm_bindgen]
 pub struct Quranize {
     root: Node,
     transliteration_map: transliteration_map::Map,
-    aya_simple_plain_map: quran_index::AyaMap,
 }
 
 impl Default for Quranize {
@@ -24,7 +21,6 @@ impl Quranize {
         Self {
             root: quran_index::build_quran_index(word_count_limit),
             transliteration_map: transliteration_map::build_map(),
-            aya_simple_plain_map: quran_index::build_aya_simple_plain_map(),
         }
     }
 
@@ -62,12 +58,6 @@ impl Quranize {
             e.push(expl);
         }
         results
-    }
-
-    pub fn get_aya_simple_plain(&self, sura_number: u8, aya_number: u16) -> &str {
-        self.aya_simple_plain_map
-            .get(&(sura_number, aya_number))
-            .unwrap()
     }
 }
 

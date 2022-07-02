@@ -1,20 +1,34 @@
-use super::Quranize;
+use std::collections::HashMap;
+
+use crate::Quranize;
 use wasm_bindgen::prelude::*;
 
-#[allow(clippy::unused_unit)]
-#[wasm_bindgen]
-impl Quranize {
+#[wasm_bindgen(js_name = Quranize)]
+pub struct JsQuranize {
+    quranize: Quranize,
+    aya_map: HashMap<(u8, u16), &'static str>,
+}
+
+#[wasm_bindgen(js_class = Quranize)]
+impl JsQuranize {
     #[wasm_bindgen(constructor)]
-    pub fn js_new(word_count_limit: u8) -> Self {
-        match word_count_limit {
-            0 => Quranize::default(),
-            n => Quranize::new(n),
+    pub fn new(word_count_limit: u8) -> Self {
+        let mut aya_map = HashMap::new();
+        for (s, a, t) in crate::quran::simple_plain_iter() {
+            aya_map.insert((s, a), t);
+        }
+        Self {
+            quranize: match word_count_limit {
+                0 => Quranize::default(),
+                n => Quranize::new(n),
+            },
+            aya_map,
         }
     }
 
-    #[wasm_bindgen(js_name = encode)]
-    pub fn js_encode(&self, text: &str) -> JsValue {
+    pub fn encode(&self, text: &str) -> JsValue {
         let encode_results = self
+            .quranize
             .encode(text)
             .into_iter()
             .map(|(quran, locations, explanations)| {
@@ -33,7 +47,7 @@ impl Quranize {
         locations
             .iter()
             .map(|&(sura_number, aya_number, word_number)| {
-                let aya_text = self.get_aya_simple_plain(sura_number, aya_number);
+                let aya_text = self.aya_map.get(&(sura_number, aya_number)).unwrap();
                 let mut words = aya_text.split_whitespace();
                 JsLocation {
                     sura_number,

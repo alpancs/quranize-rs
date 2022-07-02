@@ -1,8 +1,29 @@
 mod simple_clean;
-pub use simple_clean::SIMPLE_CLEAN;
+use simple_clean::SIMPLE_CLEAN;
 
 mod simple_plain;
-pub use simple_plain::SIMPLE_PLAIN;
+use simple_plain::SIMPLE_PLAIN;
+
+pub fn simple_clean_iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
+    quran_iter(SIMPLE_CLEAN)
+}
+
+pub fn simple_plain_iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
+    quran_iter(SIMPLE_PLAIN)
+}
+
+fn quran_iter(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
+    let raw = raw.trim_start();
+    let basmalah = raw.split('\n').next().unwrap().split('|').nth(2).unwrap();
+    raw.split('\n').take_while(|l| !l.is_empty()).map(move |l| {
+        let mut it = l.split('|');
+        (
+            it.next().unwrap().parse().unwrap(),
+            it.next().unwrap().parse().unwrap(),
+            it.next().unwrap().trim_start_matches(basmalah).trim_start(),
+        )
+    })
+}
 
 #[cfg(test)]
 mod tests {
