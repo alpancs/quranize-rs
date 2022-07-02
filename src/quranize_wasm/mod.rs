@@ -64,7 +64,7 @@ impl JsQuranize {
 }
 
 fn take_join<'a>(words: &mut impl Iterator<Item = &'a str>, n_take: usize) -> String {
-    words.take(n_take).collect::<Vec<_>>().join(" ")
+    Vec::from_iter(words.take(n_take)).join(" ")
 }
 
 #[derive(serde::Serialize)]
@@ -86,6 +86,15 @@ struct JsLocation {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_encode() {
+        let q = JsQuranize::new(0);
+        let l = &q.encode("bismillah")[0].locations[0];
+        assert_eq!(l.before_text, "");
+        assert_eq!(l.text, "بِسْمِ اللَّهِ");
+        assert_eq!(l.after_text, "الرَّحْمَـٰنِ الرَّحِيمِ");
+    }
 
     #[test]
     fn test_take_join() {
