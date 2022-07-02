@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
-use crate::Quranize;
 use wasm_bindgen::prelude::*;
+
+use crate::Quranize;
 
 #[wasm_bindgen(js_name = Quranize)]
 pub struct JsQuranize {
@@ -26,24 +27,25 @@ impl JsQuranize {
         }
     }
 
-    pub fn encode(&self, text: &str) -> JsValue {
-        let encode_results = self
-            .quranize
-            .encode(text)
-            .into_iter()
-            .map(|(quran, locations, explanations)| {
-                let word_count = quran.split_whitespace().count();
-                JsEncodeResult {
-                    quran,
-                    locations: self.to_js_locations(locations, word_count),
-                    explanations,
-                }
-            })
-            .collect::<Vec<_>>();
-        JsValue::from_serde(&encode_results).unwrap()
+    #[wasm_bindgen(js_name = encode)]
+    pub fn js_encode(&self, text: &str) -> JsValue {
+        JsValue::from_serde(&self.encode(text)).unwrap()
     }
 
-    fn to_js_locations(&self, locations: &[(u8, u16, u8)], word_count: usize) -> Vec<JsLocation> {
+    fn encode<'a>(&'a self, text: &'a str) -> Vec<JsEncodeResult<'a>> {
+        self.quranize
+            .encode(text)
+            .into_iter()
+            .map(|(quran, locations, explanations)| JsEncodeResult {
+                locations: self.to_js_locations(&quran, locations),
+                quran,
+                explanations,
+            })
+            .collect()
+    }
+
+    fn to_js_locations(&self, quran: &str, locations: &[(u8, u16, u8)]) -> Vec<JsLocation> {
+        let word_count = quran.split_whitespace().count();
         locations
             .iter()
             .map(|&(sura_number, aya_number, word_number)| {
