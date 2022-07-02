@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+mod aya_map;
 
 use wasm_bindgen::prelude::*;
 
@@ -7,23 +7,19 @@ use crate::Quranize;
 #[wasm_bindgen(js_name = Quranize)]
 pub struct JsQuranize {
     quranize: Quranize,
-    aya_map: HashMap<(u8, u16), &'static str>,
+    aya_map: aya_map::Map,
 }
 
 #[wasm_bindgen(js_class = Quranize)]
 impl JsQuranize {
     #[wasm_bindgen(constructor)]
     pub fn new(word_count_limit: u8) -> Self {
-        let mut aya_map = HashMap::new();
-        for (s, a, t) in crate::quran::simple_plain_iter() {
-            aya_map.insert((s, a), t);
-        }
         Self {
             quranize: match word_count_limit {
                 0 => Quranize::default(),
                 n => Quranize::new(n),
             },
-            aya_map,
+            aya_map: aya_map::build_map(),
         }
     }
 
