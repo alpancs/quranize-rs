@@ -1,5 +1,7 @@
+const ARABIC_UNICODE_START: u32 = 0x0600;
+
 pub fn build_quran_index(word_count_limit: u8) -> Node {
-    let mut root = Node::new('\0');
+    let mut root = Node::new(' ');
     for (s, a, t) in crate::quran::simple_clean_iter() {
         root.update_tree(s, a, t, word_count_limit);
     }
@@ -7,7 +9,7 @@ pub fn build_quran_index(word_count_limit: u8) -> Node {
 }
 
 pub struct Node {
-    pub content: char,
+    pub content_code: u8,
     pub next_harfs: Vec<Node>,
     pub locations: Vec<(u8, u16, u8)>,
 }
@@ -15,10 +17,14 @@ pub struct Node {
 impl Node {
     fn new(content: char) -> Self {
         Self {
-            content,
+            content_code: char_to_code(content),
             next_harfs: Vec::new(),
             locations: Vec::new(),
         }
+    }
+
+    pub fn content(&self) -> char {
+        code_to_char(self.content_code)
     }
 
     fn update_tree(&mut self, sura_number: u8, aya_number: u16, aya_text: &str, wc_limit: u8) {
@@ -44,7 +50,7 @@ impl Node {
     }
 
     fn get_or_add(&mut self, content: char) -> &mut Self {
-        let pos = self.next_harfs.iter().position(|h| h.content == content);
+        let pos = self.next_harfs.iter().position(|h| h.content() == content);
         match pos {
             Some(index) => self.next_harfs.get_mut(index).unwrap(),
             None => {
@@ -55,6 +61,20 @@ impl Node {
     }
 }
 
+fn char_to_code(c: char) -> u8 {
+    match c {
+        ' ' => 0,
+        _ => (u32::from(c) - ARABIC_UNICODE_START).try_into().unwrap(),
+    }
+}
+
+fn code_to_char(c: u8) -> char {
+    match c {
+        0 => ' ',
+        _ => char::try_from(ARABIC_UNICODE_START + u32::from(c)).unwrap(),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -62,7 +82,7 @@ mod tests {
     #[test]
     fn test_build_quran_index() {
         let root = build_quran_index(u8::MAX);
-        assert_eq!(root.content, '\0');
+        assert_eq!(root.content_code, 0);
         assert_eq!(root.next_harfs.len(), 31);
         assert!(find_next(&root, 'ب').locations.is_empty());
         assert_eq!(find_next(&root, 'ن').locations, vec![(68, 1, 1)]);
@@ -71,7 +91,21 @@ mod tests {
     fn find_next(node: &Node, target: char) -> &Node {
         node.next_harfs
             .iter()
-            .find(|h| h.content == target)
+            .find(|h| h.content() == target)
             .unwrap()
+    }
+
+    #[test]
+    fn test_char_to_code() {
+        assert_eq!(char_to_code(' '), 0);
+        assert_eq!(char_to_code('ء'), 0x21);
+        assert_eq!(char_to_code('ي'), 0x4a);
+    }
+
+    #[test]
+    fn test_code_to_char() {
+        assert_eq!(code_to_char(0), ' ');
+        assert_eq!(code_to_char(0x21), 'ء');
+        assert_eq!(code_to_char(0x4a), 'ي');
     }
 }

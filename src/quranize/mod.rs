@@ -39,12 +39,12 @@ impl Quranize {
             results.push((String::new(), &node.locations, vec![]));
         }
         for subnode in node.next_harfs.iter() {
-            for prefix in self.transliteration_map[&subnode.content].iter().rev() {
+            for prefix in self.transliteration_map[&subnode.content()].iter().rev() {
                 if let Some(subtext) = text.strip_prefix(prefix) {
                     results.append(&mut self.rev_encode_sub(subnode, subtext, prefix));
                 }
             }
-            if is_special_case(node.content, subnode.content) {
+            if is_special_case(node.content(), subnode.content()) {
                 results.append(&mut self.rev_encode_sub(subnode, text, ""));
             }
         }
@@ -54,7 +54,7 @@ impl Quranize {
     fn rev_encode_sub<'a>(&'a self, node: &'a Node, text: &str, expl: &'a str) -> EncodeResults {
         let mut results = self.rev_encode(node, text);
         for (q, _, e) in results.iter_mut() {
-            q.push(node.content);
+            q.push(node.content());
             e.push(expl);
         }
         results
