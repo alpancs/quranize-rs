@@ -1,49 +1,60 @@
-use std::collections::HashMap;
-
-pub type Map = HashMap<char, Vec<&'static str>>;
-
-pub fn build_map() -> Map {
-    let mut map = HashMap::new();
-    map.insert(' ', vec!["", "n"]);
-    map.insert('ء', split("' k a i u"));
-    map.insert('آ', split("a aa"));
-    map.insert('أ', split("' k a u al"));
-    map.insert('ؤ', split("' k u"));
-    map.insert('إ', split("i il"));
-    map.insert('ئ', split("' k a i"));
-    map.insert('ا', split("a o i u"));
-    map.insert('ب', split("b ba bi bu"));
-    map.insert('ة', split("h ta ti tu t"));
-    map.insert('ت', split("t ta ti tu"));
-    map.insert('ث', split("ts tsa tsi tsu s sa si su"));
-    map.insert('ج', split("j ja ji ju"));
-    map.insert('ح', split("h ha hi hu ch cha chi chu kh kha khi khu"));
-    map.insert('خ', split("kh kho khi khu h ho hi hu kha ha"));
-    map.insert('د', split("d da di du"));
-    map.insert('ذ', split("d da di du dh dha dhi dhu dz dza dzi dzu"));
-    map.insert('ر', split("r ro ri ru ra"));
-    map.insert('ز', split("z za zi zu"));
-    map.insert('س', split("s sa si su"));
-    map.insert('ش', split("s sa si su sy sya syi syu sh sha shi shu"));
-    map.insert('ص', split("s so si su sh sho shi shu sa sha"));
-    map.insert('ض', split("d do di du dh dho dhi dhu dz dzo dzi dzu"));
-    map.insert('ط', split("t to ti tu th tho thi thu ta tha"));
-    map.insert('ظ', split("d do di du dh dho dhi dhu dz dzo dzi dzu"));
-    map.insert('ع', split("' 'a 'i 'u k a i u"));
-    map.insert('غ', split("g go gi gu gh gho ghi ghu ga gha"));
-    map.insert('ف', split("f fa fi fu"));
-    map.insert('ق', split("k ko ki ku q qo qi qu qa"));
-    map.insert('ك', split("k ka ki ku"));
-    map.insert('ل', split("l lla la li lu"));
-    map.insert('م', split("m ma mi mu"));
-    map.insert('ن', split("n na ni nu"));
-    map.insert('ه', split("h ha hi hu"));
-    map.insert('و', split("w wa wi wu u"));
-    map.insert('ى', split("a o"));
-    map.insert('ي', split("y ya yi yu i iya iyi iyu"));
-    map
-}
-
-fn split(text: &str) -> Vec<&str> {
-    text.split_whitespace().collect()
+pub fn transliterations(c: char) -> &'static [&'static str] {
+    match c {
+        'ء' => &["'", "k", "a", "i", "u"],
+        'آ' => &["a", "aa"],
+        'أ' => &["'", "k", "a", "u", "al"],
+        'ؤ' => &["'", "k", "u"],
+        'إ' => &["i", "il"],
+        'ئ' => &["'", "k", "a", "i"],
+        'ا' => &["a", "o", "i", "u"],
+        'ب' => &["b", "ba", "bi", "bu"],
+        'ة' => &["h", "ta", "ti", "tu", "t"],
+        'ت' => &["t", "ta", "ti", "tu"],
+        'ث' => &["ts", "tsa", "tsi", "tsu", "s", "sa", "si", "su"],
+        'ج' => &["j", "ja", "ji", "ju"],
+        'ح' => &[
+            "h", "ha", "hi", "hu", "ch", "cha", "chi", "chu", "kh", "kha", "khi", "khu",
+        ],
+        'خ' => &[
+            "kh", "kho", "khi", "khu", "h", "ho", "hi", "hu", "kha", "ha",
+        ],
+        'د' => &["d", "da", "di", "du"],
+        'ذ' => &[
+            "d", "da", "di", "du", "dh", "dha", "dhi", "dhu", "dz", "dza", "dzi", "dzu",
+        ],
+        'ر' => &["r", "ro", "ri", "ru", "ra"],
+        'ز' => &["z", "za", "zi", "zu"],
+        'س' => &["s", "sa", "si", "su"],
+        'ش' => &[
+            "s", "sa", "si", "su", "sy", "sya", "syi", "syu", "sh", "sha", "shi", "shu",
+        ],
+        'ص' => &[
+            "s", "so", "si", "su", "sh", "sho", "shi", "shu", "sa", "sha",
+        ],
+        'ض' => &[
+            "d", "do", "di", "du", "dh", "dho", "dhi", "dhu", "dz", "dzo", "dzi", "dzu",
+        ],
+        'ط' => &[
+            "t", "to", "ti", "tu", "th", "tho", "thi", "thu", "ta", "tha",
+        ],
+        'ظ' => &[
+            "d", "do", "di", "du", "dh", "dho", "dhi", "dhu", "dz", "dzo", "dzi", "dzu",
+        ],
+        'ع' => &["'", "'a", "'i", "'u", "k", "a", "i", "u"],
+        'غ' => &[
+            "g", "go", "gi", "gu", "gh", "gho", "ghi", "ghu", "ga", "gha",
+        ],
+        'ف' => &["f", "fa", "fi", "fu"],
+        'ق' => &["k", "ko", "ki", "ku", "q", "qo", "qi", "qu", "qa"],
+        'ك' => &["k", "ka", "ki", "ku"],
+        'ل' => &["l", "lla", "la", "li", "lu"],
+        'م' => &["m", "ma", "mi", "mu"],
+        'ن' => &["n", "na", "ni", "nu"],
+        'ه' => &["h", "ha", "hi", "hu"],
+        'و' => &["w", "wa", "wi", "wu", "u"],
+        'ى' => &["a", "o"],
+        'ي' => &["y", "ya", "yi", "yu", "i", "iya", "iyi", "iyu"],
+        ' ' => &["", "n"],
+        _ => &[],
+    }
 }

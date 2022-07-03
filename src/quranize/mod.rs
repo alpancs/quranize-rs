@@ -2,12 +2,12 @@ mod quran_index;
 mod transliteration_map;
 
 use quran_index::Node;
+use transliteration_map::transliterations;
 
 type EncodeResults<'a> = Vec<(String, &'a [(u8, u16, u8)], Vec<&'a str>)>;
 
 pub struct Quranize {
     root: Node,
-    transliteration_map: transliteration_map::Map,
 }
 
 impl Default for Quranize {
@@ -20,7 +20,6 @@ impl Quranize {
     pub fn new(word_count_limit: u8) -> Self {
         Self {
             root: quran_index::build_quran_index(word_count_limit),
-            transliteration_map: transliteration_map::build_map(),
         }
     }
 
@@ -39,7 +38,7 @@ impl Quranize {
             results.push((String::new(), &node.locations, vec![]));
         }
         for subnode in node.next_harfs.iter() {
-            for prefix in self.transliteration_map[&subnode.content].iter().rev() {
+            for prefix in transliterations(subnode.content).iter().rev() {
                 if let Some(subtext) = text.strip_prefix(prefix) {
                     results.append(&mut self.rev_encode_sub(subnode, subtext, prefix));
                 }
