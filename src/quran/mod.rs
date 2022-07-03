@@ -1,6 +1,9 @@
 mod simple_clean;
 mod simple_plain;
 
+pub const SURA_COUNT: usize = 114;
+pub const AYA_COUNT: usize = 6236;
+
 pub fn simple_clean_iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
     quran_iter(simple_clean::RAW_QURAN)
 }
@@ -29,21 +32,22 @@ mod tests {
     use super::*;
 
     #[test]
-    fn validate_quran_versions() {
-        for ((s1, a1, t1, c1), (_, _, t2, c2)) in
-            word_counts(simple_clean::RAW_QURAN).zip(word_counts(simple_plain::RAW_QURAN))
-        {
-            assert_eq!(
-                c1,c2,
-                "sura_number = {s1}, aya_number = {a1},\naya_text = {t1} and {t2},\nword count = {c1} and {c2}",
-            );
+    fn test_quran_version_compatibility() {
+        let word_counter =
+            |(s, a, t): (u8, u16, &'static str)| (s, a, t, t.split_whitespace().count());
+        let simple_clean_wc_iter = simple_clean_iter().map(word_counter);
+        let simple_plain_wc_iter = simple_plain_iter().map(word_counter);
+        for ((s1, a1, t1, c1), (_, _, t2, c2)) in simple_clean_wc_iter.zip(simple_plain_wc_iter) {
+            assert_eq!(c1, c2, "sura_number = {s1}, aya_number = {a1},\naya_text = {t1} and {t2},\nword count = {c1} and {c2}");
         }
-        assert_same_basmalah(simple_clean::RAW_QURAN);
-        assert_same_basmalah(simple_plain::RAW_QURAN);
     }
 
-    fn word_counts(raw: &str) -> impl Iterator<Item = (u8, u16, &str, usize)> {
-        quran_iter(raw).map(|(s, a, t)| (s, a, t, t.split_whitespace().count()))
+    #[test]
+    fn test_properties() {
+        assert_same_basmalah(simple_clean::RAW_QURAN);
+        assert_same_basmalah(simple_plain::RAW_QURAN);
+        assert_eq!(simple_clean_iter().count(), AYA_COUNT);
+        assert_eq!(simple_plain_iter().count(), AYA_COUNT);
     }
 
     fn assert_same_basmalah(raw: &str) {

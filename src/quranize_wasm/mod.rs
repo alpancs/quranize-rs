@@ -45,7 +45,7 @@ impl JsQuranize {
         locations
             .iter()
             .map(|&(sura_number, aya_number, word_number)| {
-                let aya_text = self.aya_map.get(&(sura_number, aya_number)).unwrap();
+                let aya_text = self.aya_map.get(sura_number, aya_number).unwrap();
                 let mut words = aya_text.split_whitespace();
                 JsLocation {
                     sura_number,
