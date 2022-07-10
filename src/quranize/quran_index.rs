@@ -1,3 +1,5 @@
+use super::word_utils::WordSuffixIter;
+
 pub fn build_quran_index(word_count_limit: u8) -> Node {
     let mut root = Node::new('\0');
     for (s, a, t) in crate::quran::simple_clean_iter() {
@@ -22,24 +24,21 @@ impl Node {
     }
 
     fn update_tree(&mut self, sura_number: u8, aya_number: u16, aya_text: &str, wc_limit: u8) {
-        let mut word_number = 0;
-        let aya_chars = Vec::from_iter(aya_text.chars());
-        for i in 0..aya_chars.len() {
-            if i == 0 || aya_chars[i - 1] == ' ' {
-                word_number += 1;
-                let mut node = &mut *self;
-                let mut word_count = 0;
-                for j in i..aya_chars.len() {
-                    node = node.get_or_add(aya_chars[j]);
-                    if j == aya_chars.len() - 1 || aya_chars[j + 1] == ' ' {
-                        word_count += 1;
-                        if word_count > wc_limit {
-                            break;
-                        }
-                        node.locations.push((sura_number, aya_number, word_number));
-                    }
+        for (i, t) in WordSuffixIter::from(aya_text).enumerate() {
+            let location = (sura_number, aya_number, i as u8 + 1);
+            let mut node = &mut *self;
+            let mut word_count = 0;
+            for c in t.chars() {
+                if word_count >= wc_limit {
+                    break;
+                }
+                node = node.get_or_add(c);
+                if node.content == ' ' {
+                    word_count += 1;
+                    node.locations.push(location);
                 }
             }
+            node.locations.push(location);
         }
     }
 
@@ -64,8 +63,10 @@ mod tests {
         let root = build_quran_index(u8::MAX);
         assert_eq!(root.content, '\0');
         assert_eq!(root.next_harfs.len(), 31);
-        assert!(find_next(&root, 'ب').locations.is_empty());
-        assert_eq!(find_next(&root, 'ن').locations, vec![(68, 1, 1)]);
+        assert_eq!(find_next(&root, 'ب').locations.len(), 0);
+        let nun = find_next(&root, 'ن');
+        assert_eq!(nun.locations.len(), 0);
+        assert_eq!(find_next(nun, ' ').locations, vec![(68, 1, 1)]);
     }
 
     fn find_next(node: &Node, target: char) -> &Node {

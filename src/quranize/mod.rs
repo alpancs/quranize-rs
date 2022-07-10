@@ -1,5 +1,6 @@
 mod quran_index;
 mod transliteration_map;
+mod word_utils;
 
 use quran_index::Node;
 use transliteration_map::transliterations;
@@ -28,7 +29,15 @@ impl Quranize {
         results.dedup_by(|r1, r2| r1.0 == r2.0);
         results
             .into_iter()
-            .map(|(q, l, e)| (q.chars().rev().collect(), l, e.into_iter().rev().collect()))
+            .map(|(q, l, e)| {
+                let mut q = String::from_iter(q.chars().rev());
+                let mut e = Vec::from_iter(e.into_iter().rev());
+                if q.ends_with(' ') {
+                    q.pop();
+                    e.pop();
+                }
+                (q, l, e)
+            })
             .collect()
     }
 
@@ -94,6 +103,7 @@ mod tests {
         assert_eq!(encode(&q, "innasya niaka"), vec!["إن شانئك"]);
         assert_eq!(encode(&q, "wasalamun alaihi"), vec!["وسلام عليه"]);
         assert_eq!(encode(&q, "ulaika hum"), vec!["أولئك هم"]);
+        assert_eq!(encode(&q, "n"), vec!["ن"]);
         assert_eq!(encode(&q, "qulhuwallahuahad").len(), 0);
     }
 
