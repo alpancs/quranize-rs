@@ -41,50 +41,40 @@ impl JsQuranize {
     }
 
     fn to_js_locations(&self, quran: &str, locations: &[(u8, u16, u8)]) -> Vec<JsLocation> {
-        let word_count = quran.split_whitespace().count();
+        let word_count = quran.split_whitespace().count() as u8;
         locations
             .iter()
             .map(|&(sura_number, aya_number, word_number)| {
                 let text = self.aya_map.get(sura_number, aya_number).unwrap();
-                let (before_text, text) = split_at_nth_word(text, word_number as usize - 1);
-                let (text, after_text) = split_at_nth_word(text, word_count);
+                let (l, r) = get_highlight_boundary(text, word_number, word_count);
                 JsLocation {
                     sura_number,
                     aya_number,
-                    before_text,
-                    text,
-                    after_text,
+                    before_text: if l == 0 { "" } else { &text[..l - 1] },
+                    text: &text[l..r],
+                    after_text: text.get(r + 1..).unwrap_or_default(),
                 }
             })
             .collect()
     }
 }
 
-fn split_at_nth_word(text: &str, n: usize) -> (&str, &str) {
-    let mut split_index = None;
-    let mut char_indices = text.char_indices();
-    for _ in 0..n {
-        loop {
-            match char_indices.next() {
-                Some((i, ' ')) => {
-                    split_index = Some(i);
-                    break;
-                }
-                None => {
-                    split_index = Some(text.len());
-                    break;
-                }
-                _ => {}
-            }
+fn get_highlight_boundary(text: &str, word_number: u8, word_count: u8) -> (usize, usize) {
+    let mut left = 0;
+    let mut right = text.len();
+    let mut counted_words = 0;
+    for (i, c) in text.char_indices() {
+        if i == 0 || c == ' ' {
+            counted_words += 1;
+        }
+        if c == ' ' && counted_words == word_number {
+            left = i + 1;
+        }
+        if c == ' ' && counted_words == word_number + word_count {
+            right = i;
         }
     }
-    match split_index {
-        Some(i) => (
-            &text[..i],
-            text.get(i + 1..).or_else(|| text.get(i..)).unwrap(),
-        ),
-        _ => ("", text),
-    }
+    (left, right)
 }
 
 #[derive(serde::Serialize)]
@@ -114,13 +104,23 @@ mod tests {
         assert_eq!(l.before_text, "");
         assert_eq!(l.text, "بِسْمِ اللَّهِ");
         assert_eq!(l.after_text, "الرَّحْمَـٰنِ الرَّحِيمِ");
+
+        let l = &q.encode("bismillah hirrohman nirrohim")[0].locations[0];
+        assert_eq!(l.before_text, "");
+        assert_eq!(l.text, "بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ");
+        assert_eq!(l.after_text, "");
+
+        let l = &q.encode("arrohman nirrohim")[0].locations[0];
+        assert_eq!(l.before_text, "بِسْمِ اللَّهِ");
+        assert_eq!(l.text, "الرَّحْمَـٰنِ الرَّحِيمِ");
+        assert_eq!(l.after_text, "");
     }
 
     #[test]
-    fn test_split_at_nth_word() {
-        assert_eq!(split_at_nth_word("ab cde fg h", 2), ("ab cde", "fg h"));
-        assert_eq!(split_at_nth_word("fg h", 1), ("fg", "h"));
-        assert_eq!(split_at_nth_word("ab c", 0), ("", "ab c"));
-        assert_eq!(split_at_nth_word("ab c", 2), ("ab c", ""));
+    fn test_get_highlight_boundary() {
+        assert_eq!(get_highlight_boundary("ab cde f", 1, 3), (0, 8));
+        assert_eq!(get_highlight_boundary("ab cde f", 2, 2), (3, 8));
+        assert_eq!(get_highlight_boundary("ab cde f", 3, 1), (7, 8));
+        assert_eq!(get_highlight_boundary("ab cde f", 1, 1), (0, 2));
     }
 }
