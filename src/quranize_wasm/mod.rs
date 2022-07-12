@@ -45,22 +45,46 @@ impl JsQuranize {
         locations
             .iter()
             .map(|&(sura_number, aya_number, word_number)| {
-                let aya_text = self.aya_map.get(sura_number, aya_number).unwrap();
-                let mut words = aya_text.split_whitespace();
+                let text = self.aya_map.get(sura_number, aya_number).unwrap();
+                let (before_text, text) = split_at_nth_word(text, word_number as usize - 1);
+                let (text, after_text) = split_at_nth_word(text, word_count);
                 JsLocation {
                     sura_number,
                     aya_number,
-                    before_text: take_join(&mut words, (word_number - 1).into()),
-                    text: take_join(&mut words, word_count),
-                    after_text: take_join(&mut words, usize::MAX),
+                    before_text,
+                    text,
+                    after_text,
                 }
             })
             .collect()
     }
 }
 
-fn take_join<'a>(words: &mut impl Iterator<Item = &'a str>, n_take: usize) -> String {
-    Vec::from_iter(words.take(n_take)).join(" ")
+fn split_at_nth_word(text: &str, n: usize) -> (&str, &str) {
+    let mut split_index = None;
+    let mut char_indices = text.char_indices();
+    for _ in 0..n {
+        loop {
+            match char_indices.next() {
+                Some((i, ' ')) => {
+                    split_index = Some(i);
+                    break;
+                }
+                None => {
+                    split_index = Some(text.len());
+                    break;
+                }
+                _ => {}
+            }
+        }
+    }
+    match split_index {
+        Some(i) => (
+            &text[..i],
+            text.get(i + 1..).or_else(|| text.get(i..)).unwrap(),
+        ),
+        _ => ("", text),
+    }
 }
 
 #[derive(serde::Serialize)]
@@ -74,9 +98,9 @@ struct JsEncodeResult<'a> {
 struct JsLocation {
     sura_number: u8,
     aya_number: u16,
-    before_text: String,
-    text: String,
-    after_text: String,
+    before_text: &'static str,
+    text: &'static str,
+    after_text: &'static str,
 }
 
 #[cfg(test)]
@@ -93,10 +117,10 @@ mod tests {
     }
 
     #[test]
-    fn test_take_join() {
-        let mut words = "ab cd ef g".split_whitespace();
-        assert_eq!(&take_join(&mut words, 0), "");
-        assert_eq!(&take_join(&mut words, 2), "ab cd");
-        assert_eq!(&take_join(&mut words, usize::MAX), "ef g");
+    fn test_split_at_nth_word() {
+        assert_eq!(split_at_nth_word("ab cde fg h", 2), ("ab cde", "fg h"));
+        assert_eq!(split_at_nth_word("fg h", 1), ("fg", "h"));
+        assert_eq!(split_at_nth_word("ab c", 0), ("", "ab c"));
+        assert_eq!(split_at_nth_word("ab c", 2), ("ab c", ""));
     }
 }
