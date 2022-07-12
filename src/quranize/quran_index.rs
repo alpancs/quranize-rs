@@ -28,7 +28,7 @@ impl Node {
             let location = (sura_number, aya_number, i as u8 + 1);
             let mut node = &mut *self;
             let mut word_count = 0;
-            for c in t.chars() {
+            for c in t.chars().chain(std::iter::once(' ')) {
                 if word_count >= wc_limit {
                     break;
                 }
@@ -38,7 +38,6 @@ impl Node {
                     node.locations.push(location);
                 }
             }
-            node.locations.push(location);
         }
     }
 

@@ -32,10 +32,8 @@ impl Quranize {
             .map(|(q, l, e)| {
                 let mut q = String::from_iter(q.chars().rev());
                 let mut e = Vec::from_iter(e.into_iter().rev());
-                if q.ends_with(' ') {
-                    q.pop();
-                    e.pop();
-                }
+                q.pop();
+                e.pop();
                 (q, l, e)
             })
             .collect()
@@ -44,7 +42,7 @@ impl Quranize {
     fn rev_encode<'a>(&'a self, node: &'a Node, text: &str) -> EncodeResults {
         let mut results = EncodeResults::new();
         if text.is_empty() && !node.locations.is_empty() {
-            results.push((String::new(), &node.locations, vec![]));
+            results.push((String::new(), &node.locations, Vec::new()));
         }
         for subnode in node.next_harfs.iter() {
             for prefix in transliterations(subnode.content).iter().rev() {
@@ -149,6 +147,8 @@ mod tests {
         let q = Quranize::new(3);
         assert_eq!(q.encode("bismillah")[0].1[0], (1, 1, 1));
         assert_eq!(q.encode("subhanallah")[0].1.len(), 5);
+        assert_eq!(q.encode("arrohman").len(), 2);
+        assert_eq!(q.encode("arrohman")[0].1.len(), 45);
         assert_eq!(q.encode("alhamdu")[0].2, vec!["a", "l", "ha", "m", "du"]);
         assert_eq!(
             q.encode("arrohman")[0].2,
