@@ -29,13 +29,7 @@ impl Quranize {
         results.dedup_by(|r1, r2| r1.0 == r2.0);
         results
             .into_iter()
-            .map(|(q, l, e)| {
-                let mut q = String::from_iter(q.chars().rev());
-                let mut e = Vec::from_iter(e.into_iter().rev());
-                q.pop();
-                e.pop();
-                (q, l, e)
-            })
+            .map(|(q, l, e)| (q.chars().rev().collect(), l, e.into_iter().rev().collect()))
             .collect()
     }
 
@@ -147,7 +141,7 @@ mod tests {
         let q = Quranize::new(3);
         assert_eq!(q.encode("bismillah")[0].1[0], (1, 1, 1));
         assert_eq!(q.encode("subhanallah")[0].1.len(), 5);
-        assert_eq!(q.encode("arrohman").len(), 2);
+        assert_eq!(q.encode("arrohman").len(), 1);
         assert_eq!(q.encode("arrohman")[0].1.len(), 45);
         assert_eq!(q.encode("alhamdu")[0].2, vec!["a", "l", "ha", "m", "du"]);
         assert_eq!(

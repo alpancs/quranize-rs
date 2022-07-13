@@ -1,3 +1,5 @@
+use std::iter::once;
+
 use super::word_utils::WordSuffixIter;
 
 pub fn build_quran_index(word_count_limit: u8) -> Node {
@@ -28,12 +30,12 @@ impl Node {
             let location = (sura_number, aya_number, i as u8 + 1);
             let mut node = &mut *self;
             let mut word_count = 0;
-            for c in t.chars().chain(std::iter::once(' ')) {
+            for (c, next_c) in t.chars().zip(t.chars().skip(1).chain(once(' '))) {
                 if word_count >= wc_limit {
                     break;
                 }
                 node = node.get_or_add(c);
-                if node.content == ' ' {
+                if next_c == ' ' {
                     word_count += 1;
                     node.locations.push(location);
                 }
@@ -63,9 +65,7 @@ mod tests {
         assert_eq!(root.content, '\0');
         assert_eq!(root.next_harfs.len(), 31);
         assert_eq!(find_next(&root, 'ب').locations.len(), 0);
-        let nun = find_next(&root, 'ن');
-        assert_eq!(nun.locations.len(), 0);
-        assert_eq!(find_next(nun, ' ').locations, vec![(68, 1, 1)]);
+        assert_eq!(find_next(&root, 'ن').locations.len(), 1);
     }
 
     fn find_next(node: &Node, target: char) -> &Node {
