@@ -72,6 +72,7 @@ fn get_highlight_boundary(text: &str, word_number: u8, word_count: u8) -> (usize
         }
         if c == ' ' && counted_words == word_number + word_count {
             right = i;
+            break;
         }
     }
     (left, right)
