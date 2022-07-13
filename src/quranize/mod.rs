@@ -125,7 +125,7 @@ mod tests {
         assert_eq!(
             encode(
                 &q,
-                "shirotolladzina an'amta 'alaihim ghoiril maghdzubi 'alaihim waladdoolin"
+                "shirotolladzina an'amta 'alaihim ghoiril maghdzubi 'alaihim waladdoolliin"
             ),
             vec!["صراط الذين أنعمت عليهم غير المغضوب عليهم ولا الضالين"]
         );
