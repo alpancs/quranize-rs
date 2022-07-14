@@ -92,13 +92,13 @@ mod tests {
         assert_eq!(encode(&q, "idza qodho"), vec!["إذا قضى"]);
         assert_eq!(encode(&q, "masyaallah"), vec!["ما شاء الله"]);
         assert_eq!(encode(&q, "illa man taaba"), vec!["إلا من تاب"]);
+        assert_eq!(encode(&q, "qulhuwallahuahad"), Vec::<String>::new());
         assert_eq!(encode(&q, "alla tahzani"), vec!["ألا تحزني"]);
         assert_eq!(encode(&q, "innasya niaka"), vec!["إن شانئك"]);
         assert_eq!(encode(&q, "wasalamun alaihi"), vec!["وسلام عليه"]);
         assert_eq!(encode(&q, "ulaika hum"), vec!["أولئك هم"]);
         assert_eq!(encode(&q, "waladdoolin"), vec!["ولا الضالين"]);
         assert_eq!(encode(&q, "n"), vec!["ن"]);
-        assert_eq!(encode(&q, "qulhuwallahuahad").len(), 0);
     }
 
     #[test]
