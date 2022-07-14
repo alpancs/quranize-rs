@@ -5,9 +5,25 @@ use super::word_utils::WordSuffixIter;
 pub fn build_quran_index(word_count_limit: u8) -> Node {
     let mut root = Node::new('\0');
     for (s, a, t) in crate::quran::simple_clean_iter() {
-        root.update_tree(s, a, t, word_count_limit);
+        for (i, t) in WordSuffixIter::from(t).enumerate() {
+            expand_node(&mut root, t, (s, a, i as u8 + 1), word_count_limit);
+        }
     }
     root
+}
+
+fn expand_node(mut node: &mut Node, text: &str, location: (u8, u16, u8), wcl: u8) {
+    let mut word_count = 0;
+    for (c, next_c) in text.chars().zip(text.chars().skip(1).chain(once(' '))) {
+        node = node.get_or_add(c);
+        if next_c == ' ' {
+            node.locations.push(location);
+            word_count += 1;
+            if word_count >= wcl {
+                break;
+            }
+        }
+    }
 }
 
 pub struct Node {
@@ -22,24 +38,6 @@ impl Node {
             content,
             next_harfs: Vec::new(),
             locations: Vec::new(),
-        }
-    }
-
-    fn update_tree(&mut self, sura_number: u8, aya_number: u16, aya_text: &str, wc_limit: u8) {
-        for (i, t) in WordSuffixIter::from(aya_text).enumerate() {
-            let location = (sura_number, aya_number, i as u8 + 1);
-            let mut node = &mut *self;
-            let mut word_count = 0;
-            for (c, next_c) in t.chars().zip(t.chars().skip(1).chain(once(' '))) {
-                if word_count >= wc_limit {
-                    break;
-                }
-                node = node.get_or_add(c);
-                if next_c == ' ' {
-                    word_count += 1;
-                    node.locations.push(location);
-                }
-            }
         }
     }
 
