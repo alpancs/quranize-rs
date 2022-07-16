@@ -50,9 +50,9 @@ impl JsQuranize {
                 JsLocation {
                     sura_number,
                     aya_number,
-                    before_text: if l == 0 { "" } else { &text[..l - 1] },
+                    before_text: &text[..l.max(1) - 1],
                     text: &text[l..r],
-                    after_text: text.get(r + 1..).unwrap_or_default(),
+                    after_text: &text[r.min(text.len() - 1) + 1..],
                 }
             })
             .collect()
