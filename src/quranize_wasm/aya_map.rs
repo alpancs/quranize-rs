@@ -1,4 +1,4 @@
-use crate::quran::{simple_plain_iter, AYA_COUNT, SURA_COUNT};
+use crate::quran::{quran_iter, AYA_COUNT, SIMPLE_PLAIN, SURA_COUNT};
 
 pub struct Map {
     aya_texts: [&'static str; AYA_COUNT],
@@ -8,7 +8,7 @@ pub struct Map {
 pub fn build_map() -> Map {
     let mut aya_texts = [""; AYA_COUNT];
     let mut aya_sums = [0; SURA_COUNT];
-    for (i, (s, _, t)) in simple_plain_iter().enumerate() {
+    for (i, (s, _, t)) in quran_iter(SIMPLE_PLAIN).enumerate() {
         let s = s as usize;
         aya_texts[i] = t;
         if s < SURA_COUNT {
