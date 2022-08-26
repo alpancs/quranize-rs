@@ -4,8 +4,8 @@ mod simple_plain;
 pub use simple_clean::RAW_QURAN as SIMPLE_CLEAN;
 pub use simple_plain::RAW_QURAN as SIMPLE_PLAIN;
 
-pub const SURA_COUNT: usize = 114;
-pub const AYA_COUNT: usize = 6236;
+const SURA_COUNT: usize = 114;
+const AYA_COUNT: usize = 6236;
 
 pub fn quran_iter(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     let raw = raw.trim_start();
