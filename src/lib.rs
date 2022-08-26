@@ -3,7 +3,6 @@ mod quran_index;
 mod transliterations;
 
 use quran_index::Node;
-use transliterations::map;
 
 type EncodeResults<'a> = Vec<(String, &'a [(u8, u16, u8)], Vec<&'a str>)>;
 
@@ -39,7 +38,7 @@ impl Quranize {
             results.push((String::new(), &node.locations, Vec::new()));
         }
         for subnode in node.next_harfs.iter() {
-            for prefix in map(subnode.content).iter().rev() {
+            for prefix in transliterations::map(subnode.content).iter().rev() {
                 if let Some(subtext) = text.strip_prefix(prefix) {
                     results.append(&mut self.rev_encode_sub(subnode, subtext, prefix));
                 }
