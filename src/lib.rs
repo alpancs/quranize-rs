@@ -1,6 +1,4 @@
-mod quran;
+pub mod quran;
 
 mod quranize;
-pub use quranize::Quranize;
-
-mod quranize_wasm;
+pub use crate::quranize::Quranize;
