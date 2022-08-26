@@ -1,13 +1,14 @@
-mod aya_map;
-
 use wasm_bindgen::prelude::*;
 
-use crate::Quranize;
+use crate::{
+    quran::{AyaIndex, SIMPLE_PLAIN},
+    Quranize,
+};
 
 #[wasm_bindgen(js_name = Quranize)]
 pub struct JsQuranize {
     quranize: Quranize,
-    aya_map: aya_map::Map,
+    aya_index: AyaIndex<'static>,
 }
 
 #[wasm_bindgen(js_class = Quranize)]
@@ -19,7 +20,7 @@ impl JsQuranize {
                 0 => Quranize::default(),
                 n => Quranize::new(n),
             },
-            aya_map: aya_map::build_map(),
+            aya_index: AyaIndex::new(SIMPLE_PLAIN),
         }
     }
 
@@ -45,7 +46,7 @@ impl JsQuranize {
         locations
             .iter()
             .map(|&(sura_number, aya_number, word_number)| {
-                let text = self.aya_map.get(sura_number, aya_number).unwrap();
+                let text = self.aya_index.get(sura_number, aya_number).unwrap();
                 let (l, r) = get_highlight_boundary(text, word_number, word_count);
                 JsLocation {
                     sura_number,

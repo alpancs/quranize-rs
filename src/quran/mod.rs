@@ -23,6 +23,33 @@ pub fn quran_iter(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     })
 }
 
+pub struct AyaIndex<'a> {
+    aya_texts: Vec<&'a str>,
+    aya_sums: Vec<usize>,
+}
+
+impl<'a> AyaIndex<'a> {
+    pub fn new(raw: &'a str) -> Self {
+        let mut aya_texts = Vec::with_capacity(AYA_COUNT);
+        let mut aya_sums = Vec::with_capacity(SURA_COUNT);
+        for (i, (_, a, q)) in quran_iter(raw).enumerate() {
+            aya_texts.push(q);
+            if a == 1 {
+                aya_sums.push(i);
+            }
+        }
+        Self {
+            aya_texts,
+            aya_sums,
+        }
+    }
+
+    pub fn get(&self, sura_number: u8, aya_number: u16) -> Option<&'a str> {
+        let aya_sum = self.aya_sums.get(sura_number as usize - 1)?;
+        Some(*self.aya_texts.get(aya_sum + aya_number as usize - 1)?)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -62,5 +89,13 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn test_map() {
+        let map = AyaIndex::new(SIMPLE_PLAIN);
+        assert_eq!(map.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
+        assert_eq!(map.get(114, 6), Some("مِنَ الْجِنَّةِ وَالنَّاسِ"));
+        assert_eq!(map.get(114, 7), None);
     }
 }
