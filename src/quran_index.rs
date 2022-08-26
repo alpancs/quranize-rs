@@ -1,7 +1,9 @@
+mod word_utils;
+
 use std::iter::once;
 
-use super::word_utils::WordSuffixIter;
 use crate::quran::{quran_iter, SIMPLE_CLEAN};
+use word_utils::WordSuffixIter;
 
 pub fn build_quran_index(word_count_limit: u8) -> Node {
     let mut root = Node::new('\0');
