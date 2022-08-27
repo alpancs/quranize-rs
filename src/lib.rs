@@ -1,6 +1,7 @@
 mod quran;
 mod quran_index;
 mod transliterations;
+mod normalization;
 
 pub use quran::{AyaGetter, SIMPLE_CLEAN, SIMPLE_PLAIN};
 use quran_index::Node;
@@ -25,7 +26,7 @@ impl Quranize {
     }
 
     pub fn encode(&self, text: &str) -> EncodeResults {
-        let mut results = self.rev_encode(&self.root, &normalize(text));
+        let mut results = self.rev_encode(&self.root, &normalization::normalize(text));
         results.dedup_by(|r1, r2| r1.0 == r2.0);
         results
             .into_iter()
@@ -59,15 +60,6 @@ impl Quranize {
         }
         results
     }
-}
-
-fn normalize(text: &str) -> String {
-    let mut chars = Vec::from_iter(text.chars().filter_map(|c| match c.to_ascii_lowercase() {
-        c @ ('a'..='z' | '\'') => Some(c),
-        _ => None,
-    }));
-    chars.dedup_by(|a, b| a == b && *a != 'l' && *a != 'a' && *a != 'o' && *a != 'i' && *a != 'u');
-    String::from_iter(chars)
 }
 
 fn is_special_case(node_content: char, subnode_content: char) -> bool {
@@ -164,17 +156,5 @@ mod tests {
         assert!(q.encode("bbb").is_empty());
         assert!(q.encode("abcd").is_empty());
         assert!(q.encode("1+2=3").is_empty());
-    }
-
-    #[test]
-    fn test_normalize() {
-        assert_eq!(normalize(""), "");
-        assert_eq!(normalize("bismi"), "bismi");
-        assert_eq!(normalize("'aalimul ghoibi"), "'aalimulghoibi");
-        assert_eq!(normalize("Qul A'udzu"), "qula'udzu");
-        assert_eq!(
-            normalize("bismilla hirrohman nirrohiim"),
-            "bismillahirohmanirohiim"
-        );
     }
 }
