@@ -23,12 +23,12 @@ pub fn quran_iter(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     })
 }
 
-pub struct AyaIndex<'a> {
+pub struct AyaGetter<'a> {
     aya_texts: Vec<&'a str>,
     aya_sums: Vec<usize>,
 }
 
-impl<'a> AyaIndex<'a> {
+impl<'a> AyaGetter<'a> {
     pub fn new(raw: &'a str) -> Self {
         let mut aya_texts = Vec::with_capacity(AYA_COUNT);
         let mut aya_sums = Vec::with_capacity(SURA_COUNT);
@@ -93,7 +93,7 @@ mod tests {
 
     #[test]
     fn test_map() {
-        let map = AyaIndex::new(SIMPLE_PLAIN);
+        let map = AyaGetter::new(SIMPLE_PLAIN);
         assert_eq!(map.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
         assert_eq!(map.get(114, 6), Some("مِنَ الْجِنَّةِ وَالنَّاسِ"));
         assert_eq!(map.get(114, 7), None);
