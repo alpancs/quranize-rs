@@ -1,30 +1,43 @@
+//! Quranize transforms transliteration back into Quran form.
+
+mod normalization;
 mod quran;
 mod quran_index;
 mod transliterations;
-mod normalization;
 
 pub use quran::{AyaGetter, SIMPLE_CLEAN, SIMPLE_PLAIN};
 use quran_index::Node;
 
 type EncodeResults<'a> = Vec<(String, &'a [(u8, u16, u8)], Vec<&'a str>)>;
 
+/// The struct to process encoding requests.
 pub struct Quranize {
     root: Node,
 }
 
 impl Default for Quranize {
+    /// Build `Quranize` with the default initialization values.
     fn default() -> Self {
         Self::new(u8::MAX)
     }
 }
 
 impl Quranize {
+    /// Build `Quranize` with parameter `word_count_limit`. It limits the number of consecutive words scanned by the indexer to reduce memory usage and indexing time.
     pub fn new(word_count_limit: u8) -> Self {
         Self {
             root: quran_index::build_quran_index(word_count_limit),
         }
     }
 
+    /// Encode `text` back into Quran form.
+    ///
+    /// # Examples
+    /// ```
+    /// use quranize::Quranize;
+    /// let q = Quranize::default();
+    /// assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد لله");
+    /// ```
     pub fn encode(&self, text: &str) -> EncodeResults {
         let mut results = self.rev_encode(&self.root, &normalization::normalize(text));
         results.dedup_by(|r1, r2| r1.0 == r2.0);
