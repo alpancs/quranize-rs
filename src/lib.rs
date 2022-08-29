@@ -10,7 +10,7 @@ use quran_index::Node;
 
 type EncodeResults<'a> = Vec<(String, &'a [(u8, u16, u8)], Vec<&'a str>)>;
 
-/// The struct to process encoding requests.
+/// A struct to process encoding requests.
 pub struct Quranize {
     root: Node,
 }
