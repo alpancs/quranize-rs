@@ -42,7 +42,7 @@ impl Quranize {
     /// # Examples
     /// ```
     /// let q = quranize::Quranize::new(5);
-    /// assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد لله");
+    /// assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء الله");
     /// ```
     pub fn encode(&self, text: &str) -> EncodeResults {
         let mut results = self.rev_encode(&self.root, &normalization::normalize(text));
