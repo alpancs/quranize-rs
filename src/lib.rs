@@ -1,4 +1,11 @@
 //! Quranize transforms transliteration back into Quran form.
+//!
+//! # Examples
+//! ```
+//! use quranize::Quranize;
+//! let q = Quranize::default();
+//! assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد لله");
+//! ```
 
 mod normalization;
 mod quran;
@@ -34,8 +41,7 @@ impl Quranize {
     ///
     /// # Examples
     /// ```
-    /// use quranize::Quranize;
-    /// let q = Quranize::default();
+    /// let q = quranize::Quranize::new(5);
     /// assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد لله");
     /// ```
     pub fn encode(&self, text: &str) -> EncodeResults {
