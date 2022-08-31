@@ -50,7 +50,7 @@ impl<'a> AyaGetter<'a> {
     ///
     /// # Examples
     /// ```
-    /// use quranize::{AyaGetter, SIMPLE_PLAIN};
+    /// use quranize::quran::{AyaGetter, SIMPLE_PLAIN};
     /// let aya_map = AyaGetter::new(SIMPLE_PLAIN);
     /// assert_eq!(aya_map.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
     /// ```

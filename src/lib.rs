@@ -8,11 +8,10 @@
 //! ```
 
 mod normalization;
-mod quran;
+pub mod quran;
 mod quran_index;
 mod transliterations;
 
-pub use quran::{AyaGetter, SIMPLE_CLEAN, SIMPLE_PLAIN};
 use quran_index::Node;
 
 type EncodeResults<'a> = Vec<(String, &'a [(u8, u16, u8)], Vec<&'a str>)>;
