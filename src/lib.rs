@@ -1,10 +1,24 @@
-//! Quranize transforms transliteration back into Quran form.
-//!
-//! # Examples
-//! ```
-//! let q = quranize::Quranize::default();
-//! assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد لله");
-//! ```
+/*!
+Transforms transliteration back into Quran form.
+
+# Examples
+```
+let q = quranize::Quranize::default();
+assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد لله");
+```
+
+# Crate features
+
+In addition to [`SIMPLE_CLEAN`][quran::SIMPLE_CLEAN], the [`quran`] module also has `SIMPLE_PLAIN`.
+It can be used by enabling feature `quran-simple-plain`.
+The feature is not enabled by default to keep [`quran`] module as small as possible.
+```
+// Cargo.toml
+// ...
+[dependencies]
+quranize = { version = "0.1", features = ["quran-simple-plain"] }
+```
+*/
 
 mod normalization;
 pub mod quran;
@@ -21,14 +35,14 @@ pub struct Quranize {
 }
 
 impl Default for Quranize {
-    /// Build `Quranize` with the default initialization values.
+    /// Build [`Quranize`] with the default initialization values.
     fn default() -> Self {
         Self::new(u8::MAX)
     }
 }
 
 impl Quranize {
-    /// Build `Quranize` with parameter `word_count_limit`. It limits the number of consecutive words scanned by the indexer to reduce memory usage and indexing time.
+    /// Build [`Quranize`] with parameter `word_count_limit`. It limits the number of consecutive words scanned by the indexer to reduce memory usage and indexing time.
     pub fn new(word_count_limit: u8) -> Self {
         Self {
             root: quran_index::build_quran_index(word_count_limit),

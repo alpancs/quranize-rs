@@ -34,7 +34,7 @@ pub struct AyaGetter<'a> {
 }
 
 impl<'a> AyaGetter<'a> {
-    /// Create a new `AyaGetter`. Parameter `raw` should be either `SIMPLE_CLEAN` or `SIMPLE_PLAIN`.
+    /// Create a new [`AyaGetter`]. Parameter `raw` should be either [`SIMPLE_CLEAN`] or `SIMPLE_PLAIN` (only available when feature `quran-simple-plain` is enabled).
     pub fn new(raw: &'a str) -> Self {
         let mut aya_texts = Vec::with_capacity(AYA_COUNT);
         let mut aya_sums = Vec::with_capacity(SURA_COUNT);
