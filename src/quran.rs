@@ -1,3 +1,5 @@
+//! Helper module related to Quran stuffs.
+
 mod simple_clean;
 mod simple_plain;
 
@@ -7,7 +9,8 @@ pub use simple_plain::RAW_QURAN as SIMPLE_PLAIN;
 const SURA_COUNT: usize = 114;
 const AYA_COUNT: usize = 6236;
 
-pub fn quran_iter(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
+/// Accept raw Quran string, return an iterator for each ayah in the Quran with surah number and ayah number.
+pub(crate) fn quran_iter(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     let raw = raw.trim_start();
     let basmalah = raw.split('\n').next().unwrap().split('|').nth(2).unwrap();
     let basmalah_prefix = basmalah.to_string() + " ";
@@ -23,7 +26,7 @@ pub fn quran_iter(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     })
 }
 
-/// A struct to index ayah texts by surah number and ayah number.
+/// Struct to index ayah texts by surah number and ayah number.
 pub struct AyaGetter<'a> {
     aya_texts: Vec<&'a str>,
     aya_sums: Vec<usize>,

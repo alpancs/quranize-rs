@@ -2,8 +2,7 @@
 //!
 //! # Examples
 //! ```
-//! use quranize::Quranize;
-//! let q = Quranize::default();
+//! let q = quranize::Quranize::default();
 //! assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد لله");
 //! ```
 
@@ -16,7 +15,7 @@ use quran_index::Node;
 
 type EncodeResults<'a> = Vec<(String, &'a [(u8, u16, u8)], Vec<&'a str>)>;
 
-/// A struct to process encoding requests.
+/// Struct to encode transliterations into Quran forms.
 pub struct Quranize {
     root: Node,
 }
