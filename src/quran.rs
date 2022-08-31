@@ -4,6 +4,7 @@ mod simple_clean;
 mod simple_plain;
 
 pub use simple_clean::RAW_QURAN as SIMPLE_CLEAN;
+#[cfg(feature = "quran-simple-plain")]
 pub use simple_plain::RAW_QURAN as SIMPLE_PLAIN;
 
 const SURA_COUNT: usize = 114;
@@ -53,9 +54,9 @@ impl<'a> AyaGetter<'a> {
     ///
     /// # Examples
     /// ```
-    /// use quranize::quran::{AyaGetter, SIMPLE_PLAIN};
-    /// let aya_map = AyaGetter::new(SIMPLE_PLAIN);
-    /// assert_eq!(aya_map.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
+    /// use quranize::quran::{AyaGetter, SIMPLE_CLEAN};
+    /// let aya_map = AyaGetter::new(SIMPLE_CLEAN);
+    /// assert_eq!(aya_map.get(1, 1), Some("بسم الله الرحمن الرحيم"));
     /// ```
     pub fn get(&self, sura_number: u8, aya_number: u16) -> Option<&'a str> {
         let aya_sum = self.aya_sums.get(sura_number as usize - 1)?;
@@ -68,6 +69,7 @@ mod tests {
     use super::*;
 
     #[test]
+    #[cfg(feature = "quran-simple-plain")]
     fn test_quran_version_compatibility() {
         let word_counter =
             |(s, a, t): (u8, u16, &'static str)| (s, a, t, t.split_whitespace().count());
@@ -80,10 +82,13 @@ mod tests {
 
     #[test]
     fn test_properties() {
-        assert_same_basmalah(simple_clean::RAW_QURAN);
-        assert_same_basmalah(simple_plain::RAW_QURAN);
+        assert_same_basmalah(SIMPLE_CLEAN);
         assert_eq!(quran_iter(SIMPLE_CLEAN).count(), AYA_COUNT);
-        assert_eq!(quran_iter(SIMPLE_PLAIN).count(), AYA_COUNT);
+        #[cfg(feature = "quran-simple-plain")]
+        {
+            assert_same_basmalah(SIMPLE_PLAIN);
+            assert_eq!(quran_iter(SIMPLE_PLAIN).count(), AYA_COUNT);
+        }
     }
 
     fn assert_same_basmalah(raw: &str) {
@@ -106,9 +111,9 @@ mod tests {
 
     #[test]
     fn test_map() {
-        let map = AyaGetter::new(SIMPLE_PLAIN);
-        assert_eq!(map.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
-        assert_eq!(map.get(114, 6), Some("مِنَ الْجِنَّةِ وَالنَّاسِ"));
+        let map = AyaGetter::new(SIMPLE_CLEAN);
+        assert_eq!(map.get(1, 1), Some("بسم الله الرحمن الرحيم"));
+        assert_eq!(map.get(114, 6), Some("من الجنة والناس"));
         assert_eq!(map.get(114, 7), None);
     }
 }

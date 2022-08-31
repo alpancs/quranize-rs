@@ -1,4 +1,5 @@
 /// Tanzil Quran Text (Simple Plain, Version 1.1)
+#[cfg(feature = "quran-simple-plain")]
 pub const RAW_QURAN: &str = r#"
 1|1|بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ
 1|2|الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ

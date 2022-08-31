@@ -6,3 +6,6 @@ edition = "2021"
 description = "Quranize transforms transliteration back into Quran form."
 repository = "https://github.com/alpancs/quranize-rs"
 license = "MIT OR Apache-2.0"
+
+[features]
+quran-simple-plain = []
