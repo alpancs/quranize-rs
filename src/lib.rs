@@ -2,6 +2,7 @@
 Transforms transliteration back into Quran form.
 
 # Examples
+
 ```
 let q = quranize::Quranize::default();
 assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد لله");
@@ -12,9 +13,8 @@ assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد لله");
 In addition to [`SIMPLE_CLEAN`][quran::SIMPLE_CLEAN], the [`quran`] module also has `SIMPLE_PLAIN`.
 It can be used by enabling feature `quran-simple-plain`.
 The feature is not enabled by default to keep [`quran`] module as small as possible.
+
 ```toml
-// Cargo.toml
-// ...
 [dependencies]
 quranize = { version = "0.1", features = ["quran-simple-plain"] }
 ```
@@ -29,25 +29,19 @@ use quran_index::Node;
 
 type EncodeResults<'a> = Vec<(String, &'a [(u8, u16, u8)], Vec<&'a str>)>;
 
-/**
-Struct to encode transliterations into Quran forms.
-
-# Examples
-```
-let q = quranize::Quranize::default();
-assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء الله");
-let q = quranize::Quranize::new(5);
-assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء الله");
-let q = quranize::Quranize::new(1);
-assert_eq!(q.encode("masyaallah").first(), None);
-```
-*/
+/// Struct to encode transliterations into Quran forms.
 pub struct Quranize {
     root: Node,
 }
 
 impl Default for Quranize {
     /// Build [`Quranize`] with the default initialization values.
+    ///
+    /// # Examples
+    /// ```
+    /// let q = quranize::Quranize::default();
+    /// assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء الله");
+    /// ```
     fn default() -> Self {
         Self::new(u8::MAX)
     }
@@ -55,6 +49,14 @@ impl Default for Quranize {
 
 impl Quranize {
     /// Build [`Quranize`] with parameter `word_count_limit`. It limits the number of consecutive words scanned by the indexer to reduce memory usage and indexing time.
+    ///
+    /// # Examples
+    /// ```
+    /// let q = quranize::Quranize::new(5);
+    /// assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء الله");
+    /// let q = quranize::Quranize::new(1);
+    /// assert_eq!(q.encode("masyaallah").first(), None);
+    /// ```
     pub fn new(word_count_limit: u8) -> Self {
         Self {
             root: quran_index::build_quran_index(word_count_limit),
