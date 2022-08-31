@@ -35,7 +35,7 @@ pub struct Quranize {
 }
 
 impl Default for Quranize {
-    /// Build [`Quranize`] with the default initialization values.
+    /// Build [`Quranize`] without [word count limit][Quranize::new].
     ///
     /// # Examples
     /// ```
@@ -48,7 +48,9 @@ impl Default for Quranize {
 }
 
 impl Quranize {
-    /// Build [`Quranize`] with parameter `word_count_limit`. It limits the number of consecutive words scanned by the indexer to reduce memory usage and indexing time.
+    /// Build [`Quranize`] with parameter `word_count_limit`.
+    /// It limits the number of consecutive words scanned by the indexer to reduce memory usage and indexing time.
+    /// Use [`Quranize::default`] to build [`Quranize`] without the limit.
     ///
     /// # Examples
     /// ```
