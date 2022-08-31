@@ -1,4 +1,4 @@
-pub fn transliterations(c: char) -> &'static [&'static str] {
+pub fn map(c: char) -> &'static [&'static str] {
     match c {
         'ء' => &["'", "k", "a", "i", "u"],
         'آ' => &["a", "aa"],

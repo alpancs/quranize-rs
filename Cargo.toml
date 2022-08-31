@@ -3,10 +3,9 @@ name = "quranize"
 version = "0.1.0"
 authors = ["Alfan Nur Fauzan <alpancs@gmail.com>"]
 edition = "2021"
+description = "Quranize transforms transliteration back into Quran form."
+repository = "https://github.com/alpancs/quranize-rs"
+license = "MIT OR Apache-2.0"
 
-[lib]
-crate-type = ["cdylib"]
-
-[dependencies]
-serde = { version = "1.0", features = ["derive"] }
-wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
+[features]
+quran-simple-plain = []

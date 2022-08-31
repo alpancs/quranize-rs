@@ -1,3 +1,4 @@
+/// Tanzil Quran Text (Simple Clean, Version 1.1)
 pub const RAW_QURAN: &str = r#"
 1|1|بسم الله الرحمن الرحيم
 1|2|الحمد لله رب العالمين
