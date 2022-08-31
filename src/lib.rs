@@ -12,7 +12,7 @@ assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد لله");
 In addition to [`SIMPLE_CLEAN`][quran::SIMPLE_CLEAN], the [`quran`] module also has `SIMPLE_PLAIN`.
 It can be used by enabling feature `quran-simple-plain`.
 The feature is not enabled by default to keep [`quran`] module as small as possible.
-```
+```toml
 // Cargo.toml
 // ...
 [dependencies]
