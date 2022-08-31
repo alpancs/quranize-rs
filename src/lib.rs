@@ -29,7 +29,19 @@ use quran_index::Node;
 
 type EncodeResults<'a> = Vec<(String, &'a [(u8, u16, u8)], Vec<&'a str>)>;
 
-/// Struct to encode transliterations into Quran forms.
+/**
+Struct to encode transliterations into Quran forms.
+
+# Examples
+```
+let q = quranize::Quranize::default();
+assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء الله");
+let q = quranize::Quranize::new(5);
+assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء الله");
+let q = quranize::Quranize::new(1);
+assert_eq!(q.encode("masyaallah").first(), None);
+```
+*/
 pub struct Quranize {
     root: Node,
 }
@@ -50,12 +62,6 @@ impl Quranize {
     }
 
     /// Encode `text` back into Quran form.
-    ///
-    /// # Examples
-    /// ```
-    /// let q = quranize::Quranize::new(5);
-    /// assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء الله");
-    /// ```
     pub fn encode(&self, text: &str) -> EncodeResults {
         let mut results = self.rev_encode(&self.root, &normalization::normalize(text));
         results.dedup_by(|r1, r2| r1.0 == r2.0);

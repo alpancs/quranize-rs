@@ -27,7 +27,14 @@ pub(crate) fn quran_iter(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     })
 }
 
-/// Struct to index ayah texts by surah number and ayah number.
+/** Struct to index ayah texts by surah number and ayah number.
+# Examples
+```
+use quranize::quran::{AyaGetter, SIMPLE_CLEAN};
+let aya_map = AyaGetter::new(SIMPLE_CLEAN);
+assert_eq!(aya_map.get(1, 1), Some("بسم الله الرحمن الرحيم"));
+```
+*/
 pub struct AyaGetter<'a> {
     aya_texts: Vec<&'a str>,
     aya_sums: Vec<usize>,
@@ -51,13 +58,6 @@ impl<'a> AyaGetter<'a> {
     }
 
     /// Get an ayah text given surah number (`sura_number`) and ayah number (`aya_number`).
-    ///
-    /// # Examples
-    /// ```
-    /// use quranize::quran::{AyaGetter, SIMPLE_CLEAN};
-    /// let aya_map = AyaGetter::new(SIMPLE_CLEAN);
-    /// assert_eq!(aya_map.get(1, 1), Some("بسم الله الرحمن الرحيم"));
-    /// ```
     pub fn get(&self, sura_number: u8, aya_number: u16) -> Option<&'a str> {
         let aya_sum = self.aya_sums.get(sura_number as usize - 1)?;
         Some(*self.aya_texts.get(aya_sum + aya_number as usize - 1)?)
