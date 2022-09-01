@@ -30,9 +30,9 @@ pub(crate) fn quran_iter(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
 /** Struct to index ayah texts by surah number and ayah number.
 # Examples
 ```
-use quranize::quran::{AyaGetter, SIMPLE_CLEAN};
-let aya_map = AyaGetter::new(SIMPLE_CLEAN);
-assert_eq!(aya_map.get(1, 1), Some("بسم الله الرحمن الرحيم"));
+use quranize::quran::{AyaGetter, SIMPLE_PLAIN};
+let aya_map = AyaGetter::new(SIMPLE_PLAIN);
+assert_eq!(aya_map.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
 ```
 */
 pub struct AyaGetter<'a> {
@@ -41,7 +41,7 @@ pub struct AyaGetter<'a> {
 }
 
 impl<'a> AyaGetter<'a> {
-    /// Create a new [`AyaGetter`]. Parameter `raw` should be either [`SIMPLE_CLEAN`] or `SIMPLE_PLAIN` (only available when feature `quran-simple-plain` is enabled).
+    /// Create a new [`AyaGetter`]. Parameter `raw` should be either [`SIMPLE_CLEAN`] or [`SIMPLE_PLAIN`] (only available when feature `quran-simple-plain` is enabled).
     pub fn new(raw: &'a str) -> Self {
         let mut aya_texts = Vec::with_capacity(AYA_COUNT);
         let mut aya_sums = Vec::with_capacity(SURA_COUNT);
@@ -111,9 +111,9 @@ mod tests {
 
     #[test]
     fn test_map() {
-        let map = AyaGetter::new(SIMPLE_CLEAN);
-        assert_eq!(map.get(1, 1), Some("بسم الله الرحمن الرحيم"));
-        assert_eq!(map.get(114, 6), Some("من الجنة والناس"));
+        let map = AyaGetter::new(SIMPLE_PLAIN);
+        assert_eq!(map.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
+        assert_eq!(map.get(114, 6), Some("مِنَ الْجِنَّةِ وَالنَّاسِ"));
         assert_eq!(map.get(114, 7), None);
     }
 }

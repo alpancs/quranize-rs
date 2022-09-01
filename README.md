@@ -2,13 +2,16 @@
 
 Encoding transliterations into Quran forms.
 
+- Documentation: <https://docs.rs/quranize>
+- Crate: <https://crates.io/crates/quranize>
+
 ## License
 
 Licensed under either of
 
-* Apache License, Version 2.0
+- Apache License, Version 2.0
    ([LICENSE-APACHE](LICENSE-APACHE) or <http://www.apache.org/licenses/LICENSE-2.0>)
-* MIT license
+- MIT license
    ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
 
 at your option.
@@ -21,6 +24,6 @@ dual licensed as above, without any additional terms or conditions.
 
 ## Related Project
 
-* <https://github.com/quranize/quranize.github.io>
-* <https://github.com/alpancs/quranize-service>
-* <https://github.com/alpancs/quranize>
+- <https://github.com/quranize/quranize.github.io>
+- <https://github.com/alpancs/quranize-service>
+- <https://github.com/alpancs/quranize>
