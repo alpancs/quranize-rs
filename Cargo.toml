@@ -1,11 +1,14 @@
 [package]
 name = "quranize"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Alfan Nur Fauzan <alpancs@gmail.com>"]
 edition = "2021"
 description = "Quranize transforms transliteration back into Quran form."
 repository = "https://github.com/alpancs/quranize-rs"
 license = "MIT OR Apache-2.0"
+
+[package.metadata.docs.rs]
+all-features = true
 
 [features]
 quran-simple-plain = []
