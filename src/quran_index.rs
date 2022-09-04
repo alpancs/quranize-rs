@@ -1,6 +1,6 @@
 mod word_utils;
 
-use std::iter::once;
+use std::{collections::LinkedList, iter::once};
 
 use crate::quran::{quran_iter, SIMPLE_CLEAN};
 use word_utils::WordSuffixIter;
@@ -31,7 +31,7 @@ fn expand_node(mut node: &mut Node, text: &str, location: (u8, u16, u8), wcl: u8
 
 pub struct Node {
     pub content: char,
-    pub next_harfs: Vec<Node>,
+    pub next_harfs: LinkedList<Node>,
     pub locations: Vec<(u8, u16, u8)>,
 }
 
@@ -39,7 +39,7 @@ impl Node {
     fn new(content: char) -> Self {
         Self {
             content,
-            next_harfs: Vec::new(),
+            next_harfs: LinkedList::new(),
             locations: Vec::new(),
         }
     }
@@ -47,10 +47,10 @@ impl Node {
     fn get_or_add(&mut self, content: char) -> &mut Self {
         let pos = self.next_harfs.iter().position(|h| h.content == content);
         match pos {
-            Some(index) => self.next_harfs.get_mut(index).unwrap(),
+            Some(index) => self.next_harfs.iter_mut().nth(index).unwrap(),
             None => {
-                self.next_harfs.push(Node::new(content));
-                self.next_harfs.last_mut().unwrap()
+                self.next_harfs.push_back(Node::new(content));
+                self.next_harfs.back_mut().unwrap()
             }
         }
     }
