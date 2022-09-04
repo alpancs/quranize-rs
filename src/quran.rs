@@ -30,9 +30,9 @@ pub(crate) fn quran_iter(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
 /** Struct to index ayah texts by surah number and ayah number.
 # Examples
 ```
-use quranize::quran::{AyaGetter, SIMPLE_PLAIN};
-let aya_map = AyaGetter::new(SIMPLE_PLAIN);
-assert_eq!(aya_map.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
+use quranize::quran::{AyaGetter, SIMPLE_CLEAN};
+let aya_map = AyaGetter::new(SIMPLE_CLEAN);
+assert_eq!(aya_map.get(1, 1), Some("بسم الله الرحمن الرحيم"));
 ```
 */
 pub struct AyaGetter<'a> {
@@ -110,6 +110,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "quran-simple-plain")]
     fn test_map() {
         let map = AyaGetter::new(SIMPLE_PLAIN);
         assert_eq!(map.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
