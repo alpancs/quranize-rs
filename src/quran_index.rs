@@ -20,7 +20,7 @@ fn expand_node(mut node: &mut Node, text: &str, location: (u8, u16, u8), wcl: u8
     for (c, next_c) in text.chars().zip(text.chars().skip(1).chain(once(' '))) {
         node = node.get_or_add(c);
         if next_c == ' ' {
-            node.locations.push(location);
+            node.locations.push_back(location);
             word_count += 1;
             if word_count >= wcl {
                 break;
@@ -32,7 +32,7 @@ fn expand_node(mut node: &mut Node, text: &str, location: (u8, u16, u8), wcl: u8
 pub struct Node {
     pub content: char,
     pub next_harfs: LinkedList<Node>,
-    pub locations: Vec<(u8, u16, u8)>,
+    pub locations: LinkedList<(u8, u16, u8)>,
 }
 
 impl Node {
@@ -40,7 +40,7 @@ impl Node {
         Self {
             content,
             next_harfs: LinkedList::new(),
-            locations: Vec::new(),
+            locations: LinkedList::new(),
         }
     }
 

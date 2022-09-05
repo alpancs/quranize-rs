@@ -26,9 +26,11 @@ pub mod quran;
 mod quran_index;
 mod transliterations;
 
+use std::collections::LinkedList;
+
 use quran_index::Node;
 
-type EncodeResults<'a> = Vec<(String, &'a [(u8, u16, u8)], Vec<&'a str>)>;
+type EncodeResults<'a> = Vec<(String, &'a LinkedList<(u8, u16, u8)>, Vec<&'a str>)>;
 
 /// Struct to encode transliterations into Quran forms.
 pub struct Quranize {
@@ -173,7 +175,7 @@ mod tests {
     #[test]
     fn test_quranize_misc() {
         let q = Quranize::new(3);
-        assert_eq!(q.encode("bismillah")[0].1[0], (1, 1, 1));
+        assert_eq!(q.encode("bismillah")[0].1.front(), Some(&(1, 1, 1)));
         assert_eq!(q.encode("subhanallah")[0].1.len(), 5);
         assert_eq!(q.encode("arrohman").len(), 1);
         assert_eq!(q.encode("arrohman")[0].1.len(), 45);
