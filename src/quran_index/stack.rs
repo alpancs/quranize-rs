@@ -90,19 +90,15 @@ mod test {
     use super::Stack;
 
     #[test]
-    fn peek() {
+    fn peek_mut() {
         let mut stack = Stack::new();
         assert_eq!(stack.peek_mut(), None);
         stack.push(1);
-        stack.push(2);
-        stack.push(3);
-
-        assert_eq!(stack.peek_mut(), Some(&mut 3));
+        assert_eq!(stack.peek_mut(), Some(&mut 1));
 
         if let Some(value) = stack.peek_mut() {
             *value = 42;
         }
-
         assert_eq!(stack.peek_mut(), Some(&mut 42));
     }
 
