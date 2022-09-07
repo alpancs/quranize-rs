@@ -76,7 +76,7 @@ impl Quranize {
             .map(|(q, l, e)| {
                 (
                     q.chars().rev().collect(),
-                    l.rev().iter().map(|x| **x).collect(),
+                    Vec::from_iter(l.iter()).iter().rev().map(|x| **x).collect(),
                     e.into_iter().rev().collect(),
                 )
             })

@@ -15,12 +15,10 @@ impl<T> Stack<T> {
     }
 
     pub fn push(&mut self, elem: T) {
-        let new_node = Box::new(Node {
+        self.head = Some(Box::new(Node {
             elem,
             next: self.head.take(),
-        });
-
-        self.head = Some(new_node);
+        }));
     }
 
     pub fn peek_mut(&mut self) -> Option<&mut T> {
@@ -34,14 +32,6 @@ impl<T> Stack<T> {
     #[cfg(test)]
     pub fn len(&self) -> usize {
         self.iter().count()
-    }
-
-    pub fn rev(&self) -> Stack<&T> {
-        let mut reversed = Stack::new();
-        for elem in self.iter() {
-            reversed.push(elem)
-        }
-        reversed
     }
 
     pub fn iter(&self) -> Iter<'_, T> {
