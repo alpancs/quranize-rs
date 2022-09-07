@@ -17,7 +17,7 @@ To enable the feature, add the following lines to `Cargo.toml` file.
 
 ```toml
 [dependencies]
-quranize = { version = "0.1", features = ["quran-simple-plain"] }
+quranize = { version = "0.4", features = ["quran-simple-plain"] }
 ```
 */
 
