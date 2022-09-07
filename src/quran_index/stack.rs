@@ -1,3 +1,5 @@
+// Reference: https://rust-unofficial.github.io/too-many-lists/second-final.html
+
 #[derive(Default)]
 pub struct Stack<T> {
     head: Option<Box<Node<T>>>,
