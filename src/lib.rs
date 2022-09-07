@@ -28,8 +28,8 @@ mod transliterations;
 
 use quran_index::{Node, Stack};
 
-type RevEncodeResults<'a> = Vec<(String, &'a Stack<(u8, u16, u8)>, Vec<&'a str>)>;
 type EncodeResults<'a> = Vec<(String, Vec<(u8, u16, u8)>, Vec<&'a str>)>;
+type RevEncodeResults<'a> = Vec<(String, &'a Stack<(u8, u16, u8)>, Vec<&'a str>)>;
 
 /// Struct to encode transliterations into Quran forms.
 pub struct Quranize {
