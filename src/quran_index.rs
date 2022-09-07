@@ -1,8 +1,10 @@
+mod stack;
 mod word_utils;
 
-use std::{collections::LinkedList, iter::once};
+use std::iter::once;
 
 use crate::quran::{quran_iter, SIMPLE_CLEAN};
+pub use stack::Stack;
 use word_utils::WordSuffixIter;
 
 pub fn build_quran_index(word_count_limit: u8) -> Node {
@@ -20,7 +22,7 @@ fn expand_node(mut node: &mut Node, text: &str, location: (u8, u16, u8), wcl: u8
     for (c, next_c) in text.chars().zip(text.chars().skip(1).chain(once(' '))) {
         node = node.get_or_add(c);
         if next_c == ' ' {
-            node.locations.push_back(location);
+            node.locations.push(location);
             word_count += 1;
             if word_count >= wcl {
                 break;
@@ -31,16 +33,16 @@ fn expand_node(mut node: &mut Node, text: &str, location: (u8, u16, u8), wcl: u8
 
 pub struct Node {
     pub content: char,
-    pub next_harfs: LinkedList<Node>,
-    pub locations: LinkedList<(u8, u16, u8)>,
+    pub next_harfs: Stack<Node>,
+    pub locations: Stack<(u8, u16, u8)>,
 }
 
 impl Node {
     fn new(content: char) -> Self {
         Self {
             content,
-            next_harfs: LinkedList::new(),
-            locations: LinkedList::new(),
+            next_harfs: Stack::new(),
+            locations: Stack::new(),
         }
     }
 
@@ -49,8 +51,8 @@ impl Node {
         match pos {
             Some(index) => self.next_harfs.iter_mut().nth(index).unwrap(),
             None => {
-                self.next_harfs.push_back(Node::new(content));
-                self.next_harfs.back_mut().unwrap()
+                self.next_harfs.push(Node::new(content));
+                self.next_harfs.peek_mut().unwrap()
             }
         }
     }
