@@ -1,3 +1,4 @@
+#[derive(Default)]
 pub struct Stack<T> {
     head: Option<Box<Node<T>>>,
 }
@@ -9,7 +10,7 @@ struct Node<T> {
 
 impl<T> Stack<T> {
     pub fn new() -> Self {
-        Stack { head: None }
+        Self { head: None }
     }
 
     pub fn push(&mut self, elem: T) {
@@ -21,12 +22,25 @@ impl<T> Stack<T> {
         self.head = Some(new_node);
     }
 
-    pub fn peek(&self) -> Option<&T> {
-        self.head.as_ref().map(|node| &node.elem)
-    }
-
     pub fn peek_mut(&mut self) -> Option<&mut T> {
         self.head.as_mut().map(|node| &mut node.elem)
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.head.is_none()
+    }
+
+    #[cfg(test)]
+    pub fn len(&self) -> usize {
+        self.iter().count()
+    }
+
+    pub fn rev(&self) -> Stack<&T> {
+        let mut reversed = Stack::new();
+        for elem in self.iter() {
+            reversed.push(elem)
+        }
+        reversed
     }
 
     pub fn iter(&self) -> Iter<'_, T> {
@@ -87,20 +101,18 @@ mod test {
     #[test]
     fn peek() {
         let mut stack = Stack::new();
-        assert_eq!(stack.peek(), None);
         assert_eq!(stack.peek_mut(), None);
         stack.push(1);
         stack.push(2);
         stack.push(3);
 
-        assert_eq!(stack.peek(), Some(&3));
         assert_eq!(stack.peek_mut(), Some(&mut 3));
 
         if let Some(value) = stack.peek_mut() {
             *value = 42;
         }
 
-        assert_eq!(stack.peek(), Some(&42));
+        assert_eq!(stack.peek_mut(), Some(&mut 42));
     }
 
     #[test]

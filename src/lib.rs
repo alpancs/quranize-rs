@@ -26,11 +26,10 @@ pub mod quran;
 mod quran_index;
 mod transliterations;
 
-use std::collections::LinkedList;
+use quran_index::{Node, Stack};
 
-use quran_index::Node;
-
-type EncodeResults<'a> = Vec<(String, &'a LinkedList<(u8, u16, u8)>, Vec<&'a str>)>;
+type RevEncodeResults<'a> = Vec<(String, &'a Stack<(u8, u16, u8)>, Vec<&'a str>)>;
+type EncodeResults<'a> = Vec<(String, Vec<(u8, u16, u8)>, Vec<&'a str>)>;
 
 /// Struct to encode transliterations into Quran forms.
 pub struct Quranize {
@@ -70,16 +69,23 @@ impl Quranize {
 
     /// Encode `text` back into Quran form.
     pub fn encode(&self, text: &str) -> EncodeResults {
-        let mut results = self.rev_encode(&self.root, &normalization::normalize(text));
-        results.dedup_by(|r1, r2| r1.0 == r2.0);
-        results
+        let mut rev_results = self.rev_encode(&self.root, &normalization::normalize(text));
+        rev_results.dedup_by(|r1, r2| r1.0 == r2.0);
+        rev_results
             .into_iter()
-            .map(|(q, l, e)| (q.chars().rev().collect(), l, e.into_iter().rev().collect()))
+            .map(|(q, l, e)| {
+                (
+                    q.chars().rev().collect(),
+                    l.rev().iter().map(|x| **x).collect(),
+                    e.into_iter().rev().collect(),
+                )
+            })
+            .rev()
             .collect()
     }
 
-    fn rev_encode<'a>(&'a self, node: &'a Node, text: &str) -> EncodeResults {
-        let mut results = EncodeResults::new();
+    fn rev_encode<'a>(&'a self, node: &'a Node, text: &str) -> RevEncodeResults {
+        let mut results = RevEncodeResults::new();
         if text.is_empty() && !node.locations.is_empty() {
             results.push((String::new(), &node.locations, Vec::new()));
         }
@@ -96,7 +102,7 @@ impl Quranize {
         results
     }
 
-    fn rev_encode_sub<'a>(&'a self, node: &'a Node, text: &str, expl: &'a str) -> EncodeResults {
+    fn rev_encode_sub<'a>(&'a self, node: &'a Node, text: &str, expl: &'a str) -> RevEncodeResults {
         let mut results = self.rev_encode(node, text);
         for (q, _, e) in results.iter_mut() {
             q.push(node.content);
@@ -124,7 +130,7 @@ mod tests {
         assert_eq!(encode(&q, "birobbinnas"), vec!["برب الناس"]);
         assert_eq!(encode(&q, "inna anzalnahu"), vec!["إنا أنزلناه"]);
         assert_eq!(encode(&q, "wa'tasimu"), vec!["واعتصموا"]);
-        assert_eq!(encode(&q, "wabarro"), vec!["وبرا", "وبئر"]);
+        assert_eq!(encode(&q, "wabarro"), vec!["وبئر", "وبرا"]);
         assert_eq!(encode(&q, "idza qodho"), vec!["إذا قضى"]);
         assert_eq!(encode(&q, "masyaallah"), vec!["ما شاء الله"]);
         assert_eq!(encode(&q, "illa man taaba"), vec!["إلا من تاب"]);
@@ -175,7 +181,7 @@ mod tests {
     #[test]
     fn test_quranize_misc() {
         let q = Quranize::new(3);
-        assert_eq!(q.encode("bismillah")[0].1.front(), Some(&(1, 1, 1)));
+        assert_eq!(q.encode("bismillah")[0].1[0], (1, 1, 1));
         assert_eq!(q.encode("subhanallah")[0].1.len(), 5);
         assert_eq!(q.encode("arrohman").len(), 1);
         assert_eq!(q.encode("arrohman")[0].1.len(), 45);
