@@ -5,12 +5,12 @@ use std::iter::once;
 
 use crate::quran::{quran_iter, SIMPLE_CLEAN};
 pub use stack::Stack;
-use word_utils::WordSuffixIter;
+use word_utils::WordSuffixIterExt;
 
 pub fn build_quran_index(word_count_limit: u8) -> Node {
     let mut root = Node::new('\0');
     for (s, a, t) in quran_iter(SIMPLE_CLEAN) {
-        for (i, t) in WordSuffixIter::from(t).enumerate() {
+        for (i, t) in t.iter_word_suffix().enumerate() {
             expand_node(&mut root, t, (s, a, i as u8 + 1), word_count_limit);
         }
     }

@@ -2,14 +2,6 @@ pub struct WordSuffixIter<'a> {
     chars: std::str::Chars<'a>,
 }
 
-impl<'a> WordSuffixIter<'a> {
-    pub fn from(text: &'a str) -> Self {
-        Self {
-            chars: text.chars(),
-        }
-    }
-}
-
 impl<'a> Iterator for WordSuffixIter<'a> {
     type Item = &'a str;
     fn next(&mut self) -> Option<Self::Item> {
@@ -22,13 +14,25 @@ impl<'a> Iterator for WordSuffixIter<'a> {
     }
 }
 
+pub trait WordSuffixIterExt {
+    fn iter_word_suffix(&self) -> WordSuffixIter;
+}
+
+impl WordSuffixIterExt for &str {
+    fn iter_word_suffix(&self) -> WordSuffixIter {
+        WordSuffixIter {
+            chars: self.chars(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_word_suffix_iter() {
-        let mut word_suffix_iter = WordSuffixIter::from("ab cde fg h");
+        let mut word_suffix_iter = "ab cde fg h".iter_word_suffix();
         assert_eq!(word_suffix_iter.next(), Some("ab cde fg h"));
         assert_eq!(word_suffix_iter.next(), Some("cde fg h"));
         assert_eq!(word_suffix_iter.next(), Some("fg h"));
