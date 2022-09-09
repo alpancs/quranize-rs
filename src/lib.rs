@@ -160,18 +160,6 @@ mod tests {
     }
 
     #[test]
-    fn test_locate() {
-        let q = Quranize::new(5);
-        assert_eq!(q.get_locations("ن").next(), Some(&(68, 1, 1)));
-        assert_eq!(q.get_locations("بسم").last(), Some(&(1, 1, 1)));
-        assert_eq!(q.get_locations("والناس").next(), Some(&(114, 6, 3)));
-        assert_eq!(q.get_locations("بسم الله الرحمن الرحيم").count(), 2);
-        assert_eq!(q.get_locations("نننن").next(), None);
-        assert_eq!(q.get_locations("").next(), None);
-        assert_eq!(q.get_locations("2+3+4=9").next(), None);
-    }
-
-    #[test]
     fn test_quranize_full() {
         let q = Quranize::default();
         assert_eq!(
@@ -233,5 +221,17 @@ mod tests {
         assert!(q.encode("bbb").is_empty());
         assert!(q.encode("abcd").is_empty());
         assert!(q.encode("1+2=3").is_empty());
+    }
+
+    #[test]
+    fn test_locate() {
+        let q = Quranize::new(5);
+        assert_eq!(q.get_locations("ن").next(), Some(&(68, 1, 1)));
+        assert_eq!(q.get_locations("بسم").last(), Some(&(1, 1, 1)));
+        assert_eq!(q.get_locations("والناس").next(), Some(&(114, 6, 3)));
+        assert_eq!(q.get_locations("بسم الله الرحمن الرحيم").count(), 2);
+        assert_eq!(q.get_locations("").next(), None);
+        assert_eq!(q.get_locations("نننن").next(), None);
+        assert_eq!(q.get_locations("2+3+4=9").next(), None);
     }
 }
