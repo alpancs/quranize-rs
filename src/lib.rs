@@ -103,6 +103,17 @@ impl Quranize {
         }
         results
     }
+
+    pub fn locate(&self, quran: &str) -> impl Iterator<Item = &(u8, u16, u8)> {
+        let mut node = &self.root;
+        for h in quran.chars() {
+            match node.next_harfs.iter().find(|c| c.content == h) {
+                Some(next_node) => node = next_node,
+                _ => return self.root.locations.iter(),
+            }
+        }
+        node.locations.iter()
+    }
 }
 
 fn is_special_case(node_content: char, subnode_content: char) -> bool {
@@ -134,6 +145,18 @@ mod tests {
         assert_eq!(encode(&q, "ulaika hum"), vec!["أولئك هم"]);
         assert_eq!(encode(&q, "waladdoolin"), vec!["ولا الضالين"]);
         assert_eq!(encode(&q, "n"), vec!["ن"]);
+    }
+
+    #[test]
+    fn test_locate() {
+        let q = Quranize::new(5);
+        assert_eq!(q.locate("ن").next(), Some(&(68, 1, 1)));
+        assert_eq!(q.locate("بسم").nth(2), Some(&(1, 1, 1)));
+        assert_eq!(q.locate("والناس").next(), Some(&(114, 6, 3)));
+        assert_eq!(q.locate("بسم الله الرحمن الرحيم").count(), 2);
+        assert_eq!(q.locate("نننن").next(), None);
+        assert_eq!(q.locate("").next(), None);
+        assert_eq!(q.locate("2+3+4=9").next(), None);
     }
 
     #[test]
