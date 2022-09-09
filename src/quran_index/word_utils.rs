@@ -15,11 +15,11 @@ impl<'a> Iterator for WordSuffixIter<'a> {
 }
 
 pub trait WordSuffixIterExt {
-    fn iter_word_suffix(&self) -> WordSuffixIter;
+    fn word_suffixes(&self) -> WordSuffixIter;
 }
 
 impl WordSuffixIterExt for &str {
-    fn iter_word_suffix(&self) -> WordSuffixIter {
+    fn word_suffixes(&self) -> WordSuffixIter {
         WordSuffixIter {
             chars: self.chars(),
         }
@@ -32,7 +32,7 @@ mod tests {
 
     #[test]
     fn test_word_suffix_iter() {
-        let mut word_suffix_iter = "ab cde fg h".iter_word_suffix();
+        let mut word_suffix_iter = "ab cde fg h".word_suffixes();
         assert_eq!(word_suffix_iter.next(), Some("ab cde fg h"));
         assert_eq!(word_suffix_iter.next(), Some("cde fg h"));
         assert_eq!(word_suffix_iter.next(), Some("fg h"));
