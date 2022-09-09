@@ -104,7 +104,18 @@ impl Quranize {
         results
     }
 
-    pub fn locate(&self, quran: &str) -> impl Iterator<Item = &(u8, u16, u8)> {
+    /// Get locations from the given `quran` text.
+    /// Each location is a reference to a tuple that contains sura number, aya number, and word number within the aya.
+    ///
+    /// Note that the locations are returned in descending order (from the last word of الناس to the first word of الفاتحة).
+    ///
+    /// # Examples
+    /// ```
+    /// let q = quranize::Quranize::new(5);
+    /// assert_eq!(q.get_locations("بسم").last(), Some(&(1, 1, 1)));
+    /// assert_eq!(q.get_locations("ن").next(), Some(&(68, 1, 1)));
+    /// ```
+    pub fn get_locations(&self, quran: &str) -> impl Iterator<Item = &(u8, u16, u8)> {
         let mut node = &self.root;
         for h in quran.chars() {
             match node.next_harfs.iter().find(|c| c.content == h) {
@@ -150,13 +161,13 @@ mod tests {
     #[test]
     fn test_locate() {
         let q = Quranize::new(5);
-        assert_eq!(q.locate("ن").next(), Some(&(68, 1, 1)));
-        assert_eq!(q.locate("بسم").nth(2), Some(&(1, 1, 1)));
-        assert_eq!(q.locate("والناس").next(), Some(&(114, 6, 3)));
-        assert_eq!(q.locate("بسم الله الرحمن الرحيم").count(), 2);
-        assert_eq!(q.locate("نننن").next(), None);
-        assert_eq!(q.locate("").next(), None);
-        assert_eq!(q.locate("2+3+4=9").next(), None);
+        assert_eq!(q.get_locations("ن").next(), Some(&(68, 1, 1)));
+        assert_eq!(q.get_locations("بسم").last(), Some(&(1, 1, 1)));
+        assert_eq!(q.get_locations("والناس").next(), Some(&(114, 6, 3)));
+        assert_eq!(q.get_locations("بسم الله الرحمن الرحيم").count(), 2);
+        assert_eq!(q.get_locations("نننن").next(), None);
+        assert_eq!(q.get_locations("").next(), None);
+        assert_eq!(q.get_locations("2+3+4=9").next(), None);
     }
 
     #[test]
