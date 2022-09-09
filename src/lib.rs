@@ -37,6 +37,7 @@ impl Default for Quranize {
     /// Build [`Quranize`] without [word count limit][Quranize::new].
     ///
     /// # Examples
+    ///
     /// ```
     /// let q = quranize::Quranize::default();
     /// assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء الله");
@@ -52,6 +53,7 @@ impl Quranize {
     /// Use [`Quranize::default`] to build [`Quranize`] without the limit.
     ///
     /// # Examples
+    ///
     /// ```
     /// let q = quranize::Quranize::new(5);
     /// assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء الله");
@@ -108,6 +110,7 @@ impl Quranize {
     /// Note that the locations are returned in descending order (from the last word of الناس to the first word of الفاتحة).
     ///
     /// # Examples
+    ///
     /// ```
     /// let q = quranize::Quranize::new(5);
     /// assert_eq!(q.get_locations("بسم").last(), Some(&(1, 1, 1)));
