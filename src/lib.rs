@@ -1,35 +1,32 @@
-/*!
-Transforms transliteration back into Quran form.
-
-# Examples
-
-```
-let q = quranize::Quranize::default();
-assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد لله");
-```
-
-# Crate features
-
-In addition to [`SIMPLE_CLEAN`][quran::SIMPLE_CLEAN], the [`quran`] module also has [`SIMPLE_PLAIN`][quran::SIMPLE_PLAIN].
-It can be used by enabling feature `quran-simple-plain`.
-The feature is not enabled by default to keep the [`quran`] module as small as possible.
-To enable the feature, add the following lines to `Cargo.toml` file.
-
-```toml
-[dependencies]
-quranize = { version = "0.4", features = ["quran-simple-plain"] }
-```
-*/
+//! Transforms transliteration back into Quran form.
+//!
+//! # Examples
+//!
+//! ```
+//! let q = quranize::Quranize::default();
+//! assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد لله");
+//! ```
+//!
+//! # Crate features
+//!
+//! In addition to [`SIMPLE_CLEAN`][quran::SIMPLE_CLEAN], the [`quran`] module also has [`SIMPLE_PLAIN`][quran::SIMPLE_PLAIN].
+//! It can be used by enabling feature `quran-simple-plain`.
+//! The feature is not enabled by default to keep the [`quran`] module as small as possible.
+//! To enable the feature, add the following lines to `Cargo.toml` file.
+//!
+//! ```toml
+//! [dependencies]
+//! quranize = { version = "0.5", features = ["quran-simple-plain"] }
+//! ```
 
 mod normalization;
 pub mod quran;
 mod quran_index;
 mod transliterations;
 
-use quran_index::{Node, Stack};
+use quran_index::Node;
 
-type EncodeResults<'a> = Vec<(String, Vec<(u8, u16, u8)>, Vec<&'a str>)>;
-type RevEncodeResults<'a> = Vec<(String, &'a Stack<(u8, u16, u8)>, Vec<&'a str>)>;
+type EncodeResults<'a> = Vec<(String, Vec<&'a str>)>;
 
 /// Struct to encode transliterations into Quran forms.
 pub struct Quranize {
@@ -40,6 +37,7 @@ impl Default for Quranize {
     /// Build [`Quranize`] without [word count limit][Quranize::new].
     ///
     /// # Examples
+    ///
     /// ```
     /// let q = quranize::Quranize::default();
     /// assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء الله");
@@ -55,6 +53,7 @@ impl Quranize {
     /// Use [`Quranize::default`] to build [`Quranize`] without the limit.
     ///
     /// # Examples
+    ///
     /// ```
     /// let q = quranize::Quranize::new(5);
     /// assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء الله");
@@ -73,21 +72,15 @@ impl Quranize {
         rev_results.dedup_by(|r1, r2| r1.0 == r2.0);
         rev_results
             .into_iter()
-            .map(|(q, l, e)| {
-                (
-                    q.chars().rev().collect(),
-                    Vec::from_iter(l.iter()).iter().rev().map(|x| **x).collect(),
-                    e.into_iter().rev().collect(),
-                )
-            })
+            .map(|(q, e)| (q.chars().rev().collect(), e.into_iter().rev().collect()))
             .rev()
             .collect()
     }
 
-    fn rev_encode<'a>(&'a self, node: &'a Node, text: &str) -> RevEncodeResults {
-        let mut results = RevEncodeResults::new();
+    fn rev_encode<'a>(&'a self, node: &'a Node, text: &str) -> EncodeResults {
+        let mut results = EncodeResults::new();
         if text.is_empty() && !node.locations.is_empty() {
-            results.push((String::new(), &node.locations, Vec::new()));
+            results.push((String::new(), Vec::new()));
         }
         for subnode in node.next_harfs.iter() {
             for prefix in transliterations::map(subnode.content).iter().rev() {
@@ -102,13 +95,36 @@ impl Quranize {
         results
     }
 
-    fn rev_encode_sub<'a>(&'a self, node: &'a Node, text: &str, expl: &'a str) -> RevEncodeResults {
+    fn rev_encode_sub<'a>(&'a self, node: &'a Node, text: &str, expl: &'a str) -> EncodeResults {
         let mut results = self.rev_encode(node, text);
-        for (q, _, e) in results.iter_mut() {
+        for (q, e) in results.iter_mut() {
             q.push(node.content);
             e.push(expl);
         }
         results
+    }
+
+    /// Get locations from the given `quran` text.
+    /// Each location is a reference to a tuple that contains sura number, aya number, and word number within the aya.
+    ///
+    /// Note that the locations are returned in descending order (from the last word of الناس to the first word of الفاتحة).
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let q = quranize::Quranize::new(5);
+    /// assert_eq!(q.get_locations("بسم").last(), Some(&(1, 1, 1)));
+    /// assert_eq!(q.get_locations("ن").next(), Some(&(68, 1, 1)));
+    /// ```
+    pub fn get_locations(&self, quran: &str) -> impl Iterator<Item = &(u8, u16, u8)> {
+        let mut node = &self.root;
+        for h in quran.chars() {
+            match node.next_harfs.iter().find(|c| c.content == h) {
+                Some(next_node) => node = next_node,
+                _ => return self.root.locations.iter(),
+            }
+        }
+        node.locations.iter()
     }
 }
 
@@ -181,19 +197,18 @@ mod tests {
     #[test]
     fn test_quranize_misc() {
         let q = Quranize::new(3);
-        assert_eq!(q.encode("bismillah")[0].1[0], (1, 1, 1));
-        assert_eq!(q.encode("subhanallah")[0].1.len(), 5);
+        assert_eq!(q.encode("bismillah")[0].1.len(), 8);
         assert_eq!(q.encode("arrohman").len(), 1);
-        assert_eq!(q.encode("arrohman")[0].1.len(), 45);
-        assert_eq!(q.encode("alhamdu")[0].2, vec!["a", "l", "ha", "m", "du"]);
+        assert_eq!(q.encode("arrohman")[0].1.len(), 6);
+        assert_eq!(q.encode("alhamdu")[0].1, vec!["a", "l", "ha", "m", "du"]);
         assert_eq!(
-            q.encode("arrohman")[0].2,
+            q.encode("arrohman")[0].1,
             vec!["a", "", "ro", "h", "ma", "n"]
         );
         let result = &q.encode("masyaallah")[0];
-        assert_eq!(result.0.chars().count(), result.2.len());
+        assert_eq!(result.0.chars().count(), result.1.len());
         assert_eq!(
-            result.2,
+            result.1,
             vec!["m", "a", "", "sy", "a", "a", "", "", "l", "la", "h"]
         );
     }
@@ -206,5 +221,17 @@ mod tests {
         assert!(q.encode("bbb").is_empty());
         assert!(q.encode("abcd").is_empty());
         assert!(q.encode("1+2=3").is_empty());
+    }
+
+    #[test]
+    fn test_locate() {
+        let q = Quranize::new(5);
+        assert_eq!(q.get_locations("ن").next(), Some(&(68, 1, 1)));
+        assert_eq!(q.get_locations("بسم").last(), Some(&(1, 1, 1)));
+        assert_eq!(q.get_locations("والناس").next(), Some(&(114, 6, 3)));
+        assert_eq!(q.get_locations("بسم الله الرحمن الرحيم").count(), 2);
+        assert_eq!(q.get_locations("").next(), None);
+        assert_eq!(q.get_locations("نننن").next(), None);
+        assert_eq!(q.get_locations("2+3+4=9").next(), None);
     }
 }
