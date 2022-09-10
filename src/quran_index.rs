@@ -4,7 +4,7 @@ mod word_utils;
 use std::iter::once;
 
 use crate::quran::{quran_iter, SIMPLE_CLEAN};
-pub use stack::Stack;
+use stack::Stack;
 use word_utils::WordSuffixIterExt;
 
 pub fn build_quran_index(wcl: u8) -> Node {

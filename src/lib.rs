@@ -19,8 +19,9 @@
 //! quranize = { version = "0.5", features = ["quran-simple-plain"] }
 //! ```
 
-mod normalization;
 pub mod quran;
+
+mod normalization;
 mod quran_index;
 mod transliterations;
 
