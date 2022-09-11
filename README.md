@@ -2,14 +2,16 @@
 
 Encoding transliterations into Quran forms.
 
-- Documentation: <https://docs.rs/quranize>
 - Crate: <https://crates.io/crates/quranize>
+- Documentation: <https://docs.rs/quranize>
+- Application: <https://github.com/quranize/quranize.github.io>
 
 ## Related Project
 
-- <https://github.com/quranize/quranize.github.io>
-- <https://github.com/alpancs/quranize-service>
-- <https://github.com/alpancs/quranize>
+### Former version of this project
+
+- Go: <https://github.com/alpancs/quranize>
+- Application: <https://github.com/alpancs/quranize-service>
 
 ## License
 
