@@ -143,8 +143,7 @@ mod tests {
 
     #[test]
     fn test_clean_chars() {
-        for ((_, _, clean), (_, _, plain)) in iter_quran(SIMPLE_CLEAN).zip(iter_quran(SIMPLE_PLAIN))
-        {
+        for ((_, _, clean), (_, _, plain)) in iter_quran(SIMPLE_CLEAN).zip(iter()) {
             assert_eq!(clean, plain.clean_chars().collect::<String>());
         }
     }
