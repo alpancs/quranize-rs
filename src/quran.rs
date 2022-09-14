@@ -13,7 +13,7 @@ const SURA_COUNT: usize = 114;
 const AYA_COUNT: usize = 6236;
 
 /// Accept raw Quran string, return an iterator for each ayah in the Quran with surah number and ayah number.
-pub(crate) fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
+pub fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     let raw = raw.trim_start();
     let basmalah = raw.split('\n').next().unwrap().split('|').nth(2).unwrap();
     let basmalah_prefix = basmalah.to_string() + " ";
@@ -45,21 +45,26 @@ impl CleanCharsExt for str {
 /// # Examples
 ///
 /// ```
-/// use quranize::quran::{AyaGetter, SIMPLE_PLAIN};
-/// let aya_map = AyaGetter::new(SIMPLE_PLAIN);
-/// assert_eq!(aya_map.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
+/// use quranize::quran::AyaGetter;
+/// let aya_getter = AyaGetter::new();
+/// assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
 /// ```
 pub struct AyaGetter<'a> {
     aya_texts: Vec<&'a str>,
     aya_sums: Vec<usize>,
 }
 
+impl Default for AyaGetter<'_> {
+    fn default() -> Self {
+        AyaGetter::new()
+    }
+}
 impl<'a> AyaGetter<'a> {
     /// Create a new [`AyaGetter`]. Parameter `raw` should be either [`SIMPLE_CLEAN`] or [`SIMPLE_PLAIN`] (only available when feature `quran-simple-plain` is enabled).
-    pub fn new(raw: &'a str) -> Self {
+    pub fn new() -> Self {
         let mut aya_texts = Vec::with_capacity(AYA_COUNT);
         let mut aya_sums = Vec::with_capacity(SURA_COUNT);
-        for (i, (_, a, q)) in iter_quran(raw).enumerate() {
+        for (i, (_, a, q)) in iter_quran(SIMPLE_PLAIN).enumerate() {
             aya_texts.push(q);
             if a == 1 {
                 aya_sums.push(i);
@@ -123,10 +128,10 @@ mod tests {
 
     #[test]
     fn test_map() {
-        let map = AyaGetter::new(SIMPLE_PLAIN);
-        assert_eq!(map.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
-        assert_eq!(map.get(114, 6), Some("مِنَ الْجِنَّةِ وَالنَّاسِ"));
-        assert_eq!(map.get(114, 7), None);
+        let aya_getter = AyaGetter::new();
+        assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
+        assert_eq!(aya_getter.get(114, 6), Some("مِنَ الْجِنَّةِ وَالنَّاسِ"));
+        assert_eq!(aya_getter.get(114, 7), None);
     }
 
     #[test]
