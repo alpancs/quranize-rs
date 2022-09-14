@@ -3,13 +3,13 @@ mod word_utils;
 
 use std::iter::once;
 
-use crate::quran::{quran_iter, SIMPLE_CLEAN};
+use crate::quran::{self, CleanCharsExt};
 use stack::Stack;
 use word_utils::WordSuffixIterExt;
 
 pub fn build_quran_index(wcl: u8) -> Node {
     let mut root = Node::new('\0');
-    for (s, a, t) in quran_iter(SIMPLE_CLEAN) {
+    for (s, a, t) in quran::iter() {
         for (i, t) in t.word_suffixes().enumerate() {
             expand_node(&mut root, t, (s, a, i as u8 + 1), wcl);
         }
@@ -19,7 +19,8 @@ pub fn build_quran_index(wcl: u8) -> Node {
 
 fn expand_node(mut node: &mut Node, text: &str, location: (u8, u16, u8), wcl: u8) {
     let mut word_count = 0;
-    for (c, next_c) in text.chars().zip(text.chars().skip(1).chain(once(' '))) {
+    let next_chars = text.clean_chars().skip(1).chain(once(' '));
+    for (c, next_c) in text.clean_chars().zip(next_chars) {
         node = node.get_or_add(c);
         if next_c == ' ' {
             node.locations.push(location);

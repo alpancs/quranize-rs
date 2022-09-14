@@ -1,25 +1,30 @@
-//! Transforms transliteration back into Quran form.
+//! Encodes alphabetic text to quran text.
 //!
 //! # Examples
+//!
+//! ## Adding crate quranize to a project's dependencies
+//!
+//! ```toml
+//! [dependencies]
+//! quranize = "0.6"
+//! ```
+//!
+//! ## Encoding alphabetic text to quran text
 //!
 //! ```
 //! let q = quranize::Quranize::default();
 //! assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد لله");
 //! ```
 //!
-//! # Crate features
+//! ## Getting an aya text given surah number and ayah number
 //!
-//! In addition to [`SIMPLE_CLEAN`][quran::SIMPLE_CLEAN], the [`quran`] module also has [`SIMPLE_PLAIN`][quran::SIMPLE_PLAIN].
-//! It can be used by enabling feature `quran-simple-plain`.
-//! The feature is not enabled by default to keep the [`quran`] module as small as possible.
-//! To enable the feature, add the following lines to `Cargo.toml` file.
-//!
-//! ```toml
-//! [dependencies]
-//! quranize = { version = "0.5", features = ["quran-simple-plain"] }
+//! ```
+//! let aya_getter = quranize::AyaGetter::default();
+//! assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
 //! ```
 
-pub mod quran;
+mod quran;
+pub use quran::AyaGetter;
 
 mod normalization;
 mod quran_index;
@@ -29,13 +34,13 @@ use quran_index::Node;
 
 type EncodeResults<'a> = Vec<(String, Vec<&'a str>)>;
 
-/// Struct to encode transliterations into Quran forms.
+/// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
     root: Node,
 }
 
 impl Default for Quranize {
-    /// Build [`Quranize`] without [word count limit][Quranize::new].
+    /// Build `Quranize` without [word count limit][Quranize::new].
     ///
     /// # Examples
     ///
@@ -49,9 +54,9 @@ impl Default for Quranize {
 }
 
 impl Quranize {
-    /// Build [`Quranize`] with parameter `word_count_limit`.
+    /// Build `Quranize` with parameter `word_count_limit`.
     /// It limits the number of consecutive words scanned by the indexer to reduce memory usage and indexing time.
-    /// Use [`Quranize::default`] to build [`Quranize`] without the limit.
+    /// Use [`Quranize::default`] to build `Quranize` without the limit.
     ///
     /// # Examples
     ///
