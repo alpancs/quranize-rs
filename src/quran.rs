@@ -1,19 +1,19 @@
 //! Helper module related to Quran stuffs.
 
-mod simple_clean;
-mod simple_plain;
-
 use std::{iter::Filter, str::Chars};
 
-#[cfg(test)]
-pub use simple_clean::RAW_QURAN as SIMPLE_CLEAN;
-pub use simple_plain::RAW_QURAN as SIMPLE_PLAIN;
+mod simple_plain;
+use simple_plain::RAW_QURAN as SIMPLE_PLAIN;
 
 const SURA_COUNT: usize = 114;
 const AYA_COUNT: usize = 6236;
 
 /// Accept raw Quran string, return an iterator for each ayah in the Quran with surah number and ayah number.
-pub fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
+pub fn iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
+    iter_quran(SIMPLE_PLAIN)
+}
+
+fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     let raw = raw.trim_start();
     let basmalah = raw.split('\n').next().unwrap().split('|').nth(2).unwrap();
     let basmalah_prefix = basmalah.to_string() + " ";
@@ -82,6 +82,12 @@ impl<'a> AyaGetter<'a> {
         Some(*self.aya_texts.get(aya_sum + aya_number as usize - 1)?)
     }
 }
+
+#[cfg(test)]
+mod simple_clean;
+
+#[cfg(test)]
+use simple_clean::RAW_QURAN as SIMPLE_CLEAN;
 
 #[cfg(test)]
 mod tests {
