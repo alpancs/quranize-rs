@@ -48,6 +48,7 @@ impl CleanCharsExt for str {
 /// use quranize::AyaGetter;
 /// let aya_getter = AyaGetter::default();
 /// assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
+/// assert_eq!(aya_getter.get(114, 6), Some("مِنَ الْجِنَّةِ وَالنَّاسِ"));
 /// ```
 pub struct AyaGetter<'a> {
     aya_texts: Vec<&'a str>,
