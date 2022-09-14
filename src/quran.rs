@@ -45,8 +45,8 @@ impl CleanCharsExt for str {
 /// # Examples
 ///
 /// ```
-/// use quranize::quran::AyaGetter;
-/// let aya_getter = AyaGetter::new();
+/// use quranize::AyaGetter;
+/// let aya_getter = AyaGetter::default();
 /// assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
 /// ```
 pub struct AyaGetter<'a> {
@@ -61,7 +61,7 @@ impl Default for AyaGetter<'_> {
 }
 impl<'a> AyaGetter<'a> {
     /// Create a new `AyaGetter`.
-    pub fn new() -> Self {
+    fn new() -> Self {
         let mut aya_texts = Vec::with_capacity(AYA_COUNT);
         let mut aya_sums = Vec::with_capacity(SURA_COUNT);
         for (i, (_, a, q)) in iter_quran(SIMPLE_PLAIN).enumerate() {

@@ -1,4 +1,4 @@
-//! Transforms transliteration back into Quran form.
+//! Encodes alphabetic text to quran text.
 //!
 //! # Examples
 //!
@@ -14,6 +14,13 @@
 //! ```
 //! let q = quranize::Quranize::default();
 //! assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد لله");
+//! ```
+//!
+//! ## Getting an aya text given surah number and ayah number
+//!
+//! ```
+//! let aya_getter = quranize::AyaGetter::default();
+//! assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
 //! ```
 
 mod quran;
@@ -33,7 +40,7 @@ pub struct Quranize {
 }
 
 impl Default for Quranize {
-    /// Build [`Quranize`] without [word count limit][Quranize::new].
+    /// Build `Quranize` without [word count limit][Quranize::new].
     ///
     /// # Examples
     ///
@@ -47,9 +54,9 @@ impl Default for Quranize {
 }
 
 impl Quranize {
-    /// Build [`Quranize`] with parameter `word_count_limit`.
+    /// Build `Quranize` with parameter `word_count_limit`.
     /// It limits the number of consecutive words scanned by the indexer to reduce memory usage and indexing time.
-    /// Use [`Quranize::default`] to build [`Quranize`] without the limit.
+    /// Use [`Quranize::default`] to build `Quranize` without the limit.
     ///
     /// # Examples
     ///
