@@ -40,7 +40,7 @@ impl CleanCharsExt for str {
     }
 }
 
-/// Struct to index ayah texts by surah number and ayah number.
+/// Struct to get ayah texts by surah number and ayah number.
 ///
 /// # Examples
 ///
@@ -60,7 +60,7 @@ impl Default for AyaGetter<'_> {
     }
 }
 impl<'a> AyaGetter<'a> {
-    /// Create a new [`AyaGetter`]. Parameter `raw` should be either [`SIMPLE_CLEAN`] or [`SIMPLE_PLAIN`] (only available when feature `quran-simple-plain` is enabled).
+    /// Create a new `AyaGetter`.
     pub fn new() -> Self {
         let mut aya_texts = Vec::with_capacity(AYA_COUNT);
         let mut aya_sums = Vec::with_capacity(SURA_COUNT);

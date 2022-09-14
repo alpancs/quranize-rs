@@ -2,24 +2,22 @@
 //!
 //! # Examples
 //!
+//! ## Adding quranize to a project's dependencies
+//!
+//! ```toml
+//! [dependencies]
+//! quranize = "0.5"
+//! ```
+//!
+//! ## Encoding alphabetic text to quran text
+//!
 //! ```
 //! let q = quranize::Quranize::default();
 //! assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد لله");
 //! ```
-//!
-//! # Crate features
-//!
-//! In addition to [`SIMPLE_CLEAN`][quran::SIMPLE_CLEAN], the [`quran`] module also has [`SIMPLE_PLAIN`][quran::SIMPLE_PLAIN].
-//! It can be used by enabling feature `quran-simple-plain`.
-//! The feature is not enabled by default to keep the [`quran`] module as small as possible.
-//! To enable the feature, add the following lines to `Cargo.toml` file.
-//!
-//! ```toml
-//! [dependencies]
-//! quranize = { version = "0.5", features = ["quran-simple-plain"] }
-//! ```
 
-pub mod quran;
+mod quran;
+pub use quran::AyaGetter;
 
 mod normalization;
 mod quran_index;
@@ -29,7 +27,7 @@ use quran_index::Node;
 
 type EncodeResults<'a> = Vec<(String, Vec<&'a str>)>;
 
-/// Struct to encode transliterations into Quran forms.
+/// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
     root: Node,
 }
