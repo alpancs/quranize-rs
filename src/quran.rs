@@ -6,7 +6,6 @@ mod simple_plain;
 use std::{iter::Filter, str::Chars};
 
 pub use simple_clean::RAW_QURAN as SIMPLE_CLEAN;
-#[cfg(feature = "quran-simple-plain")]
 pub use simple_plain::RAW_QURAN as SIMPLE_PLAIN;
 
 const SURA_COUNT: usize = 114;
@@ -83,7 +82,6 @@ mod tests {
     use super::*;
 
     #[test]
-    #[cfg(feature = "quran-simple-plain")]
     fn test_quran_version_compatibility() {
         let word_counter =
             |(s, a, t): (u8, u16, &'static str)| (s, a, t, t.split_whitespace().count());
@@ -98,7 +96,6 @@ mod tests {
     fn test_properties() {
         assert_same_basmalah(SIMPLE_CLEAN);
         assert_eq!(iter_quran(SIMPLE_CLEAN).count(), AYA_COUNT);
-        #[cfg(feature = "quran-simple-plain")]
         {
             assert_same_basmalah(SIMPLE_PLAIN);
             assert_eq!(iter_quran(SIMPLE_PLAIN).count(), AYA_COUNT);
@@ -124,7 +121,6 @@ mod tests {
     }
 
     #[test]
-    #[cfg(feature = "quran-simple-plain")]
     fn test_map() {
         let map = AyaGetter::new(SIMPLE_PLAIN);
         assert_eq!(map.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
@@ -133,7 +129,6 @@ mod tests {
     }
 
     #[test]
-    #[cfg(feature = "quran-simple-plain")]
     fn test_clean_chars() {
         for ((_, _, clean), (_, _, plain)) in iter_quran(SIMPLE_CLEAN).zip(iter_quran(SIMPLE_PLAIN))
         {
