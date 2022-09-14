@@ -3,6 +3,8 @@
 mod simple_clean;
 mod simple_plain;
 
+use std::{iter::Filter, str::Chars};
+
 pub use simple_clean::RAW_QURAN as SIMPLE_CLEAN;
 #[cfg(feature = "quran-simple-plain")]
 pub use simple_plain::RAW_QURAN as SIMPLE_PLAIN;
@@ -25,6 +27,17 @@ pub(crate) fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
         }
         (sura_number, aya_number, aya_text)
     })
+}
+
+trait CleanCharsExt {
+    fn clean_chars(&self) -> Filter<Chars, fn(&char) -> bool>;
+}
+
+use crate::transliterations as trans;
+impl CleanCharsExt for str {
+    fn clean_chars(&self) -> Filter<Chars, fn(&char) -> bool> {
+        self.chars().filter(|&c| !trans::map(c).is_empty())
+    }
 }
 
 /// Struct to index ayah texts by surah number and ayah number.
@@ -117,5 +130,14 @@ mod tests {
         assert_eq!(map.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
         assert_eq!(map.get(114, 6), Some("مِنَ الْجِنَّةِ وَالنَّاسِ"));
         assert_eq!(map.get(114, 7), None);
+    }
+
+    #[test]
+    #[cfg(feature = "quran-simple-plain")]
+    fn test_clean_chars() {
+        for ((_, _, clean), (_, _, plain)) in iter_quran(SIMPLE_CLEAN).zip(iter_quran(SIMPLE_PLAIN))
+        {
+            assert_eq!(clean, plain.clean_chars().collect::<String>());
+        }
     }
 }
