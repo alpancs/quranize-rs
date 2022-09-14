@@ -6,7 +6,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! quranize = "0.5"
+//! quranize = "0.6"
 //! ```
 //!
 //! ## Encoding alphabetic text to quran text
