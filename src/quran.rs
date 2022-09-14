@@ -5,6 +5,7 @@ mod simple_plain;
 
 use std::{iter::Filter, str::Chars};
 
+#[cfg(test)]
 pub use simple_clean::RAW_QURAN as SIMPLE_CLEAN;
 pub use simple_plain::RAW_QURAN as SIMPLE_PLAIN;
 
@@ -28,7 +29,7 @@ pub(crate) fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     })
 }
 
-trait CleanCharsExt {
+pub trait CleanCharsExt {
     fn clean_chars(&self) -> Filter<Chars, fn(&char) -> bool>;
 }
 
@@ -44,9 +45,9 @@ impl CleanCharsExt for str {
 /// # Examples
 ///
 /// ```
-/// use quranize::quran::{AyaGetter, SIMPLE_CLEAN};
-/// let aya_map = AyaGetter::new(SIMPLE_CLEAN);
-/// assert_eq!(aya_map.get(1, 1), Some("بسم الله الرحمن الرحيم"));
+/// use quranize::quran::{AyaGetter, SIMPLE_PLAIN};
+/// let aya_map = AyaGetter::new(SIMPLE_PLAIN);
+/// assert_eq!(aya_map.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
 /// ```
 pub struct AyaGetter<'a> {
     aya_texts: Vec<&'a str>,
