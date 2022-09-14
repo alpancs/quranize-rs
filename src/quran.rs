@@ -11,7 +11,7 @@ const SURA_COUNT: usize = 114;
 const AYA_COUNT: usize = 6236;
 
 /// Accept raw Quran string, return an iterator for each ayah in the Quran with surah number and ayah number.
-pub(crate) fn quran_iter(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
+pub(crate) fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     let raw = raw.trim_start();
     let basmalah = raw.split('\n').next().unwrap().split('|').nth(2).unwrap();
     let basmalah_prefix = basmalah.to_string() + " ";
@@ -46,7 +46,7 @@ impl<'a> AyaGetter<'a> {
     pub fn new(raw: &'a str) -> Self {
         let mut aya_texts = Vec::with_capacity(AYA_COUNT);
         let mut aya_sums = Vec::with_capacity(SURA_COUNT);
-        for (i, (_, a, q)) in quran_iter(raw).enumerate() {
+        for (i, (_, a, q)) in iter_quran(raw).enumerate() {
             aya_texts.push(q);
             if a == 1 {
                 aya_sums.push(i);
@@ -74,8 +74,8 @@ mod tests {
     fn test_quran_version_compatibility() {
         let word_counter =
             |(s, a, t): (u8, u16, &'static str)| (s, a, t, t.split_whitespace().count());
-        let simple_clean_wc_iter = quran_iter(SIMPLE_CLEAN).map(word_counter);
-        let simple_plain_wc_iter = quran_iter(SIMPLE_PLAIN).map(word_counter);
+        let simple_clean_wc_iter = iter_quran(SIMPLE_CLEAN).map(word_counter);
+        let simple_plain_wc_iter = iter_quran(SIMPLE_PLAIN).map(word_counter);
         for ((s1, a1, t1, c1), (_, _, t2, c2)) in simple_clean_wc_iter.zip(simple_plain_wc_iter) {
             assert_eq!(c1, c2, "sura_number = {s1}, aya_number = {a1},\naya_text = {t1} and {t2},\nword count = {c1} and {c2}");
         }
@@ -84,11 +84,11 @@ mod tests {
     #[test]
     fn test_properties() {
         assert_same_basmalah(SIMPLE_CLEAN);
-        assert_eq!(quran_iter(SIMPLE_CLEAN).count(), AYA_COUNT);
+        assert_eq!(iter_quran(SIMPLE_CLEAN).count(), AYA_COUNT);
         #[cfg(feature = "quran-simple-plain")]
         {
             assert_same_basmalah(SIMPLE_PLAIN);
-            assert_eq!(quran_iter(SIMPLE_PLAIN).count(), AYA_COUNT);
+            assert_eq!(iter_quran(SIMPLE_PLAIN).count(), AYA_COUNT);
         }
     }
 
