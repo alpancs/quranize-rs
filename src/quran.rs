@@ -41,15 +41,6 @@ impl CleanCharsExt for str {
 }
 
 /// Struct to get ayah texts by surah number and ayah number.
-///
-/// # Examples
-///
-/// ```
-/// use quranize::AyaGetter;
-/// let aya_getter = AyaGetter::default();
-/// assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
-/// assert_eq!(aya_getter.get(114, 6), Some("مِنَ الْجِنَّةِ وَالنَّاسِ"));
-/// ```
 pub struct AyaGetter<'a> {
     aya_texts: Vec<&'a str>,
     aya_sums: Vec<usize>,
@@ -77,7 +68,16 @@ impl<'a> AyaGetter<'a> {
         }
     }
 
-    /// Get an ayah text given surah number (`sura_number`) and ayah number (`aya_number`).
+    /// Get an ayah text given a surah number and an ayah number.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use quranize::AyaGetter;
+    /// let aya_getter = AyaGetter::default();
+    /// assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
+    /// assert_eq!(aya_getter.get(114, 6), Some("مِنَ الْجِنَّةِ وَالنَّاسِ"));
+    /// ```
     pub fn get(&self, sura_number: u8, aya_number: u16) -> Option<&'a str> {
         let aya_sum = self.aya_sums.get(sura_number as usize - 1)?;
         Some(*self.aya_texts.get(aya_sum + aya_number as usize - 1)?)

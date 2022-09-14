@@ -2,7 +2,7 @@
 //!
 //! # Examples
 //!
-//! ## Adding quranize to a project's dependencies
+//! ## Adding crate quranize to a project's dependencies
 //!
 //! ```toml
 //! [dependencies]
