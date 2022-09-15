@@ -109,10 +109,8 @@ mod tests {
     fn test_properties() {
         assert_same_basmalah(SIMPLE_CLEAN);
         assert_eq!(iter_quran(SIMPLE_CLEAN).count(), AYA_COUNT);
-        {
-            assert_same_basmalah(SIMPLE_PLAIN);
-            assert_eq!(iter_quran(SIMPLE_PLAIN).count(), AYA_COUNT);
-        }
+        assert_same_basmalah(SIMPLE_PLAIN);
+        assert_eq!(iter_quran(SIMPLE_PLAIN).count(), AYA_COUNT);
         assert_eq!(count_unique_simple_clean_chars(), 37);
         assert_eq!(count_unique_simple_plain_chars(), 37);
     }
