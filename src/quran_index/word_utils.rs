@@ -18,7 +18,7 @@ pub trait WordSuffixIterExt {
     fn word_suffixes(&self) -> WordSuffixIter;
 }
 
-impl WordSuffixIterExt for &str {
+impl WordSuffixIterExt for str {
     fn word_suffixes(&self) -> WordSuffixIter {
         WordSuffixIter {
             chars: self.chars(),
