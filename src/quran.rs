@@ -113,6 +113,8 @@ mod tests {
             assert_same_basmalah(SIMPLE_PLAIN);
             assert_eq!(iter_quran(SIMPLE_PLAIN).count(), AYA_COUNT);
         }
+        assert_eq!(count_unique_simple_clean_chars(), 37);
+        assert_eq!(count_unique_simple_plain_chars(), 37);
     }
 
     fn assert_same_basmalah(raw: &str) {
@@ -131,6 +133,22 @@ mod tests {
                 );
             }
         }
+    }
+
+    fn count_unique_simple_clean_chars() -> usize {
+        let mut set = std::collections::HashSet::new();
+        for (_, _, t) in iter_quran(SIMPLE_CLEAN) {
+            set.extend(t.chars());
+        }
+        set.len()
+    }
+
+    fn count_unique_simple_plain_chars() -> usize {
+        let mut set = std::collections::HashSet::new();
+        for (_, _, t) in iter() {
+            set.extend(t.clean_chars());
+        }
+        set.len()
     }
 
     #[test]
