@@ -200,7 +200,7 @@ mod tests {
     }
 
     fn encode(quranize: &Quranize, text: &str) -> Vec<String> {
-        quranize.encode(text).into_iter().map(|r| r.0).collect()
+        quranize.encode(text).into_iter().map(|(q, _)| q).collect()
     }
 
     #[test]
