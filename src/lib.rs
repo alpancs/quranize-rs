@@ -74,13 +74,14 @@ impl Quranize {
 
     /// Encode `text` back into Quran form.
     pub fn encode(&self, text: &str) -> EncodeResults {
-        let mut rev_results = self.rev_encode(&self.root, &normalization::normalize(text));
-        rev_results.dedup_by(|r1, r2| r1.0 == r2.0);
-        rev_results
-            .into_iter()
-            .map(|(q, e)| (q.chars().rev().collect(), e.into_iter().rev().collect()))
-            .rev()
-            .collect()
+        let mut results = self.rev_encode(&self.root, &normalization::normalize(text));
+        results.dedup_by(|(q1, _), (q2, _)| q1 == q2);
+        for (q, e) in results.iter_mut() {
+            *q = q.chars().rev().collect();
+            e.reverse();
+        }
+        results.reverse();
+        results
     }
 
     fn rev_encode<'a>(&'a self, node: &'a Node, text: &str) -> EncodeResults {
