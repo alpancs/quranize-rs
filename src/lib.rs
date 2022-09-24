@@ -95,7 +95,7 @@ impl Quranize {
                     results.append(&mut self.rev_encode_sub(subnode, subtext, prefix));
                 }
             }
-            if node.content == '\0' && subnode.content == 'ا' {
+            if node.content == self.root.content && subnode.content == 'ا' {
                 if let Some(subtext) = text.strip_prefix('i') {
                     results.append(&mut self.rev_encode_sub(subnode, subtext, "i"));
                 }
