@@ -95,6 +95,14 @@ impl Quranize {
                     results.append(&mut self.rev_encode_sub(subnode, subtext, prefix));
                 }
             }
+            if node.content == '\0' && subnode.content == 'ا' {
+                if let Some(subtext) = text.strip_prefix('i') {
+                    results.append(&mut self.rev_encode_sub(subnode, subtext, "i"));
+                }
+                if let Some(subtext) = text.strip_prefix('u') {
+                    results.append(&mut self.rev_encode_sub(subnode, subtext, "u"));
+                }
+            }
             if is_special_case(node.content, subnode.content) {
                 results.append(&mut self.rev_encode_sub(subnode, text, ""));
             }
@@ -151,7 +159,7 @@ mod tests {
         let q = Quranize::new(3);
         assert_eq!(encode(&q, "alquran"), vec!["القرآن"]);
         assert_eq!(encode(&q, "alqur'an"), vec!["القرآن"]);
-        assert_eq!(encode(&q, "bismillah"), vec!["بسم الله", "بشماله"]);
+        assert_eq!(encode(&q, "bismillah"), vec!["بسم الله"]);
         assert_eq!(encode(&q, "birobbinnas"), vec!["برب الناس"]);
         assert_eq!(encode(&q, "inna anzalnahu"), vec!["إنا أنزلناه"]);
         assert_eq!(encode(&q, "wa'tasimu"), vec!["واعتصموا"]);
@@ -166,6 +174,7 @@ mod tests {
         assert_eq!(encode(&q, "ulaika hum"), vec!["أولئك هم"]);
         assert_eq!(encode(&q, "waladdoolin"), vec!["ولا الضالين"]);
         assert_eq!(encode(&q, "n"), vec!["ن"]);
+        assert_eq!(encode(&q, "undur kaifa"), vec!["انظر كيف"]);
     }
 
     #[test]
