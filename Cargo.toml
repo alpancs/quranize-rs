@@ -1,6 +1,6 @@
 [package]
 name = "quranize"
-version = "0.6.1"
+version = "0.6.2"
 authors = ["Alfan Nur Fauzan <alpancs@gmail.com>"]
 edition = "2021"
 description = "Quranize transforms transliteration back into Quran form."
