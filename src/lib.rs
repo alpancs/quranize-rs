@@ -23,14 +23,14 @@
 //! assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
 //! ```
 
-mod quran;
-pub use quran::AyaGetter;
-
 mod normalization;
+mod quran;
 mod quran_index;
 mod transliterations;
 
+pub use quran::AyaGetter;
 use quran_index::Node;
+use transliterations as trans;
 
 type EncodeResults<'a> = Vec<(String, Vec<&'a str>)>;
 
@@ -90,21 +90,12 @@ impl Quranize {
             results.push((String::new(), Vec::new()));
         }
         for subnode in node.next_harfs.iter() {
-            for prefix in transliterations::map(subnode.content).iter().rev() {
+            let prefixes = trans::map(subnode.content);
+            let additional_prefixes = trans::contextual_map(node.content, subnode.content);
+            for prefix in prefixes.iter().chain(additional_prefixes) {
                 if let Some(subtext) = text.strip_prefix(prefix) {
                     results.append(&mut self.rev_encode_sub(subnode, subtext, prefix));
                 }
-            }
-            if node.content == self.root.content && subnode.content == 'ا' {
-                if let Some(subtext) = text.strip_prefix('i') {
-                    results.append(&mut self.rev_encode_sub(subnode, subtext, "i"));
-                }
-                if let Some(subtext) = text.strip_prefix('u') {
-                    results.append(&mut self.rev_encode_sub(subnode, subtext, "u"));
-                }
-            }
-            if is_special_case(node.content, subnode.content) {
-                results.append(&mut self.rev_encode_sub(subnode, text, ""));
             }
         }
         results
@@ -143,13 +134,6 @@ impl Quranize {
     }
 }
 
-fn is_special_case(node_content: char, subnode_content: char) -> bool {
-    (node_content == ' ' && subnode_content == 'ا')
-        || (node_content == 'ا' && subnode_content == 'ل')
-        || (node_content == 'و' && subnode_content == 'ا')
-        || (node_content == 'أ' && subnode_content == 'و')
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -163,7 +147,7 @@ mod tests {
         assert_eq!(encode(&q, "birobbinnas"), vec!["برب الناس"]);
         assert_eq!(encode(&q, "inna anzalnahu"), vec!["إنا أنزلناه"]);
         assert_eq!(encode(&q, "wa'tasimu"), vec!["واعتصموا"]);
-        assert_eq!(encode(&q, "wabarro"), vec!["وبئر", "وبرا"]);
+        assert_eq!(encode(&q, "wabarro"), vec!["وبرا", "وبئر"]);
         assert_eq!(encode(&q, "idza qodho"), vec!["إذا قضى"]);
         assert_eq!(encode(&q, "masyaallah"), vec!["ما شاء الله"]);
         assert_eq!(encode(&q, "illa man taaba"), vec!["إلا من تاب"]);
