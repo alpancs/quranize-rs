@@ -9,29 +9,14 @@ use word_utils::WordSuffixIterExt;
 pub type EncodeResults<'a> = Vec<(String, Vec<&'a str>)>;
 type Location = (u8, u16, u8);
 
-pub fn build_quran_index(wcl: u8) -> Node {
+pub fn build_root(wcl: u8) -> Node {
     let mut root = Node::new('\0');
-    for (s, a, t) in quran::iter() {
-        for (i, t) in t.word_suffixes().enumerate() {
-            expand_node(&mut root, t, (s, a, i as u8 + 1), wcl);
+    for (s, a, q) in quran::iter() {
+        for (i, q) in q.word_suffixes().enumerate() {
+            root.expand(q, (s, a, i as u8 + 1), wcl);
         }
     }
     root
-}
-
-fn expand_node(mut node: &mut Node, text: &str, location: Location, wcl: u8) {
-    let mut word_count = 0;
-    let next_chars = text.clean_chars().skip(1).chain(std::iter::once(' '));
-    for (c, next_c) in text.clean_chars().zip(next_chars) {
-        node = node.get_or_add(c);
-        if next_c == ' ' {
-            node.locations.push(location);
-            word_count += 1;
-            if word_count >= wcl {
-                break;
-            }
-        }
-    }
 }
 
 pub struct Node {
@@ -49,8 +34,20 @@ impl Node {
         }
     }
 
-    pub fn get(&self, content: char) -> Option<&Self> {
-        self.next_harfs.iter().find(|n| n.content == content)
+    fn expand(&mut self, quran: &str, location: Location, wcl: u8) {
+        let mut node = self;
+        let mut word_count = 0;
+        let next_chars = quran.clean_chars().skip(1).chain(std::iter::once(' '));
+        for (c, next_c) in quran.clean_chars().zip(next_chars) {
+            node = node.get_or_add(c);
+            if next_c == ' ' {
+                node.locations.push(location);
+                word_count += 1;
+                if word_count >= wcl {
+                    break;
+                }
+            }
+        }
     }
 
     fn get_or_add(&mut self, content: char) -> &mut Self {
@@ -100,6 +97,10 @@ impl Node {
             },
         }
     }
+
+    fn get(&self, content: char) -> Option<&Self> {
+        self.next_harfs.iter().find(|n| n.content == content)
+    }
 }
 
 #[cfg(test)]
@@ -108,7 +109,7 @@ mod tests {
 
     #[test]
     fn test_build_quran_index() {
-        let root = build_quran_index(u8::MAX);
+        let root = build_root(u8::MAX);
         assert_eq!(root.content, '\0');
         assert_eq!(root.next_harfs.len(), 31);
         assert_eq!(root.get('ب').unwrap().locations.len(), 0);

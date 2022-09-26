@@ -65,7 +65,7 @@ impl Quranize {
     /// ```
     pub fn new(word_count_limit: u8) -> Self {
         Self {
-            root: quran_index::build_quran_index(word_count_limit),
+            root: quran_index::build_root(word_count_limit),
         }
     }
 
