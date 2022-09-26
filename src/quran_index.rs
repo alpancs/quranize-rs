@@ -7,7 +7,7 @@ use stack::Stack;
 use word_utils::WordSuffixIterExt;
 
 pub type EncodeResults<'a> = Vec<(String, Vec<&'a str>)>;
-type Location = (u8, u16, u8);
+pub type Location = (u8, u16, u8);
 
 pub fn build_root(wcl: u8) -> Node {
     let mut root = Node::new('\0');
@@ -61,7 +61,7 @@ impl Node {
         }
     }
 
-    pub fn rev_encode<'a>(&'a self, text: &str) -> EncodeResults {
+    pub(crate) fn rev_encode<'a>(&'a self, text: &str) -> EncodeResults {
         let mut results = EncodeResults::new();
         if text.is_empty() && !self.locations.is_empty() {
             results.push((String::new(), Vec::new()));
@@ -87,7 +87,7 @@ impl Node {
         results
     }
 
-    pub fn get_locations(&self, quran: &str) -> Option<&Stack<Location>> {
+    pub(crate) fn get_locations(&self, quran: &str) -> Option<&Stack<Location>> {
         let mut chars = quran.chars();
         match chars.next() {
             None => Some(&self.locations),

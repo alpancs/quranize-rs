@@ -29,7 +29,7 @@ mod quran_index;
 mod transliterations;
 
 pub use quran::AyaGetter;
-use quran_index::{EncodeResults, Node};
+use quran_index::{EncodeResults, Location, Node};
 
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
@@ -93,7 +93,7 @@ impl Quranize {
     /// assert_eq!(q.get_locations("بسم").last(), Some(&(1, 1, 1)));
     /// assert_eq!(q.get_locations("ن").next(), Some(&(68, 1, 1)));
     /// ```
-    pub fn get_locations(&self, quran: &str) -> impl Iterator<Item = &(u8, u16, u8)> {
+    pub fn get_locations(&self, quran: &str) -> impl Iterator<Item = &Location> {
         match self.root.get_locations(quran) {
             None => self.root.locations.iter(),
             Some(locations) => locations.iter(),
