@@ -3,6 +3,6 @@ name = "quranize"
 version = "0.6.3"
 authors = ["Alfan Nur Fauzan <alpancs@gmail.com>"]
 edition = "2021"
-description = "Quranize transforms transliteration back into Quran form."
+description = "Encoding transliterations into Quran forms."
 repository = "https://github.com/alpancs/quranize-rs"
 license = "MIT OR Apache-2.0"
