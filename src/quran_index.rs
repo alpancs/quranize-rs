@@ -54,7 +54,7 @@ impl Node {
     }
 
     fn get_or_add(&mut self, content: char) -> &mut Self {
-        let pos = self.next_harfs.iter().position(|h| h.content == content);
+        let pos = self.next_harfs.iter().position(|n| n.content == content);
         match pos {
             Some(index) => self.next_harfs.iter_mut().nth(index).unwrap(),
             None => {
