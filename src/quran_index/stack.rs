@@ -47,15 +47,6 @@ impl<T> Stack<T> {
     }
 }
 
-impl<T> Drop for Stack<T> {
-    fn drop(&mut self) {
-        let mut cur_link = self.head.take();
-        while let Some(mut boxed_node) = cur_link {
-            cur_link = boxed_node.next.take();
-        }
-    }
-}
-
 pub struct Iter<'a, T> {
     next: Option<&'a Node<T>>,
 }
@@ -90,29 +81,14 @@ mod test {
     use super::Stack;
 
     #[test]
-    fn peek_mut() {
-        let mut stack = Stack::new();
-        assert_eq!(stack.peek_mut(), None);
-        stack.push(1);
-        assert_eq!(stack.peek_mut(), Some(&mut 1));
-
-        if let Some(value) = stack.peek_mut() {
-            *value = 42;
-        }
-        assert_eq!(stack.peek_mut(), Some(&mut 42));
-    }
-
-    #[test]
     fn iter() {
         let mut stack = Stack::new();
         stack.push(1);
         stack.push(2);
-        stack.push(3);
-
         let mut iter = stack.iter();
-        assert_eq!(iter.next(), Some(&3));
         assert_eq!(iter.next(), Some(&2));
         assert_eq!(iter.next(), Some(&1));
+        assert_eq!(iter.next(), None);
     }
 
     #[test]
@@ -120,11 +96,21 @@ mod test {
         let mut stack = Stack::new();
         stack.push(1);
         stack.push(2);
-        stack.push(3);
-
         let mut iter = stack.iter_mut();
-        assert_eq!(iter.next(), Some(&mut 3));
         assert_eq!(iter.next(), Some(&mut 2));
         assert_eq!(iter.next(), Some(&mut 1));
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn peek_mut() {
+        let mut stack = Stack::new();
+        assert_eq!(stack.peek_mut(), None);
+        stack.push(1);
+        assert_eq!(stack.peek_mut(), Some(&mut 1));
+        if let Some(value) = stack.peek_mut() {
+            *value = 2;
+        }
+        assert_eq!(stack.peek_mut(), Some(&mut 2));
     }
 }
