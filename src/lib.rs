@@ -94,14 +94,10 @@ impl Quranize {
     /// assert_eq!(q.get_locations("ن").next(), Some(&(68, 1, 1)));
     /// ```
     pub fn get_locations(&self, quran: &str) -> impl Iterator<Item = &(u8, u16, u8)> {
-        let mut node = &self.root;
-        for h in quran.chars() {
-            match node.next_harfs.iter().find(|c| c.content == h) {
-                Some(next_node) => node = next_node,
-                _ => return self.root.locations.iter(),
-            }
+        match self.root.get_locations(quran) {
+            None => self.root.locations.iter(),
+            Some(locations) => locations.iter(),
         }
-        node.locations.iter()
     }
 }
 
@@ -199,11 +195,13 @@ mod tests {
     #[test]
     fn test_locate() {
         let q = Quranize::new(5);
-        assert_eq!(q.get_locations("ن").next(), Some(&(68, 1, 1)));
         assert_eq!(q.get_locations("بسم").last(), Some(&(1, 1, 1)));
         assert_eq!(q.get_locations("والناس").next(), Some(&(114, 6, 3)));
         assert_eq!(q.get_locations("بسم الله الرحمن الرحيم").count(), 2);
         assert_eq!(q.get_locations("").next(), None);
+        assert_eq!(q.get_locations("ن").next(), Some(&(68, 1, 1)));
+        assert_eq!(q.get_locations("نن").next(), None);
+        assert_eq!(q.get_locations("ننن").next(), None);
         assert_eq!(q.get_locations("نننن").next(), None);
         assert_eq!(q.get_locations("2+3+4=9").next(), None);
     }

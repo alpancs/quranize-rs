@@ -7,6 +7,7 @@ use stack::Stack;
 use word_utils::WordSuffixIterExt;
 
 pub type EncodeResults<'a> = Vec<(String, Vec<&'a str>)>;
+type Location = (u8, u16, u8);
 
 pub fn build_quran_index(wcl: u8) -> Node {
     let mut root = Node::new('\0');
@@ -18,7 +19,7 @@ pub fn build_quran_index(wcl: u8) -> Node {
     root
 }
 
-fn expand_node(mut node: &mut Node, text: &str, location: (u8, u16, u8), wcl: u8) {
+fn expand_node(mut node: &mut Node, text: &str, location: Location, wcl: u8) {
     let mut word_count = 0;
     let next_chars = text.clean_chars().skip(1).chain(std::iter::once(' '));
     for (c, next_c) in text.clean_chars().zip(next_chars) {
@@ -36,7 +37,7 @@ fn expand_node(mut node: &mut Node, text: &str, location: (u8, u16, u8), wcl: u8
 pub struct Node {
     pub content: char,
     pub next_harfs: Stack<Node>,
-    pub locations: Stack<(u8, u16, u8)>,
+    pub locations: Stack<Location>,
 }
 
 impl Node {
@@ -46,6 +47,10 @@ impl Node {
             next_harfs: Stack::new(),
             locations: Stack::new(),
         }
+    }
+
+    pub fn get(&self, content: char) -> Option<&Self> {
+        self.next_harfs.iter().find(|n| n.content == content)
     }
 
     fn get_or_add(&mut self, content: char) -> &mut Self {
@@ -84,6 +89,17 @@ impl Node {
         }
         results
     }
+
+    pub fn get_locations(&self, quran: &str) -> Option<&Stack<Location>> {
+        let mut chars = quran.chars();
+        match chars.next() {
+            None => Some(&self.locations),
+            Some(c) => match self.get(c) {
+                None => None,
+                Some(subnode) => subnode.get_locations(chars.as_str()),
+            },
+        }
+    }
 }
 
 #[cfg(test)]
@@ -95,14 +111,7 @@ mod tests {
         let root = build_quran_index(u8::MAX);
         assert_eq!(root.content, '\0');
         assert_eq!(root.next_harfs.len(), 31);
-        assert_eq!(find_next(&root, 'ب').locations.len(), 0);
-        assert_eq!(find_next(&root, 'ن').locations.len(), 1);
-    }
-
-    fn find_next(node: &Node, target: char) -> &Node {
-        node.next_harfs
-            .iter()
-            .find(|h| h.content == target)
-            .unwrap()
+        assert_eq!(root.get('ب').unwrap().locations.len(), 0);
+        assert_eq!(root.get('ن').unwrap().locations.len(), 1);
     }
 }
