@@ -1,11 +1,12 @@
 mod stack;
 mod word_utils;
 
-use std::iter::once;
-
 use crate::quran::{self, CleanCharsExt};
+use crate::transliterations as trans;
 use stack::Stack;
 use word_utils::WordSuffixIterExt;
+
+pub type EncodeResults<'a> = Vec<(String, Vec<&'a str>)>;
 
 pub fn build_quran_index(wcl: u8) -> Node {
     let mut root = Node::new('\0');
@@ -19,7 +20,7 @@ pub fn build_quran_index(wcl: u8) -> Node {
 
 fn expand_node(mut node: &mut Node, text: &str, location: (u8, u16, u8), wcl: u8) {
     let mut word_count = 0;
-    let next_chars = text.clean_chars().skip(1).chain(once(' '));
+    let next_chars = text.clean_chars().skip(1).chain(std::iter::once(' '));
     for (c, next_c) in text.clean_chars().zip(next_chars) {
         node = node.get_or_add(c);
         if next_c == ' ' {
@@ -56,6 +57,32 @@ impl Node {
                 self.next_harfs.peek_mut().unwrap()
             }
         }
+    }
+
+    pub fn rev_encode<'a>(&'a self, text: &str) -> EncodeResults {
+        let mut results = EncodeResults::new();
+        if text.is_empty() && !self.locations.is_empty() {
+            results.push((String::new(), Vec::new()));
+        }
+        for subnode in self.next_harfs.iter() {
+            let prefixes = trans::map(subnode.content);
+            let additional_prefixes = trans::contextual_map(self.content, subnode.content);
+            for prefix in prefixes.iter().chain(additional_prefixes) {
+                if let Some(subtext) = text.strip_prefix(prefix) {
+                    results.append(&mut subnode.rev_encode_sub(subtext, prefix));
+                }
+            }
+        }
+        results
+    }
+
+    fn rev_encode_sub<'a>(&'a self, text: &str, expl: &'a str) -> EncodeResults {
+        let mut results = self.rev_encode(text);
+        for (q, e) in results.iter_mut() {
+            q.push(self.content);
+            e.push(expl);
+        }
+        results
     }
 }
 

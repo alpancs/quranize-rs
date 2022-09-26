@@ -29,10 +29,7 @@ mod quran_index;
 mod transliterations;
 
 pub use quran::AyaGetter;
-use quran_index::Node;
-use transliterations as trans;
-
-type EncodeResults<'a> = Vec<(String, Vec<&'a str>)>;
+use quran_index::{EncodeResults, Node};
 
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
@@ -74,39 +71,13 @@ impl Quranize {
 
     /// Encode `text` back into Quran form.
     pub fn encode(&self, text: &str) -> EncodeResults {
-        let mut results = self.rev_encode(&self.root, &normalization::normalize(text));
+        let mut results = self.root.rev_encode(&normalization::normalize(text));
         results.dedup_by(|(q1, _), (q2, _)| q1 == q2);
         for (q, e) in results.iter_mut() {
             *q = q.chars().rev().collect();
             e.reverse();
         }
         results.reverse();
-        results
-    }
-
-    fn rev_encode<'a>(&'a self, node: &'a Node, text: &str) -> EncodeResults {
-        let mut results = EncodeResults::new();
-        if text.is_empty() && !node.locations.is_empty() {
-            results.push((String::new(), Vec::new()));
-        }
-        for subnode in node.next_harfs.iter() {
-            let prefixes = trans::map(subnode.content);
-            let additional_prefixes = trans::contextual_map(node.content, subnode.content);
-            for prefix in prefixes.iter().chain(additional_prefixes) {
-                if let Some(subtext) = text.strip_prefix(prefix) {
-                    results.append(&mut self.rev_encode_sub(subnode, subtext, prefix));
-                }
-            }
-        }
-        results
-    }
-
-    fn rev_encode_sub<'a>(&'a self, node: &'a Node, text: &str, expl: &'a str) -> EncodeResults {
-        let mut results = self.rev_encode(node, text);
-        for (q, e) in results.iter_mut() {
-            q.push(node.content);
-            e.push(expl);
-        }
         results
     }
 
