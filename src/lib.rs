@@ -208,7 +208,7 @@ mod tests {
 
     #[test]
     fn all_stats() {
-        for wcl in 1..=10 {
+        for wcl in 1..=20 {
             stats(wcl);
         }
         stats(u8::MAX);
@@ -220,12 +220,12 @@ mod tests {
         let init_duration = std::time::SystemTime::now().duration_since(t0).unwrap();
         let leaf_depths = q.root.get_depths();
         println!(
-            "word count limit={}\ttotal nodes={}\ttotal leaves={}\tdepth avg={}\tinit duration={:#?}",
+            "word count limit={}\tinit duration={}ms\ttotal nodes={}\ttotal leaves={}\tdepth avg={}",
             wcl,
+            init_duration.as_millis(),
             thousand_sep(q.root.count()),
             thousand_sep(leaf_depths.len()),
             leaf_depths.iter().sum::<usize>() / leaf_depths.len(),
-            init_duration,
         );
     }
 
