@@ -101,6 +101,24 @@ impl Node {
     fn get(&self, content: char) -> Option<&Self> {
         self.next_harfs.iter().find(|n| n.content == content)
     }
+
+    #[cfg(test)]
+    pub fn count(&self) -> usize {
+        1 + self.next_harfs.iter().map(Self::count).sum::<usize>()
+    }
+
+    #[cfg(test)]
+    pub fn get_depths(&self) -> Vec<usize> {
+        match self.next_harfs.is_empty() {
+            true => vec![1],
+            false => self
+                .next_harfs
+                .iter()
+                .flat_map(Self::get_depths)
+                .map(|x| x + 1)
+                .collect(),
+        }
+    }
 }
 
 #[cfg(test)]
