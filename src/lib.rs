@@ -205,27 +205,4 @@ mod tests {
         assert_eq!(q.get_locations("نننن").next(), None);
         assert_eq!(q.get_locations("2+3+4=9").next(), None);
     }
-
-    #[test]
-    fn all_stats() {
-        for wcl in 1..=10 {
-            stats(wcl);
-        }
-        stats(u8::MAX);
-    }
-
-    fn stats(wcl: u8) {
-        let t0 = std::time::SystemTime::now();
-        let q = Quranize::new(wcl);
-        let init_duration = std::time::SystemTime::now().duration_since(t0).unwrap();
-        let leaf_depths = q.root.get_depths();
-        println!(
-            "word count limit={:#?},\ttotal nodes={:#?},\ttotal leaves={:#?},\tdepth avg={:#?},\tinit duration={:#?}",
-            wcl,
-            q.root.count(),
-            leaf_depths.len(),
-            leaf_depths.iter().sum::<usize>() / leaf_depths.len(),
-            init_duration,
-        );
-    }
 }
