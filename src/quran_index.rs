@@ -22,16 +22,14 @@ impl Node {
         }
     }
 
-    pub fn expand(&mut self, quran: &str, location: Location, harf_count_limit: u8) {
+    pub fn expand(&mut self, quran: &str, location: Location, harf_count_limit: usize) {
         let mut node = self;
-        let mut word_count = 0;
         let next_chars = quran.clean_chars().skip(1).chain(std::iter::once(' '));
-        for (c, next_c) in quran.clean_chars().zip(next_chars) {
+        for (i, (c, next_c)) in quran.clean_chars().zip(next_chars).enumerate() {
             node = node.get_or_add(c);
             if next_c == ' ' {
                 node.locations.push(location);
-                word_count += 1;
-                if word_count >= harf_count_limit {
+                if i + 1 >= harf_count_limit {
                     break;
                 }
             }
