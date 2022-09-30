@@ -220,19 +220,12 @@ mod tests {
         let init_duration = std::time::SystemTime::now().duration_since(t0).unwrap();
         let leaf_depths = q.root.get_depths();
         println!(
-            "word count limit={}\ttotal nodes={}\ttotal leaves={}\tdepth avg={}\tinit duration={:#?}",
+            "word count limit={:#?},\ttotal nodes={:#?},\ttotal leaves={:#?},\tdepth avg={:#?},\tinit duration={:#?}",
             wcl,
-            thousand_sep(q.root.count()),
-            thousand_sep(leaf_depths.len()),
+            q.root.count(),
+            leaf_depths.len(),
             leaf_depths.iter().sum::<usize>() / leaf_depths.len(),
             init_duration,
         );
-    }
-
-    fn thousand_sep(n: usize) -> String {
-        match n {
-            0..=999 => n.to_string(),
-            _ => format!("{},{:03}", thousand_sep(n / 1000), n % 1000),
-        }
     }
 }
