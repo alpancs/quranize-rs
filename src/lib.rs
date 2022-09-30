@@ -104,6 +104,7 @@ impl Quranize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rayon::prelude::*;
 
     #[test]
     fn test_quranize_short() {
@@ -208,10 +209,8 @@ mod tests {
 
     #[test]
     fn all_stats() {
-        for wcl in 1..=20 {
-            stats(wcl);
-        }
-        stats(u8::MAX);
+        println!("word count limit,init duration ms,total nodes,total leaves,depth avg");
+        (1..=u8::MAX).into_par_iter().for_each(stats);
     }
 
     fn stats(wcl: u8) {
@@ -220,19 +219,12 @@ mod tests {
         let init_duration = std::time::SystemTime::now().duration_since(t0).unwrap();
         let leaf_depths = q.root.get_depths();
         println!(
-            "word count limit={}\tinit duration={}ms\ttotal nodes={}\ttotal leaves={}\tdepth avg={}",
+            "{},{},{},{},{}",
             wcl,
             init_duration.as_millis(),
-            thousand_sep(q.root.count()),
-            thousand_sep(leaf_depths.len()),
+            q.root.count(),
+            leaf_depths.len(),
             leaf_depths.iter().sum::<usize>() / leaf_depths.len(),
         );
-    }
-
-    fn thousand_sep(n: usize) -> String {
-        match n {
-            0..=999 => n.to_string(),
-            _ => format!("{},{:03}", thousand_sep(n / 1000), n % 1000),
-        }
     }
 }
