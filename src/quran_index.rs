@@ -1,23 +1,11 @@
 mod stack;
-mod word_utils;
 
-use crate::quran::{self, CleanCharsExt};
+use crate::quran::CleanCharsExt;
 use crate::transliterations as trans;
 use stack::Stack;
-use word_utils::WordSuffixIterExt;
 
 pub type EncodeResults<'a> = Vec<(String, Vec<&'a str>)>;
 pub type Location = (u8, u16, u8);
-
-pub fn build_root(wcl: u8) -> Node {
-    let mut root = Node::new('\0');
-    for (s, a, q) in quran::iter() {
-        for (i, q) in q.word_suffixes().enumerate() {
-            root.expand(q, (s, a, i as u8 + 1), wcl);
-        }
-    }
-    root
-}
 
 pub struct Node {
     pub content: char,
@@ -26,7 +14,7 @@ pub struct Node {
 }
 
 impl Node {
-    fn new(content: char) -> Self {
+    pub fn new(content: char) -> Self {
         Self {
             content,
             next_harfs: Stack::new(),
@@ -34,7 +22,7 @@ impl Node {
         }
     }
 
-    fn expand(&mut self, quran: &str, location: Location, wcl: u8) {
+    pub fn expand(&mut self, quran: &str, location: Location, harf_count_limit: u8) {
         let mut node = self;
         let mut word_count = 0;
         let next_chars = quran.clean_chars().skip(1).chain(std::iter::once(' '));
@@ -43,7 +31,7 @@ impl Node {
             if next_c == ' ' {
                 node.locations.push(location);
                 word_count += 1;
-                if word_count >= wcl {
+                if word_count >= harf_count_limit {
                     break;
                 }
             }
@@ -98,21 +86,7 @@ impl Node {
         }
     }
 
-    fn get(&self, content: char) -> Option<&Self> {
+    pub fn get(&self, content: char) -> Option<&Self> {
         self.next_harfs.iter().find(|n| n.content == content)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_build_quran_index() {
-        let root = build_root(u8::MAX);
-        assert_eq!(root.content, '\0');
-        assert_eq!(root.next_harfs.len(), 31);
-        assert_eq!(root.get('ب').unwrap().locations.len(), 0);
-        assert_eq!(root.get('ن').unwrap().locations.len(), 1);
     }
 }

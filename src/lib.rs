@@ -27,9 +27,11 @@ mod normalization;
 mod quran;
 mod quran_index;
 mod transliterations;
+mod word_utils;
 
 pub use quran::AyaGetter;
 use quran_index::{EncodeResults, Location, Node};
+use word_utils::WordSuffixIterExt;
 
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
@@ -51,7 +53,7 @@ impl Default for Quranize {
 }
 
 impl Quranize {
-    /// Build `Quranize` with parameter `word_count_limit`.
+    /// Build `Quranize` with parameter `harf_count_limit`.
     /// It limits the number of consecutive words scanned by the indexer to reduce memory usage and indexing time.
     /// Use [`Quranize::default`] to build `Quranize` without the limit.
     ///
@@ -63,10 +65,14 @@ impl Quranize {
     /// let q = quranize::Quranize::new(1);
     /// assert_eq!(q.encode("masyaallah").first(), None);
     /// ```
-    pub fn new(word_count_limit: u8) -> Self {
-        Self {
-            root: quran_index::build_root(word_count_limit),
+    pub fn new(harf_count_limit: u8) -> Self {
+        let mut root = Node::new('\0');
+        for (s, a, q) in quran::iter() {
+            for (i, q) in q.word_suffixes().enumerate() {
+                root.expand(q, (s, a, i as u8 + 1), harf_count_limit);
+            }
         }
+        Self { root }
     }
 
     /// Encode `text` back into Quran form.
@@ -104,6 +110,15 @@ impl Quranize {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_build_root() {
+        let root = Quranize::new(u8::MAX).root;
+        assert_eq!(root.content, '\0');
+        assert_eq!(root.next_harfs.len(), 31);
+        assert_eq!(root.get('ب').unwrap().locations.len(), 0);
+        assert_eq!(root.get('ن').unwrap().locations.len(), 1);
+    }
 
     #[test]
     fn test_quranize_short() {
