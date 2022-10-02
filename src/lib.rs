@@ -46,7 +46,7 @@ impl Default for Quranize {
     /// # Examples
     ///
     /// ```
-    /// let q = quranize::Quranize::default();
+    /// let q = quranize::Quranize::default(); // the same with `Quranize::new(usize::MAX)`
     /// assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء الله");
     /// ```
     fn default() -> Self {
