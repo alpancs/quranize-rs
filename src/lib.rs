@@ -1,4 +1,5 @@
 //! Encodes alphabetic text to quran text.
+//! See [`Quranize`] for details.
 //!
 //! # Examples
 //!
@@ -39,7 +40,8 @@ pub struct Quranize {
 }
 
 impl Default for Quranize {
-    /// Build `Quranize` without [word count limit][Quranize::new].
+    /// Build [`Quranize`] with maximum `min_harfs` value.
+    /// It is equivalent with building [`Quranize`] without any harf limits.
     ///
     /// # Examples
     ///
@@ -53,10 +55,10 @@ impl Default for Quranize {
 }
 
 impl Quranize {
-    /// Build `Quranize` with parameter `min_harfs`.
+    /// Build [`Quranize`] with parameter `min_harfs`.
     /// The indexer will only scan quran harfs at least as many as `min_harfs` and stop at the nearest end of words.
     /// This strategy is implemented to reduce memory usage and indexing time.
-    /// Use [`Quranize::default`] to build `Quranize` with maximum `min_harfs` value (without limits).
+    /// Use [`Quranize::default`] to build [`Quranize`] with maximum `min_harfs` value (without limits).
     ///
     /// # Examples
     ///
