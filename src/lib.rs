@@ -53,7 +53,7 @@ impl Default for Quranize {
 }
 
 impl Quranize {
-    /// Build `Quranize` with parameter `harf_count_limit`.
+    /// Build `Quranize` with parameter `min_harfs`.
     /// It limits the number of consecutive words scanned by the indexer to reduce memory usage and indexing time.
     /// Use [`Quranize::default`] to build `Quranize` without the limit.
     ///
@@ -65,11 +65,11 @@ impl Quranize {
     /// let q = quranize::Quranize::new(1);
     /// assert_eq!(q.encode("masyaallah").first(), None);
     /// ```
-    pub fn new(harf_count_limit: usize) -> Self {
+    pub fn new(min_harfs: usize) -> Self {
         let mut root = Node::new('\0');
         for (s, a, q) in quran::iter() {
             for (i, q) in q.word_suffixes().enumerate() {
-                root.expand(q, (s, a, i as u8 + 1), harf_count_limit);
+                root.expand(q, (s, a, i as u8 + 1), min_harfs);
             }
         }
         Self { root }
