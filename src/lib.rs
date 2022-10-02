@@ -41,7 +41,7 @@ pub struct Quranize {
 
 impl Default for Quranize {
     /// Build [`Quranize`] with maximum `min_harfs` value.
-    /// It is equivalent with building [`Quranize`] without any harf limits.
+    /// It is equivalent to building [`Quranize`] without any harf limits.
     ///
     /// # Examples
     ///
