@@ -81,12 +81,12 @@ impl Quranize {
     /// Encode `text` back into Quran form.
     pub fn encode(&self, text: &str) -> EncodeResults {
         let mut results = self.root.rev_encode(&normalization::normalize(text));
+        results.sort();
         results.dedup_by(|(q1, _), (q2, _)| q1 == q2);
         for (q, e) in results.iter_mut() {
             *q = q.chars().rev().collect();
             e.reverse();
         }
-        results.reverse();
         results
     }
 
@@ -126,6 +126,7 @@ mod tests {
     #[test]
     fn test_quranize_short() {
         let q = Quranize::new(21);
+        assert_eq!(encode(&q, "allah"), vec!["آلله", "الله"]);
         assert_eq!(encode(&q, "alquran"), vec!["القرآن"]);
         assert_eq!(encode(&q, "alqur'an"), vec!["القرآن"]);
         assert_eq!(encode(&q, "bismillah"), vec!["بسم الله"]);
@@ -187,7 +188,7 @@ mod tests {
         assert_eq!(q.encode("bismillah")[0].1.len(), 8);
         assert_eq!(q.encode("arrohman").len(), 1);
         assert_eq!(q.encode("arrohman")[0].1.len(), 6);
-        assert_eq!(q.encode("alhamdu")[0].1, vec!["a", "l", "ha", "m", "du"]);
+        assert_eq!(q.encode("alhamdu")[0].1, vec!["al", "ha", "m", "du"]);
         assert_eq!(
             q.encode("arrohman")[0].1,
             vec!["a", "", "ro", "h", "ma", "n"]
@@ -208,6 +209,22 @@ mod tests {
         assert!(q.encode("bbb").is_empty());
         assert!(q.encode("abcd").is_empty());
         assert!(q.encode("1+2=3").is_empty());
+    }
+
+    #[test]
+    fn test_unique() {
+        let q = Quranize::new(14);
+        let texts = encode(&q, "allah");
+        assert!(is_unique(&texts), "{:#?}", texts);
+    }
+
+    fn is_unique(texts: &[String]) -> bool {
+        let mut texts = texts.to_owned();
+        texts.sort();
+        texts
+            .iter()
+            .zip(texts.iter().skip(1))
+            .fold(true, |acc, (t1, t2)| acc && t1 != t2)
     }
 
     #[test]
