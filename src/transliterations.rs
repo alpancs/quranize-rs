@@ -12,12 +12,8 @@ pub fn map(c: char) -> &'static [&'static str] {
         'ت' => &["t", "ta", "ti", "tu"],
         'ث' => &["ts", "tsa", "tsi", "tsu", "s", "sa", "si", "su"],
         'ج' => &["j", "ja", "ji", "ju"],
-        'ح' => &[
-            "h", "ha", "hi", "hu", "ch", "cha", "chi", "chu", "kh", "kha", "khi", "khu",
-        ],
-        'خ' => &[
-            "kh", "kho", "khi", "khu", "h", "ho", "hi", "hu", "kha", "ha",
-        ],
+        'ح' => &["h", "ha", "hi", "hu", "ch", "cha", "chi", "chu"],
+        'خ' => &["kh", "kho", "khi", "khu"],
         'د' => &["d", "da", "di", "du"],
         'ذ' => &[
             "d", "da", "di", "du", "dh", "dha", "dhi", "dhu", "dz", "dza", "dzi", "dzu",
