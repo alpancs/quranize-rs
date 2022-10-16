@@ -211,6 +211,22 @@ mod tests {
     }
 
     #[test]
+    fn test_unique() {
+        let q = Quranize::new(14);
+        let texts = encode(&q, "allah");
+        assert!(is_unique(&texts), "{:#?}", texts);
+    }
+
+    fn is_unique(texts: &[String]) -> bool {
+        let mut texts = texts.to_owned();
+        texts.sort();
+        texts
+            .iter()
+            .zip(texts.iter().skip(1))
+            .fold(true, |acc, (t1, t2)| acc && t1 != t2)
+    }
+
+    #[test]
     fn test_locate() {
         let q = Quranize::new(35);
         assert_eq!(q.get_locations("بسم").last(), Some(&(1, 1, 1)));
