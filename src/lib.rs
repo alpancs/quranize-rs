@@ -81,12 +81,12 @@ impl Quranize {
     /// Encode `text` back into Quran form.
     pub fn encode(&self, text: &str) -> EncodeResults {
         let mut results = self.root.rev_encode(&normalization::normalize(text));
+        results.sort();
         results.dedup_by(|(q1, _), (q2, _)| q1 == q2);
         for (q, e) in results.iter_mut() {
             *q = q.chars().rev().collect();
             e.reverse();
         }
-        results.reverse();
         results
     }
 
@@ -187,7 +187,7 @@ mod tests {
         assert_eq!(q.encode("bismillah")[0].1.len(), 8);
         assert_eq!(q.encode("arrohman").len(), 1);
         assert_eq!(q.encode("arrohman")[0].1.len(), 6);
-        assert_eq!(q.encode("alhamdu")[0].1, vec!["a", "l", "ha", "m", "du"]);
+        assert_eq!(q.encode("alhamdu")[0].1, vec!["al", "ha", "m", "du"]);
         assert_eq!(
             q.encode("arrohman")[0].1,
             vec!["a", "", "ro", "h", "ma", "n"]
