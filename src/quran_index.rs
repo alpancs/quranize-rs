@@ -77,10 +77,7 @@ impl Node {
         let mut chars = quran.chars();
         match chars.next() {
             None => Some(&self.locations),
-            Some(c) => match self.get(c) {
-                None => None,
-                Some(subnode) => subnode.get_locations(chars.as_str()),
-            },
+            Some(c) => self.get(c).and_then(|n| n.get_locations(chars.as_str())),
         }
     }
 
