@@ -145,6 +145,7 @@ mod tests {
         assert_eq!(encode(&q, "waladdoolin"), vec!["ولا الضالين"]);
         assert_eq!(encode(&q, "n"), vec!["ن"]);
         assert_eq!(encode(&q, "undur kaifa"), vec!["انظر كيف"]);
+        assert_eq!(encode(&q, "lirrohman"), vec!["للرحمن"]);
     }
 
     #[test]

@@ -59,6 +59,7 @@ pub fn contextual_map(prev_c: char, c: char) -> &'static [&'static str] {
     match (prev_c, c) {
         (' ', 'ا') | ('ا', 'ل') | ('و', 'ا') | ('أ', 'و') => &[""],
         ('\0', 'ا') => &["i", "u"],
+        ('ل', 'ل') => &["i"],
         _ => &[],
     }
 }
