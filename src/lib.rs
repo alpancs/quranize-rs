@@ -176,8 +176,7 @@ mod tests {
             vec!["اهدنا الصراط المستقيم"]
         );
         assert_eq!(
-            encode(
-                &q,
+            q.quran_results(
                 "shirotolladzina an'amta 'alaihim ghoiril maghdzubi 'alaihim waladdoolliin"
             ),
             vec!["صراط الذين أنعمت عليهم غير المغضوب عليهم ولا الضالين"]
