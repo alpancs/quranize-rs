@@ -31,6 +31,7 @@ mod transliterations;
 mod word_utils;
 
 pub use quran::AyaGetter;
+use quran::CleanCharsExt;
 use quran_index::{EncodeResults, Location, Node};
 use word_utils::WordSuffixIterExt;
 
@@ -71,6 +72,7 @@ impl Quranize {
     pub fn new(min_harfs: usize) -> Self {
         let mut root = Node::new('\0');
         for (s, a, q) in quran::iter() {
+            let q = q.clean_chars().collect::<String>();
             for (i, q) in q.word_suffixes().enumerate() {
                 root.expand(q, (s, a, i as u8 + 1), min_harfs);
             }

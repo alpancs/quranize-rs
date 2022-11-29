@@ -1,6 +1,5 @@
 mod stack;
 
-use crate::quran::CleanCharsExt;
 use crate::transliterations as trans;
 use stack::Stack;
 
@@ -24,8 +23,8 @@ impl Node {
 
     pub fn expand(&mut self, quran: &str, location: Location, min_harfs: usize) {
         let mut node = self;
-        let next_chars = quran.clean_chars().skip(1).chain(std::iter::once(' '));
-        for (i, (c, next_c)) in quran.clean_chars().zip(next_chars).enumerate() {
+        let next_chars = quran.chars().skip(1).chain(std::iter::once(' '));
+        for (i, (c, next_c)) in quran.chars().zip(next_chars).enumerate() {
             node = node.get_or_add(c);
             if next_c == ' ' {
                 node.locations.push(location);
