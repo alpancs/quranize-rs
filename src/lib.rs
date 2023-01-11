@@ -151,9 +151,15 @@ mod tests {
         assert_eq!(q.quran_results("wasalamun alaihi"), vec!["وسلام عليه"]);
         assert_eq!(q.quran_results("ulaika hum"), vec!["أولئك هم"]);
         assert_eq!(q.quran_results("waladdoolin"), vec!["ولا الضالين"]);
-        assert_eq!(q.quran_results("n"), vec!["ن"]);
         assert_eq!(q.quran_results("undur kaifa"), vec!["انظر كيف"]);
         assert_eq!(q.quran_results("lirrohman"), vec!["للرحمن"]);
+    }
+
+    #[test]
+    fn test_first_aya() {
+        let q = Quranize::new(1);
+        assert_eq!(q.quran_results("alif lam mim"), vec!["الم"]);
+        assert_eq!(q.quran_results("nuun"), vec!["ن"]);
     }
 
     #[test]
