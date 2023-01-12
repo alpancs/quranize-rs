@@ -3,7 +3,9 @@ pub fn normalize(text: &str) -> String {
         c @ ('a'..='z' | '\'') => Some(c),
         _ => None,
     }));
-    chars.dedup_by(|a, b| a == b && *a != 'l' && *a != 'a' && *a != 'o' && *a != 'i' && *a != 'u');
+    chars.dedup_by(|&mut a, &mut b| {
+        a == b && !(a == 'l' || a == 'a' || a == 'o' || a == 'i' || a == 'u')
+    });
     chars.into_iter().collect()
 }
 
