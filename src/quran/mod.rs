@@ -9,7 +9,7 @@ const SURA_COUNT: usize = 114;
 const AYA_COUNT: usize = 6236;
 
 /// Accept raw Quran string, return an iterator for each ayah in the Quran with surah number and ayah number.
-pub fn iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
+pub(crate) fn iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
     iter_quran(SIMPLE_PLAIN)
 }
 
@@ -29,7 +29,7 @@ fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     })
 }
 
-pub trait CleanCharsExt {
+pub(crate) trait CleanCharsExt {
     fn clean_chars(&self) -> Filter<Chars, fn(&char) -> bool>;
 }
 

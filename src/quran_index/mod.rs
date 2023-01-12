@@ -6,7 +6,7 @@ use stack::Stack;
 pub type EncodeResults<'a> = Vec<(String, Vec<&'a str>)>;
 pub type Location = (u8, u16, u8);
 
-pub struct Node {
+pub(crate) struct Node {
     pub content: char,
     pub next_harfs: Stack<Node>,
     pub locations: Stack<Location>,
@@ -46,7 +46,7 @@ impl Node {
         }
     }
 
-    pub(crate) fn rev_encode<'a>(&'a self, text: &str) -> EncodeResults {
+    pub fn rev_encode<'a>(&'a self, text: &str) -> EncodeResults {
         let mut results = EncodeResults::new();
         if text.is_empty() && !self.locations.is_empty() {
             results.push((String::new(), Vec::new()));
@@ -73,7 +73,7 @@ impl Node {
         results
     }
 
-    pub(crate) fn rev_encode_first_aya<'a>(&'a self, text: &str) -> EncodeResults {
+    pub fn rev_encode_first_aya<'a>(&'a self, text: &str) -> EncodeResults {
         let mut results = EncodeResults::new();
         if text.is_empty() && self.containing_first_aya() {
             results.push((String::new(), Vec::new()));
@@ -101,7 +101,7 @@ impl Node {
         results
     }
 
-    pub(crate) fn get_locations(&self, quran: &str) -> Option<&Stack<Location>> {
+    pub fn get_locations(&self, quran: &str) -> Option<&Stack<Location>> {
         let mut chars = quran.chars();
         match chars.next() {
             None => Some(&self.locations),

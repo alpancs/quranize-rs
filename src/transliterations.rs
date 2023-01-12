@@ -1,4 +1,4 @@
-pub fn map(c: char) -> &'static [&'static str] {
+pub(crate) fn map(c: char) -> &'static [&'static str] {
     match c {
         'ء' => &["'", "k", "a", "i", "u"],
         'آ' => &["a", "'a", "aa"],
@@ -55,7 +55,7 @@ pub fn map(c: char) -> &'static [&'static str] {
     }
 }
 
-pub fn contextual_map(prev_c: char, c: char) -> &'static [&'static str] {
+pub(crate) fn contextual_map(prev_c: char, c: char) -> &'static [&'static str] {
     match (prev_c, c) {
         (' ', 'ا') | ('ا', 'ل') | ('و', 'ا') | ('أ', 'و') => &[""],
         ('\0', 'ا') => &["i", "u"],
@@ -64,7 +64,7 @@ pub fn contextual_map(prev_c: char, c: char) -> &'static [&'static str] {
     }
 }
 
-pub fn single_harf_map(c: char) -> &'static [&'static str] {
+pub(crate) fn single_harf_map(c: char) -> &'static [&'static str] {
     match c {
         'ا' => &["alif"],
         'ب' => &["ba"],

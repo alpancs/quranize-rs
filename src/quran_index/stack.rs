@@ -1,6 +1,6 @@
 // Reference: https://rust-unofficial.github.io/too-many-lists/second-final.html
 
-pub struct Stack<T> {
+pub(crate) struct Stack<T> {
     head: Option<Box<Node<T>>>,
 }
 
