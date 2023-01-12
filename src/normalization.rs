@@ -4,16 +4,16 @@ pub fn normalize(text: &str) -> String {
         _ => None,
     }));
     chars.dedup_by(|a, b| a == b && *a != 'l' && *a != 'a' && *a != 'o' && *a != 'i' && *a != 'u');
-    String::from_iter(chars)
+    chars.into_iter().collect()
 }
 
 pub fn normalize_first_aya(text: &str) -> String {
-    text.chars()
-        .filter_map(|c| match c.to_ascii_lowercase() {
-            c @ ('a'..='z' | '\'') => Some(c),
-            _ => None,
-        })
-        .collect()
+    let mut chars = Vec::from_iter(text.chars().filter_map(|c| match c.to_ascii_lowercase() {
+        c @ ('a'..='z' | '\'' | ' ') => Some(c),
+        _ => None,
+    }));
+    chars.dedup_by(|&mut a, &mut b| a == b && (a == 'a' || a == 'o' || a == 'i' || a == 'u'));
+    chars.into_iter().filter(|&c| c != ' ').collect()
 }
 
 #[cfg(test)]

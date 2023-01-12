@@ -161,7 +161,9 @@ mod tests {
     fn test_first_aya() {
         let q = Quranize::new(1);
         assert_eq!(q.quran_results("alif lam mim"), vec!["الم"]);
+        assert_eq!(q.quran_results("alif laaam miiim"), vec!["الم"]);
         assert_eq!(q.quran_results("nuun"), vec!["ن"]);
+        assert_eq!(q.quran_results("kaaaf haa yaa aiiin shoood"), vec!["كهيعص"]);
     }
 
     #[test]
