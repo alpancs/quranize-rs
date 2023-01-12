@@ -32,4 +32,22 @@ mod tests {
             "bismillahirohmanirohiim"
         );
     }
+
+    #[test]
+    fn test_normalize_first_aya() {
+        assert_eq!(normalize_first_aya(""), "");
+        assert_eq!(normalize_first_aya("alif"), "alif");
+        assert_eq!(normalize_first_aya("laam"), "lam");
+        assert_eq!(normalize_first_aya("laaam"), "lam");
+        assert_eq!(normalize_first_aya("laaaam"), "lam");
+        assert_eq!(normalize_first_aya("laaaam"), "lam");
+        assert_eq!(
+            normalize_first_aya("kaaaf haa yaa aiiin shoood"),
+            "kafhayaainshod"
+        );
+        assert_eq!(
+            normalize_first_aya("kaaaf haa yaa 'aiiin shoood"),
+            "kafhaya'ainshod"
+        );
+    }
 }
