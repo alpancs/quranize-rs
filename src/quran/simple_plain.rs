@@ -1,5 +1,5 @@
 /// Tanzil Quran Text (Simple Plain, Version 1.1)
-pub const RAW_QURAN: &str = r#"
+pub(crate) const RAW_QURAN: &str = r#"
 1|1|بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ
 1|2|الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ
 1|3|الرَّحْمَـٰنِ الرَّحِيمِ

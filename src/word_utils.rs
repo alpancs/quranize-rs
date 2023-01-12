@@ -1,4 +1,4 @@
-pub struct WordSuffixIter<'a> {
+pub(crate) struct WordSuffixIter<'a> {
     chars: std::str::Chars<'a>,
 }
 
@@ -14,7 +14,7 @@ impl<'a> Iterator for WordSuffixIter<'a> {
     }
 }
 
-pub trait WordSuffixIterExt {
+pub(crate) trait WordSuffixIterExt {
     fn word_suffixes(&self) -> WordSuffixIter;
 }
 
