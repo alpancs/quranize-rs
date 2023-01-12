@@ -226,7 +226,7 @@ mod tests {
     #[test]
     fn test_unique() {
         let q = Quranize::new(14);
-        let texts = q.quran_results("allah");
+        let texts = q.quran_results("ALLAH");
         assert!(is_unique(&texts), "{:#?}", texts);
     }
 
