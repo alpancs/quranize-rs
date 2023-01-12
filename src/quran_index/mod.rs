@@ -52,14 +52,10 @@ impl Node {
             results.push((String::new(), Vec::new()));
         }
         for subnode in self.next_harfs.iter() {
-            let prefixes = trans::map(subnode.content)
+            for prefix in trans::map(subnode.content)
                 .iter()
                 .chain(trans::contextual_map(self.content, subnode.content))
-                .chain(match subnode.containing_first_aya() {
-                    true => trans::single_harf_map(subnode.content),
-                    _ => &[],
-                });
-            for prefix in prefixes {
+            {
                 if let Some(subtext) = text.strip_prefix(prefix) {
                     results.append(&mut subnode.rev_encode_sub(subtext, prefix));
                 }
@@ -87,9 +83,5 @@ impl Node {
 
     pub fn get(&self, content: char) -> Option<&Self> {
         self.next_harfs.iter().find(|n| n.content == content)
-    }
-
-    fn containing_first_aya(&self) -> bool {
-        self.locations.iter().any(|&(_, a, _)| a == 1)
     }
 }
