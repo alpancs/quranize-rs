@@ -52,10 +52,10 @@ impl Node {
             results.push((String::new(), Vec::new()));
         }
         for subnode in self.next_harfs.iter() {
-            for prefix in trans::map(subnode.content)
+            let prefixes = trans::map(subnode.content)
                 .iter()
-                .chain(trans::contextual_map(self.content, subnode.content))
-            {
+                .chain(trans::contextual_map(self.content, subnode.content));
+            for prefix in prefixes {
                 if let Some(subtext) = text.strip_prefix(prefix) {
                     results.append(&mut subnode.rev_encode_sub(subtext, prefix));
                 }
