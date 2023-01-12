@@ -63,3 +63,37 @@ pub fn contextual_map(prev_c: char, c: char) -> &'static [&'static str] {
         _ => &[],
     }
 }
+
+pub fn single_harf_map(c: char) -> &'static [&'static str] {
+    match c {
+        'ا' => &["alif"],
+        'ب' => &["ba"],
+        'ت' => &["ta"],
+        'ث' => &["tsa", "sa"],
+        'ج' => &["jim"],
+        'ح' => &["ha", "cha"],
+        'خ' => &["kho"],
+        'د' => &["dal"],
+        'ذ' => &["dzal", "dhal"],
+        'ر' => &["ro"],
+        'ز' => &["za"],
+        'س' => &["sin"],
+        'ش' => &["syin", "shin"],
+        'ص' => &["shod", "shot", "sod", "sot"],
+        'ض' => &["dhod", "dhot", "dzod", "dzot", "dod", "dot"],
+        'ط' => &["tho", "to"],
+        'ظ' => &["dho", "dzo", "do"],
+        'ع' => &["'ain", "ain"],
+        'غ' => &["ghoin", "goin", "ghin", "gin"],
+        'ف' => &["fa"],
+        'ق' => &["qof", "kof"],
+        'ك' => &["kaf"],
+        'ل' => &["lam"],
+        'م' => &["mim"],
+        'ن' => &["nun"],
+        'ه' => &["ha"],
+        'و' => &["wawu", "wau"],
+        'ي' => &["ya"],
+        _ => &[],
+    }
+}

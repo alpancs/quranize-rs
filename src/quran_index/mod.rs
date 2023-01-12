@@ -52,9 +52,10 @@ impl Node {
             results.push((String::new(), Vec::new()));
         }
         for subnode in self.next_harfs.iter() {
-            let prefixes = trans::map(subnode.content);
-            let additional_prefixes = trans::contextual_map(self.content, subnode.content);
-            for prefix in prefixes.iter().chain(additional_prefixes) {
+            let prefixes = trans::map(subnode.content)
+                .iter()
+                .chain(trans::contextual_map(self.content, subnode.content));
+            for prefix in prefixes {
                 if let Some(subtext) = text.strip_prefix(prefix) {
                     results.append(&mut subnode.rev_encode_sub(subtext, prefix));
                 }
@@ -65,6 +66,34 @@ impl Node {
 
     fn rev_encode_sub<'a>(&'a self, text: &str, expl: &'a str) -> EncodeResults {
         let mut results = self.rev_encode(text);
+        for (q, e) in results.iter_mut() {
+            q.push(self.content);
+            e.push(expl);
+        }
+        results
+    }
+
+    pub(crate) fn rev_encode_first_aya<'a>(&'a self, text: &str) -> EncodeResults {
+        let mut results = EncodeResults::new();
+        if text.is_empty() && self.containing_first_aya() {
+            results.push((String::new(), Vec::new()));
+        }
+        for subnode in self.next_harfs.iter() {
+            for prefix in trans::single_harf_map(subnode.content) {
+                if let Some(subtext) = text.strip_prefix(prefix) {
+                    results.append(&mut subnode.rev_encode_sub_first_aya(subtext, prefix));
+                }
+            }
+        }
+        results
+    }
+
+    fn containing_first_aya(&self) -> bool {
+        self.locations.iter().any(|&(_, a, _)| a == 1)
+    }
+
+    fn rev_encode_sub_first_aya<'a>(&'a self, text: &str, expl: &'a str) -> EncodeResults {
+        let mut results = self.rev_encode_first_aya(text);
         for (q, e) in results.iter_mut() {
             q.push(self.content);
             e.push(expl);

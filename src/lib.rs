@@ -30,6 +30,7 @@ mod quran_index;
 mod transliterations;
 mod word_utils;
 
+use normalization::{normalize, normalize_first_aya};
 pub use quran::AyaGetter;
 use quran::CleanCharsExt;
 use quran_index::{EncodeResults, Location, Node};
@@ -82,7 +83,8 @@ impl Quranize {
 
     /// Encode `text` back into Quran form.
     pub fn encode(&self, text: &str) -> EncodeResults {
-        let mut results = self.root.rev_encode(&normalization::normalize(text));
+        let mut results = self.root.rev_encode(&normalize(text));
+        results.append(&mut self.root.rev_encode_first_aya(&normalize_first_aya(text)));
         results.sort();
         results.dedup_by(|(q1, _), (q2, _)| q1 == q2);
         for (q, e) in results.iter_mut() {
@@ -151,9 +153,18 @@ mod tests {
         assert_eq!(q.quran_results("wasalamun alaihi"), vec!["وسلام عليه"]);
         assert_eq!(q.quran_results("ulaika hum"), vec!["أولئك هم"]);
         assert_eq!(q.quran_results("waladdoolin"), vec!["ولا الضالين"]);
-        assert_eq!(q.quran_results("n"), vec!["ن"]);
         assert_eq!(q.quran_results("undur kaifa"), vec!["انظر كيف"]);
         assert_eq!(q.quran_results("lirrohman"), vec!["للرحمن"]);
+    }
+
+    #[test]
+    fn test_first_aya() {
+        let q = Quranize::new(1);
+        assert_eq!(q.quran_results("alif lam mim"), vec!["الم"]);
+        assert_eq!(q.quran_results("alif laaam miiim"), vec!["الم"]);
+        assert_eq!(q.quran_results("nuun"), vec!["ن"]);
+        assert_eq!(q.quran_results("kaaaf haa yaa aiiin shoood"), vec!["كهيعص"]);
+        assert_eq!(q.quran_results("kaf ha ya 'ain shod"), vec!["كهيعص"]);
     }
 
     #[test]
@@ -188,7 +199,7 @@ mod tests {
 
     #[test]
     fn test_quranize_misc() {
-        let q = Quranize::new(21);
+        let q = Quranize::new(14);
         assert_eq!(q.encode("bismillah")[0].1.len(), 8);
         assert_eq!(q.encode("arrohman").len(), 1);
         assert_eq!(q.encode("arrohman")[0].1.len(), 6);
@@ -218,7 +229,7 @@ mod tests {
     #[test]
     fn test_unique() {
         let q = Quranize::new(14);
-        let texts = q.quran_results("allah");
+        let texts = q.quran_results("ALLAH");
         assert!(is_unique(&texts), "{:#?}", texts);
     }
 
@@ -233,7 +244,7 @@ mod tests {
 
     #[test]
     fn test_locate() {
-        let q = Quranize::new(35);
+        let q = Quranize::new(21);
         assert_eq!(q.get_locations("بسم").last(), Some(&(1, 1, 1)));
         assert_eq!(q.get_locations("والناس").next(), Some(&(114, 6, 3)));
         assert_eq!(q.get_locations("بسم الله الرحمن الرحيم").count(), 2);
