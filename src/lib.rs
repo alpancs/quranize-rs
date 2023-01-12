@@ -30,6 +30,7 @@ mod quran_index;
 mod transliterations;
 mod word_utils;
 
+use normalization::{normalize, normalize_first_aya};
 pub use quran::AyaGetter;
 use quran::CleanCharsExt;
 use quran_index::{EncodeResults, Location, Node};
@@ -82,7 +83,8 @@ impl Quranize {
 
     /// Encode `text` back into Quran form.
     pub fn encode(&self, text: &str) -> EncodeResults {
-        let mut results = self.root.rev_encode(&normalization::normalize(text));
+        let mut results = self.root.rev_encode(&normalize(text));
+        results.append(&mut self.root.rev_encode_first_aya(&normalize_first_aya(text)));
         results.sort();
         results.dedup_by(|(q1, _), (q2, _)| q1 == q2);
         for (q, e) in results.iter_mut() {

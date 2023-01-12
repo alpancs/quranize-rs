@@ -7,6 +7,15 @@ pub fn normalize(text: &str) -> String {
     String::from_iter(chars)
 }
 
+pub fn normalize_first_aya(text: &str) -> String {
+    text.chars()
+        .filter_map(|c| match c.to_ascii_lowercase() {
+            c @ ('a'..='z' | '\'') => Some(c),
+            _ => None,
+        })
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
