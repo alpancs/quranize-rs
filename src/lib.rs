@@ -198,7 +198,7 @@ mod tests {
 
     #[test]
     fn test_quranize_misc() {
-        let q = Quranize::new(21);
+        let q = Quranize::new(14);
         assert_eq!(q.encode("bismillah")[0].1.len(), 8);
         assert_eq!(q.encode("arrohman").len(), 1);
         assert_eq!(q.encode("arrohman")[0].1.len(), 6);
@@ -243,7 +243,7 @@ mod tests {
 
     #[test]
     fn test_locate() {
-        let q = Quranize::new(35);
+        let q = Quranize::new(21);
         assert_eq!(q.get_locations("بسم").last(), Some(&(1, 1, 1)));
         assert_eq!(q.get_locations("والناس").next(), Some(&(114, 6, 3)));
         assert_eq!(q.get_locations("بسم الله الرحمن الرحيم").count(), 2);
