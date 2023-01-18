@@ -137,6 +137,7 @@ mod tests {
     fn test_quranize_short() {
         let q = Quranize::new(21);
         assert_eq!(q.quran_results("allah"), vec!["آلله", "الله"]);
+        assert_eq!(q.quran_results("illa billah"), vec!["إلا بالله"]);
         assert_eq!(q.quran_results("alquran"), vec!["القرآن"]);
         assert_eq!(q.quran_results("alqur'an"), vec!["القرآن"]);
         assert_eq!(q.quran_results("bismillah"), vec!["بسم الله"]);
