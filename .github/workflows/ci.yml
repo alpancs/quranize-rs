@@ -3,18 +3,7 @@ name: Continuous Integration
 on: push
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
-  lint:
+  rust-ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -23,6 +12,15 @@ jobs:
           toolchain: stable
           profile: minimal
           components: clippy
-      - uses: actions-rs/clippy-check@v1
+      - name: Lint
+        uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+      - name: Security audit
+        uses: actions-rs/audit-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
