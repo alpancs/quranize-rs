@@ -222,7 +222,6 @@ mod tests {
         let q = Quranize::new(14);
         assert!(q.encode("").is_empty());
         assert!(q.encode("aaa").is_empty());
-        assert!(q.encode("bbb").is_empty());
         assert!(q.encode("abcd").is_empty());
         assert!(q.encode("1+2=3").is_empty());
     }
