@@ -46,7 +46,7 @@ impl Node {
         }
     }
 
-    pub fn rev_encode<'a>(&'a self, text: &str) -> EncodeResults {
+    pub fn rev_encode(&self, text: &str) -> EncodeResults {
         let mut results = EncodeResults::new();
         if text.is_empty() && !self.locations.is_empty() {
             results.push((String::new(), Vec::new()));
@@ -73,7 +73,7 @@ impl Node {
         results
     }
 
-    pub fn rev_encode_first_aya<'a>(&'a self, text: &str) -> EncodeResults {
+    pub fn rev_encode_first_aya(&self, text: &str) -> EncodeResults {
         let mut results = EncodeResults::new();
         if text.is_empty() && self.containing_first_aya() {
             results.push((String::new(), Vec::new()));
