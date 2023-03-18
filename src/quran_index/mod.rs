@@ -1,22 +1,24 @@
-mod stack;
-
 use crate::transliterations as trans;
-use stack::Stack;
 
 pub type EncodeResults<'a> = Vec<(String, Vec<&'a str>)>;
 pub type Location = (u8, u16, u8);
 
 pub(crate) struct Node {
     pub harf: char,
-    pub next_harfs: Stack<Node>,
+    pub childs: Option<Box<Nodes>>,
     pub locations: Vec<Location>,
+}
+
+pub(crate) struct Nodes {
+    head: Node,
+    tail: Option<Box<Nodes>>,
 }
 
 impl Node {
     pub fn new(content: char) -> Self {
         Self {
             harf: content,
-            next_harfs: Stack::new(),
+            childs: Default::default(),
             locations: Default::default(),
         }
     }
@@ -35,13 +37,16 @@ impl Node {
         }
     }
 
-    fn get_or_add(&mut self, content: char) -> &mut Self {
-        let pos = self.next_harfs.iter().position(|n| n.harf == content);
+    fn get_or_add(&mut self, harf: char) -> &mut Self {
+        let pos = self.iter().position(|n| n.harf == harf);
         match pos {
-            Some(index) => self.next_harfs.iter_mut().nth(index).unwrap(),
+            Some(index) => self.iter_mut().nth(index).unwrap(),
             None => {
-                self.next_harfs.push(Node::new(content));
-                self.next_harfs.peek_mut().unwrap()
+                self.childs = Some(Box::new(Nodes {
+                    head: Node::new(harf),
+                    tail: self.childs.take(),
+                }));
+                &mut self.childs.as_mut().unwrap().head
             }
         }
     }
@@ -51,7 +56,7 @@ impl Node {
         if text.is_empty() && !self.locations.is_empty() {
             results.push((String::new(), Vec::new()));
         }
-        for subnode in self.next_harfs.iter() {
+        for subnode in self.iter() {
             let prefixes = trans::map(subnode.harf)
                 .iter()
                 .chain(trans::contextual_map(self.harf, subnode.harf));
@@ -78,7 +83,7 @@ impl Node {
         if text.is_empty() && self.containing_first_aya() {
             results.push((String::new(), Vec::new()));
         }
-        for subnode in self.next_harfs.iter() {
+        for subnode in self.iter() {
             for prefix in trans::single_harf_map(subnode.harf) {
                 if let Some(subtext) = text.strip_prefix(prefix) {
                     results.append(&mut subnode.rev_encode_sub_first_aya(subtext, prefix));
@@ -109,7 +114,52 @@ impl Node {
         }
     }
 
-    pub fn get(&self, content: char) -> Option<&Self> {
-        self.next_harfs.iter().find(|n| n.harf == content)
+    pub fn get(&self, harf: char) -> Option<&Self> {
+        self.iter().find(|n| n.harf == harf)
+    }
+
+    fn iter(&self) -> Iter {
+        Iter {
+            childs: self.childs.as_deref(),
+        }
+    }
+
+    fn iter_mut(&mut self) -> IterMut {
+        IterMut {
+            childs: self.childs.as_deref_mut(),
+        }
+    }
+
+    #[cfg(test)]
+    pub fn child_count(&self) -> usize {
+        self.iter().count()
+    }
+}
+
+struct Iter<'a> {
+    childs: Option<&'a Nodes>,
+}
+
+impl<'a> Iterator for Iter<'a> {
+    type Item = &'a Node;
+    fn next(&mut self) -> Option<Self::Item> {
+        self.childs.map(|nodes| {
+            self.childs = nodes.tail.as_deref();
+            &nodes.head
+        })
+    }
+}
+
+struct IterMut<'a> {
+    childs: Option<&'a mut Nodes>,
+}
+
+impl<'a> Iterator for IterMut<'a> {
+    type Item = &'a mut Node;
+    fn next(&mut self) -> Option<Self::Item> {
+        self.childs.take().map(|nodes| {
+            self.childs = nodes.tail.as_deref_mut();
+            &mut nodes.head
+        })
     }
 }

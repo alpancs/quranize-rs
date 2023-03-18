@@ -123,7 +123,7 @@ mod tests {
     fn test_build_root() {
         let root = Quranize::new(1).root;
         assert_eq!(root.harf, '\0');
-        assert_eq!(root.next_harfs.len(), 31);
+        assert_eq!(root.child_count(), 31);
         assert_eq!(root.get('ب').unwrap().locations.len(), 0);
         assert_eq!(root.get('ن').unwrap().locations.len(), 1);
     }
