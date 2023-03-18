@@ -105,10 +105,7 @@ impl Quranize {
     /// assert_eq!(q.get_locations("ن").first(), Some(&(68, 1, 1)));
     /// ```
     pub fn get_locations(&self, quran: &str) -> &[Location] {
-        match self.root.get_locations(quran) {
-            Some(locations) => locations,
-            None => &self.root.locations,
-        }
+        self.root.get_locations(quran).unwrap_or_default()
     }
 }
 
