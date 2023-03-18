@@ -7,7 +7,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! quranize = "0.8"
+//! quranize = "0.9"
 //! ```
 //!
 //! ## Encoding alphabetic text to quran text
@@ -95,22 +95,17 @@ impl Quranize {
     }
 
     /// Get locations from the given `quran` text.
-    /// Each location is a reference to a tuple that contains sura number, aya number, and word number within the aya.
-    ///
-    /// Note that the locations are returned in descending order (from the last word of الناس to the first word of الفاتحة).
+    /// Each location is a reference to a tuple that contains "sura number", "aya number", and "word number" within the aya.
     ///
     /// # Examples
     ///
     /// ```
     /// let q = quranize::Quranize::new(5);
-    /// assert_eq!(q.get_locations("بسم").last(), Some(&(1, 1, 1)));
-    /// assert_eq!(q.get_locations("ن").next(), Some(&(68, 1, 1)));
+    /// assert_eq!(q.get_locations("بسم").first(), Some(&(1, 1, 1)));
+    /// assert_eq!(q.get_locations("ن").first(), Some(&(68, 1, 1)));
     /// ```
-    pub fn get_locations(&self, quran: &str) -> impl Iterator<Item = &Location> {
-        match self.root.get_locations(quran) {
-            None => self.root.locations.iter(),
-            Some(locations) => locations.iter(),
-        }
+    pub fn get_locations(&self, quran: &str) -> &[Location] {
+        self.root.get_locations(quran).unwrap_or_default()
     }
 }
 
@@ -127,8 +122,8 @@ mod tests {
     #[test]
     fn test_build_root() {
         let root = Quranize::new(1).root;
-        assert_eq!(root.content, '\0');
-        assert_eq!(root.next_harfs.len(), 31);
+        assert_eq!(root.harf, '\0');
+        assert_eq!(root.child_count(), 31);
         assert_eq!(root.get('ب').unwrap().locations.len(), 0);
         assert_eq!(root.get('ن').unwrap().locations.len(), 1);
     }
@@ -245,14 +240,14 @@ mod tests {
     #[test]
     fn test_locate() {
         let q = Quranize::new(21);
-        assert_eq!(q.get_locations("بسم").last(), Some(&(1, 1, 1)));
-        assert_eq!(q.get_locations("والناس").next(), Some(&(114, 6, 3)));
-        assert_eq!(q.get_locations("بسم الله الرحمن الرحيم").count(), 2);
-        assert_eq!(q.get_locations("").next(), None);
-        assert_eq!(q.get_locations("ن").next(), Some(&(68, 1, 1)));
-        assert_eq!(q.get_locations("نن").next(), None);
-        assert_eq!(q.get_locations("ننن").next(), None);
-        assert_eq!(q.get_locations("نننن").next(), None);
-        assert_eq!(q.get_locations("2+3+4=9").next(), None);
+        assert_eq!(q.get_locations("بسم").first(), Some(&(1, 1, 1)));
+        assert_eq!(q.get_locations("والناس").last(), Some(&(114, 6, 3)));
+        assert_eq!(q.get_locations("بسم الله الرحمن الرحيم").len(), 2);
+        assert_eq!(q.get_locations("").first(), None);
+        assert_eq!(q.get_locations("ن").first(), Some(&(68, 1, 1)));
+        assert_eq!(q.get_locations("نن").first(), None);
+        assert_eq!(q.get_locations("ننن").first(), None);
+        assert_eq!(q.get_locations("نننن").first(), None);
+        assert_eq!(q.get_locations("2+3+4=9").first(), None);
     }
 }
