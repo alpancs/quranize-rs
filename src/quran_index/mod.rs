@@ -7,7 +7,7 @@ pub type EncodeResults<'a> = Vec<(String, Vec<&'a str>)>;
 pub type Location = (u8, u16, u8);
 
 pub(crate) struct Node {
-    pub content: char,
+    pub harf: char,
     pub next_harfs: Stack<Node>,
     pub locations: Vec<Location>,
 }
@@ -15,7 +15,7 @@ pub(crate) struct Node {
 impl Node {
     pub fn new(content: char) -> Self {
         Self {
-            content,
+            harf: content,
             next_harfs: Stack::new(),
             locations: Default::default(),
         }
@@ -36,7 +36,7 @@ impl Node {
     }
 
     fn get_or_add(&mut self, content: char) -> &mut Self {
-        let pos = self.next_harfs.iter().position(|n| n.content == content);
+        let pos = self.next_harfs.iter().position(|n| n.harf == content);
         match pos {
             Some(index) => self.next_harfs.iter_mut().nth(index).unwrap(),
             None => {
@@ -52,9 +52,9 @@ impl Node {
             results.push((String::new(), Vec::new()));
         }
         for subnode in self.next_harfs.iter() {
-            let prefixes = trans::map(subnode.content)
+            let prefixes = trans::map(subnode.harf)
                 .iter()
-                .chain(trans::contextual_map(self.content, subnode.content));
+                .chain(trans::contextual_map(self.harf, subnode.harf));
             for prefix in prefixes {
                 if let Some(subtext) = text.strip_prefix(prefix) {
                     results.append(&mut subnode.rev_encode_sub(subtext, prefix));
@@ -67,7 +67,7 @@ impl Node {
     fn rev_encode_sub<'a>(&'a self, text: &str, expl: &'a str) -> EncodeResults {
         let mut results = self.rev_encode(text);
         for (q, e) in results.iter_mut() {
-            q.push(self.content);
+            q.push(self.harf);
             e.push(expl);
         }
         results
@@ -79,7 +79,7 @@ impl Node {
             results.push((String::new(), Vec::new()));
         }
         for subnode in self.next_harfs.iter() {
-            for prefix in trans::single_harf_map(subnode.content) {
+            for prefix in trans::single_harf_map(subnode.harf) {
                 if let Some(subtext) = text.strip_prefix(prefix) {
                     results.append(&mut subnode.rev_encode_sub_first_aya(subtext, prefix));
                 }
@@ -95,7 +95,7 @@ impl Node {
     fn rev_encode_sub_first_aya<'a>(&'a self, text: &str, expl: &'a str) -> EncodeResults {
         let mut results = self.rev_encode_first_aya(text);
         for (q, e) in results.iter_mut() {
-            q.push(self.content);
+            q.push(self.harf);
             e.push(expl);
         }
         results
@@ -110,6 +110,6 @@ impl Node {
     }
 
     pub fn get(&self, content: char) -> Option<&Self> {
-        self.next_harfs.iter().find(|n| n.content == content)
+        self.next_harfs.iter().find(|n| n.harf == content)
     }
 }
