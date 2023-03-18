@@ -1,6 +1,6 @@
 use crate::transliterations as trans;
 
-pub type EncodeResults<'a> = Vec<(String, Vec<&'a str>)>;
+pub type EncodeResults<'a> = Vec<(String, Vec<&'a str>, usize)>;
 pub type Location = (u8, u16, u8);
 
 pub(crate) struct Node {
@@ -54,7 +54,7 @@ impl Node {
     pub fn rev_encode(&self, text: &str) -> EncodeResults {
         let mut results = EncodeResults::new();
         if text.is_empty() && !self.locations.is_empty() {
-            results.push((String::new(), Vec::new()));
+            results.push((Default::default(), Default::default(), self.locations.len()));
         }
         for subnode in self.iter() {
             let prefixes = trans::map(subnode.harf)
@@ -71,7 +71,7 @@ impl Node {
 
     fn rev_encode_sub<'a>(&'a self, text: &str, expl: &'a str) -> EncodeResults {
         let mut results = self.rev_encode(text);
-        for (q, e) in results.iter_mut() {
+        for (q, e, _) in results.iter_mut() {
             q.push(self.harf);
             e.push(expl);
         }
@@ -81,7 +81,7 @@ impl Node {
     pub fn rev_encode_first_aya(&self, text: &str) -> EncodeResults {
         let mut results = EncodeResults::new();
         if text.is_empty() && self.containing_first_aya() {
-            results.push((String::new(), Vec::new()));
+            results.push((Default::default(), Default::default(), self.locations.len()));
         }
         for subnode in self.iter() {
             for prefix in trans::single_harf_map(subnode.harf) {
@@ -99,7 +99,7 @@ impl Node {
 
     fn rev_encode_sub_first_aya<'a>(&'a self, text: &str, expl: &'a str) -> EncodeResults {
         let mut results = self.rev_encode_first_aya(text);
-        for (q, e) in results.iter_mut() {
+        for (q, e, _) in results.iter_mut() {
             q.push(self.harf);
             e.push(expl);
         }
