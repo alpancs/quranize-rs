@@ -7,7 +7,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! quranize = "0.9"
+//! quranize = "0.10"
 //! ```
 //!
 //! ## Encoding alphabetic text to quran text
@@ -86,8 +86,8 @@ impl Quranize {
         let mut results = self.root.rev_encode(&normalize(text));
         results.append(&mut self.root.rev_encode_first_aya(&normalize_first_aya(text)));
         results.sort();
-        results.dedup_by(|(q1, _), (q2, _)| q1 == q2);
-        for (q, e) in results.iter_mut() {
+        results.dedup_by(|(q1, _, _), (q2, _, _)| q1 == q2);
+        for (q, e, _) in results.iter_mut() {
             *q = q.chars().rev().collect();
             e.reverse();
         }
@@ -115,7 +115,7 @@ mod tests {
 
     impl Quranize {
         fn quran_results(&self, text: &str) -> Vec<String> {
-            self.encode(text).into_iter().map(|(q, _)| q).collect()
+            self.encode(text).into_iter().map(|(q, _, _)| q).collect()
         }
     }
 
@@ -197,6 +197,7 @@ mod tests {
     fn test_quranize_misc() {
         let q = Quranize::new(14);
         assert_eq!(q.encode("bismillah")[0].1.len(), 8);
+        assert_eq!(q.encode("bismillah")[0].2, 3);
         assert_eq!(q.encode("arrohman").len(), 1);
         assert_eq!(q.encode("arrohman")[0].1.len(), 6);
         assert_eq!(q.encode("alhamdu")[0].1, vec!["al", "ha", "m", "du"]);
