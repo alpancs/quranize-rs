@@ -5,7 +5,7 @@ pub type Location = (u8, u16, u8);
 
 pub(crate) struct Node {
     pub harf: char,
-    pub childs: Option<Box<Nodes>>,
+    childs: Option<Box<Nodes>>,
     pub locations: Vec<Location>,
 }
 
