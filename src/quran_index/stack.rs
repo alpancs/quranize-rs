@@ -25,10 +25,6 @@ impl<T> Stack<T> {
         self.head.as_mut().map(|node| &mut node.elem)
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.head.is_none()
-    }
-
     #[cfg(test)]
     pub fn len(&self) -> usize {
         self.iter().count()

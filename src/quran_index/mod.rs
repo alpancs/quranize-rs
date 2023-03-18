@@ -9,7 +9,7 @@ pub type Location = (u8, u16, u8);
 pub(crate) struct Node {
     pub content: char,
     pub next_harfs: Stack<Node>,
-    pub locations: Stack<Location>,
+    pub locations: Vec<Location>,
 }
 
 impl Node {
@@ -17,7 +17,7 @@ impl Node {
         Self {
             content,
             next_harfs: Stack::new(),
-            locations: Stack::new(),
+            locations: Default::default(),
         }
     }
 
@@ -101,11 +101,11 @@ impl Node {
         results
     }
 
-    pub fn get_locations(&self, quran: &str) -> Option<&Stack<Location>> {
+    pub fn get_locations(&self, quran: &str) -> Option<&[Location]> {
         let mut chars = quran.chars();
         match chars.next() {
-            None => Some(&self.locations),
             Some(c) => self.get(c).and_then(|n| n.get_locations(chars.as_str())),
+            None => Some(&self.locations),
         }
     }
 
