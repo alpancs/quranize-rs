@@ -251,4 +251,24 @@ mod tests {
         assert_eq!(q.get_locations("نننن").first(), None);
         assert_eq!(q.get_locations("2+3+4=9").first(), None);
     }
+
+    impl Node {
+        pub(super) fn count(&self) -> (u32, u32) {
+            let (non_leaves, leaves) = self
+                .iter()
+                .map(|c| c.count())
+                .reduce(|acc, x| (acc.0 + x.0, acc.1 + x.1))
+                .unwrap_or_default();
+            (
+                self.childs.is_some() as u32 + non_leaves,
+                self.childs.is_none() as u32 + leaves,
+            )
+        }
+    }
+
+    #[test]
+    fn test_tree() {
+        let q = Quranize::default();
+        assert_eq!(q.root.count(), (3_416_740, 66_697));
+    }
 }
