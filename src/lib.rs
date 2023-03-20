@@ -125,7 +125,7 @@ impl Quranize {
     pub fn encode(&self, text: &str) -> EncodeResults {
         let mut results = self.rev_encode(0, &normalize(text));
         results.append(&mut self.rev_encode_first_aya(0, &normalize_first_aya(text)));
-        results.sort();
+        results.sort_unstable_by(|(q1, _, _), (q2, _, _)| q1.cmp(q2));
         results.dedup_by(|(q1, _, _), (q2, _, _)| q1 == q2);
         for (q, e, _) in results.iter_mut() {
             *q = q.chars().rev().collect();
