@@ -280,6 +280,7 @@ mod tests {
         assert_eq!(q.adjacencies.len(), 3_483_437);
         let leaves_count = q.adjacencies.iter().filter(|v| v.is_empty()).count();
         assert_eq!(leaves_count, 66_697);
+        assert_eq!(q.locs_map.len(), 685_770);
 
         assert_eq!(
             q.quran_results("bismilla hirrohman nirrohiim"),
