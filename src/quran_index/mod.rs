@@ -4,9 +4,9 @@ pub type EncodeResults<'a> = Vec<(String, Vec<&'a str>, usize)>;
 pub type Location = (u8, u16, u8);
 
 pub(crate) struct Node {
-    pub harf: char,
-    childs: Option<Box<Nodes>>,
-    pub locations: Vec<Location>,
+    pub(super) harf: char,
+    pub(super) childs: Option<Box<Nodes>>,
+    pub(super) locations: Vec<Location>,
 }
 
 pub(crate) struct Nodes {
@@ -118,7 +118,7 @@ impl Node {
         self.iter().find(|n| n.harf == harf)
     }
 
-    fn iter(&self) -> Iter {
+    pub(super) fn iter(&self) -> Iter {
         Iter {
             childs: self.childs.as_deref(),
         }
@@ -129,14 +129,9 @@ impl Node {
             childs: self.childs.as_deref_mut(),
         }
     }
-
-    #[cfg(test)]
-    pub fn child_count(&self) -> usize {
-        self.iter().count()
-    }
 }
 
-struct Iter<'a> {
+pub(super) struct Iter<'a> {
     childs: Option<&'a Nodes>,
 }
 
