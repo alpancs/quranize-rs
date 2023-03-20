@@ -45,7 +45,7 @@ type NodeIndex = usize;
 pub struct Quranize {
     adjacencies: Vec<Vec<NodeIndex>>,
     harfs: Vec<char>,
-    locs_map: HashMap<NodeIndex, Vec<Location>>,
+    locations_index: HashMap<NodeIndex, Vec<Location>>,
     node_id: NodeIndex,
 }
 
@@ -82,7 +82,7 @@ impl Quranize {
         let mut quranize = Self {
             adjacencies: vec![vec![]],
             harfs: vec![0 as char],
-            locs_map: Default::default(),
+            locations_index: Default::default(),
             node_id: 0,
         };
         for (s, a, q) in quran::iter() {
@@ -100,7 +100,7 @@ impl Quranize {
         for ((c, nc), n) in quran.chars().zip(next_chars).zip(1..) {
             i = self.get_or_add(i, c);
             if nc == ' ' {
-                self.locs_map.entry(i).or_default().push(location);
+                self.locations_index.entry(i).or_default().push(location);
                 if n >= min_harfs {
                     break;
                 }
@@ -137,8 +137,8 @@ impl Quranize {
     fn rev_encode(&self, i: NodeIndex, text: &str) -> EncodeResults {
         let mut results = EncodeResults::new();
         if text.is_empty() {
-            if let Some(locs) = self.locs_map.get(&i) {
-                results.push((String::new(), Vec::new(), locs.len()));
+            if let Some(locations) = self.locations_index.get(&i) {
+                results.push((String::new(), Vec::new(), locations.len()));
             }
         }
         for &j in &self.adjacencies[i] {
@@ -166,7 +166,7 @@ impl Quranize {
     fn rev_encode_first_aya(&self, i: NodeIndex, text: &str) -> EncodeResults {
         let mut results = EncodeResults::new();
         if text.is_empty() && self.containing_first_aya(i) {
-            results.push((String::new(), Vec::new(), self.locs_map[&i].len()));
+            results.push((String::new(), Vec::new(), self.locations_index[&i].len()));
         }
         for &j in &self.adjacencies[i] {
             for prefix in trans::single_harf_map(self.harfs[j]) {
@@ -179,7 +179,7 @@ impl Quranize {
     }
 
     fn containing_first_aya(&self, i: NodeIndex) -> bool {
-        self.locs_map
+        self.locations_index
             .get(&i)
             .map(|l| l.iter().any(|&(_, a, _)| a == 1))
             .unwrap_or_default()
@@ -216,7 +216,7 @@ impl Quranize {
                 .iter()
                 .find(|&&j| self.harfs[j] == harf)
                 .and_then(|&j| self.get_locations_from(j, harfs)),
-            None => self.locs_map.get(&i),
+            None => self.locations_index.get(&i),
         }
     }
 }
@@ -280,7 +280,7 @@ mod tests {
         assert_eq!(q.adjacencies.len(), 3_483_437);
         let leaves_count = q.adjacencies.iter().filter(|v| v.is_empty()).count();
         assert_eq!(leaves_count, 66_697);
-        assert_eq!(q.locs_map.len(), 685_770);
+        assert_eq!(q.locations_index.len(), 685_770);
 
         assert_eq!(
             q.quran_results("bismilla hirrohman nirrohiim"),
@@ -360,11 +360,11 @@ mod tests {
         assert_eq!(q.get_locations("بسم").first(), Some(&(1, 1, 1)));
         assert_eq!(q.get_locations("والناس").last(), Some(&(114, 6, 3)));
         assert_eq!(q.get_locations("بسم الله الرحمن الرحيم").len(), 2);
-        assert_eq!(q.get_locations("").first(), None);
         assert_eq!(q.get_locations("ن").first(), Some(&(68, 1, 1)));
-        assert_eq!(q.get_locations("نن").first(), None);
-        assert_eq!(q.get_locations("ننن").first(), None);
-        assert_eq!(q.get_locations("نننن").first(), None);
-        assert_eq!(q.get_locations("2+3+4=9"), []);
+        assert!(q.get_locations("").is_empty());
+        assert!(q.get_locations("نن").is_empty());
+        assert!(q.get_locations("ننن").is_empty());
+        assert!(q.get_locations("نننن").is_empty());
+        assert!(q.get_locations("2+3+4=9").is_empty());
     }
 }
