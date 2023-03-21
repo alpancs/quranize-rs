@@ -5,12 +5,12 @@ pub enum List<T> {
     Cons(T, Box<List<T>>),
 }
 
-impl<'a, T> List<T> {
+impl<T> List<T> {
     pub fn push(&mut self, e: T) {
         *self = List::Cons(e, Box::new(std::mem::take(self)));
     }
 
-    pub fn iter(&self) -> Iter<'_, T> {
+    pub fn iter(&self) -> Iter<T> {
         Iter { list: self }
     }
 
