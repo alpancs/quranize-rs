@@ -41,3 +41,21 @@ impl<'a, T> Iterator for Iter<'a, T> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_list() {
+        let mut list: List<u8> = Default::default();
+        assert!(list.is_empty());
+        list.push(1);
+        list.push(2);
+        assert_eq!(list.len(), 2);
+        let mut iter = list.iter();
+        assert_eq!(iter.next(), Some(&2));
+        assert_eq!(iter.next(), Some(&1));
+        assert_eq!(iter.next(), None);
+    }
+}
