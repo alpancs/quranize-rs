@@ -24,17 +24,22 @@
 //! assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
 //! ```
 
-mod normalization;
-mod quran;
-mod transliterations;
-mod word_utils;
-
 use std::{collections::HashMap, str::Chars};
 
+mod collections;
+use collections::List;
+
+mod normalization;
 use normalization::{normalize, normalize_first_aya};
+
+mod quran;
 pub use quran::AyaGetter;
 use quran::CleanCharsExt;
+
+mod transliterations;
 use transliterations as trans;
+
+mod word_utils;
 use word_utils::WordSuffixIterExt;
 
 type EncodeResults<'a> = Vec<(String, Vec<&'a str>, usize)>;
@@ -43,7 +48,7 @@ type NodeIndex = usize;
 
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
-    adjacencies: Vec<Vec<NodeIndex>>,
+    adjacencies: Vec<List<NodeIndex>>,
     harfs: Vec<char>,
     locations_index: HashMap<NodeIndex, Vec<Location>>,
     node_id: NodeIndex,
@@ -80,8 +85,8 @@ impl Quranize {
     /// ```
     pub fn new(min_harfs: usize) -> Self {
         let mut quranize = Self {
-            adjacencies: vec![vec![]],
-            harfs: vec![0 as char],
+            adjacencies: vec![Default::default()],
+            harfs: vec![Default::default()],
             locations_index: Default::default(),
             node_id: 0,
         };
@@ -113,7 +118,7 @@ impl Quranize {
             Some(&j) => j,
             None => {
                 self.node_id += 1;
-                self.adjacencies.push(vec![]);
+                self.adjacencies.push(Default::default());
                 self.harfs.push(harf);
                 self.adjacencies[i].push(self.node_id);
                 self.node_id
@@ -125,7 +130,7 @@ impl Quranize {
     pub fn encode(&self, text: &str) -> EncodeResults {
         let mut results = self.rev_encode(0, &normalize(text));
         results.append(&mut self.rev_encode_first_aya(0, &normalize_first_aya(text)));
-        results.sort();
+        results.sort_unstable_by(|(q1, _, _), (q2, _, _)| q1.cmp(q2));
         results.dedup_by(|(q1, _, _), (q2, _, _)| q1 == q2);
         for (q, e, _) in results.iter_mut() {
             *q = q.chars().rev().collect();
@@ -141,7 +146,7 @@ impl Quranize {
                 results.push((String::new(), Vec::new(), locations.len()));
             }
         }
-        for &j in &self.adjacencies[i] {
+        for &j in self.adjacencies[i].iter() {
             let prefixes = trans::map(self.harfs[j])
                 .iter()
                 .chain(trans::contextual_map(self.harfs[i], self.harfs[j]));
@@ -168,7 +173,7 @@ impl Quranize {
         if text.is_empty() && self.containing_first_aya(i) {
             results.push((String::new(), Vec::new(), self.locations_index[&i].len()));
         }
-        for &j in &self.adjacencies[i] {
+        for &j in self.adjacencies[i].iter() {
             for prefix in trans::single_harf_map(self.harfs[j]) {
                 if let Some(subtext) = text.strip_prefix(prefix) {
                     results.append(&mut self.rev_encode_sub_fa(j, subtext, prefix));
