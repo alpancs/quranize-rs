@@ -79,7 +79,7 @@ impl<'a> AyaGetter<'a> {
     /// assert_eq!(aya_getter.get(114, 6), Some("مِنَ الْجِنَّةِ وَالنَّاسِ"));
     /// ```
     pub fn get(&self, sura_number: u8, aya_number: u16) -> Option<&'a str> {
-        let aya_sum = self.aya_sums.get(sura_number as usize - 1)?;
+        let aya_sum = *self.aya_sums.get(sura_number as usize - 1)?;
         Some(*self.aya_texts.get(aya_sum + aya_number as usize - 1)?)
     }
 }

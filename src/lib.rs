@@ -48,10 +48,9 @@ type NodeIndex = usize;
 
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
-    adjacencies: Vec<List<NodeIndex>>,
     harfs: Vec<char>,
+    adjacencies: Vec<List<NodeIndex>>,
     locations_index: HashMap<NodeIndex, Vec<Location>>,
-    node_id: NodeIndex,
 }
 
 impl Default for Quranize {
@@ -85,10 +84,9 @@ impl Quranize {
     /// ```
     pub fn new(min_harfs: usize) -> Self {
         let mut quranize = Self {
-            adjacencies: vec![Default::default()],
             harfs: vec![Default::default()],
+            adjacencies: vec![Default::default()],
             locations_index: Default::default(),
-            node_id: 0,
         };
         for (s, a, q) in quran::iter() {
             let q = q.clean_chars().collect::<String>();
@@ -117,11 +115,11 @@ impl Quranize {
         match self.adjacencies[i].iter().find(|&&j| self.harfs[j] == harf) {
             Some(&j) => j,
             None => {
-                self.node_id += 1;
-                self.adjacencies.push(Default::default());
                 self.harfs.push(harf);
-                self.adjacencies[i].push(self.node_id);
-                self.node_id
+                self.adjacencies.push(Default::default());
+                let index = self.harfs.len() - 1;
+                self.adjacencies[i].push(index);
+                index
             }
         }
     }
