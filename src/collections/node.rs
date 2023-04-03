@@ -5,8 +5,8 @@ pub(crate) struct Node<T> {
 }
 
 struct List<T> {
-    element: T,
-    next: Option<Box<Self>>,
+    head: T,
+    tail: Option<Box<Self>>,
 }
 
 impl<T: PartialEq> Node<T> {
@@ -15,13 +15,12 @@ impl<T: PartialEq> Node<T> {
         match pos {
             Some(n) => self.iter_mut().nth(n).unwrap(),
             None => {
-                let node = Node {
-                    element,
-                    next: None,
-                };
                 self.next = Some(Box::new(List {
-                    element: node,
-                    next: self.next.take(),
+                    head: Node {
+                        element,
+                        next: None,
+                    },
+                    tail: self.next.take(),
                 }));
                 self.iter_mut().next().unwrap()
             }
@@ -49,8 +48,8 @@ impl<'a, T> Iterator for Iter<'a, T> {
     type Item = &'a T;
     fn next(&mut self) -> Option<Self::Item> {
         self.next.map(|list| {
-            self.next = list.next.as_deref();
-            &list.element
+            self.next = list.tail.as_deref();
+            &list.head
         })
     }
 }
@@ -63,8 +62,8 @@ impl<'a, T> Iterator for IterMut<'a, T> {
     type Item = &'a mut T;
     fn next(&mut self) -> Option<Self::Item> {
         self.next.take().map(|list| {
-            self.next = list.next.as_deref_mut();
-            &mut list.element
+            self.next = list.tail.as_deref_mut();
+            &mut list.head
         })
     }
 }
