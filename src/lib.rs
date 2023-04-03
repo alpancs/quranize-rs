@@ -206,7 +206,7 @@ impl Quranize {
         match harfs.next() {
             Some(harf) => node
                 .iter()
-                .find(|&n| n.element == harf)
+                .find(|n| n.element == harf)
                 .and_then(|n| self.get_locations_from(n, harfs)),
             None => self.locations_index.get(&(node as *const HarfNode)),
         }
