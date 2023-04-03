@@ -1,6 +1,6 @@
 #[derive(Default)]
-pub struct Node<T> {
-    pub element: T,
+pub(crate) struct Node<T> {
+    pub(crate) element: T,
     next: Option<Box<List<Self>>>,
 }
 
@@ -41,7 +41,7 @@ impl<T: PartialEq> Node<T> {
     }
 }
 
-pub struct Iter<'a, T> {
+pub(crate) struct Iter<'a, T> {
     next: Option<&'a List<T>>,
 }
 
@@ -55,7 +55,7 @@ impl<'a, T> Iterator for Iter<'a, T> {
     }
 }
 
-pub struct IterMut<'a, T> {
+pub(crate) struct IterMut<'a, T> {
     next: Option<&'a mut List<T>>,
 }
 

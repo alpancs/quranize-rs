@@ -1,2 +1,2 @@
 mod node;
-pub use node::Node;
+pub(crate) use node::Node;
