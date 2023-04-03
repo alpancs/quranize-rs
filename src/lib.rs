@@ -27,7 +27,7 @@
 use std::{collections::HashMap, str::Chars};
 
 mod collections;
-use collections::List;
+use collections::Node;
 
 mod normalization;
 use normalization::{normalize, normalize_first_aya};
@@ -42,15 +42,14 @@ use transliterations as trans;
 mod word_utils;
 use word_utils::WordSuffixIterExt;
 
+type HarfNode = Node<char>;
 type EncodeResults<'a> = Vec<(String, Vec<&'a str>, usize)>;
 type Location = (u8, u16, u8);
-type NodeIndex = usize;
 
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
-    harfs: Vec<char>,
-    adjacencies: Vec<List<NodeIndex>>,
-    locations_index: HashMap<NodeIndex, Vec<Location>>,
+    root: HarfNode,
+    locations_index: HashMap<*const HarfNode, Vec<Location>>,
 }
 
 impl Default for Quranize {
@@ -83,9 +82,8 @@ impl Quranize {
     /// assert_eq!(q.encode("masyaallah").first(), None);
     /// ```
     pub fn new(min_harfs: usize) -> Self {
-        let mut quranize = Self {
-            harfs: vec![Default::default()],
-            adjacencies: vec![Default::default()],
+        let mut quranize = Quranize {
+            root: Default::default(),
             locations_index: Default::default(),
         };
         for (s, a, q) in quran::iter() {
@@ -98,12 +96,12 @@ impl Quranize {
     }
 
     fn expand(&mut self, quran: &str, location: Location, min_harfs: usize) {
-        let mut i = 0;
+        let mut node = &mut self.root;
         let next_chars = quran.chars().skip(1).chain(std::iter::once(' '));
         for ((c, nc), n) in quran.chars().zip(next_chars).zip(1..) {
-            i = self.get_or_add(i, c);
+            node = node.get_mut_or_add(c);
             if nc == ' ' {
-                self.locations_index.entry(i).or_default().push(location);
+                self.locations_index.entry(node).or_default().push(location);
                 if n >= min_harfs {
                     break;
                 }
@@ -111,23 +109,10 @@ impl Quranize {
         }
     }
 
-    fn get_or_add(&mut self, i: NodeIndex, harf: char) -> NodeIndex {
-        match self.adjacencies[i].iter().find(|&&j| self.harfs[j] == harf) {
-            Some(&j) => j,
-            None => {
-                self.harfs.push(harf);
-                self.adjacencies.push(Default::default());
-                let index = self.harfs.len() - 1;
-                self.adjacencies[i].push(index);
-                index
-            }
-        }
-    }
-
     /// Encode `text` back into Quran form.
     pub fn encode(&self, text: &str) -> EncodeResults {
-        let mut results = self.rev_encode(0, &normalize(text));
-        results.append(&mut self.rev_encode_first_aya(0, &normalize_first_aya(text)));
+        let mut results = self.rev_encode(&self.root, &normalize(text));
+        results.append(&mut self.rev_encode_first_aya(&self.root, &normalize_first_aya(text)));
         results.sort_unstable_by(|(q1, _, _), (q2, _, _)| q1.cmp(q2));
         results.dedup_by(|(q1, _, _), (q2, _, _)| q1 == q2);
         for (q, e, _) in results.iter_mut() {
@@ -137,61 +122,65 @@ impl Quranize {
         results
     }
 
-    fn rev_encode(&self, i: NodeIndex, text: &str) -> EncodeResults {
+    fn rev_encode(&self, node: &HarfNode, text: &str) -> EncodeResults {
         let mut results = EncodeResults::new();
         if text.is_empty() {
-            if let Some(locations) = self.locations_index.get(&i) {
+            if let Some(locations) = self.locations_index.get(&(node as *const HarfNode)) {
                 results.push((String::new(), Vec::new(), locations.len()));
             }
         }
-        for &j in self.adjacencies[i].iter() {
-            let prefixes = trans::map(self.harfs[j])
+        for n in node.iter() {
+            let prefixes = trans::map(n.element)
                 .iter()
-                .chain(trans::contextual_map(self.harfs[i], self.harfs[j]));
+                .chain(trans::contextual_map(node.element, n.element));
             for prefix in prefixes {
                 if let Some(subtext) = text.strip_prefix(prefix) {
-                    results.append(&mut self.rev_encode_sub(j, subtext, prefix));
+                    results.append(&mut self.rev_encode_sub(n, subtext, prefix));
                 }
             }
         }
         results
     }
 
-    fn rev_encode_sub<'a>(&'a self, i: NodeIndex, text: &str, expl: &'a str) -> EncodeResults {
-        let mut results = self.rev_encode(i, text);
+    fn rev_encode_sub<'a>(&'a self, n: &HarfNode, text: &str, expl: &'a str) -> EncodeResults {
+        let mut results = self.rev_encode(n, text);
         for (q, e, _) in results.iter_mut() {
-            q.push(self.harfs[i]);
+            q.push(n.element);
             e.push(expl);
         }
         results
     }
 
-    fn rev_encode_first_aya(&self, i: NodeIndex, text: &str) -> EncodeResults {
+    fn rev_encode_first_aya(&self, node: &HarfNode, text: &str) -> EncodeResults {
         let mut results = EncodeResults::new();
-        if text.is_empty() && self.containing_first_aya(i) {
-            results.push((String::new(), Vec::new(), self.locations_index[&i].len()));
+        if text.is_empty() && self.containing_first_aya(node) {
+            results.push((
+                String::new(),
+                Vec::new(),
+                self.locations_index[&(node as *const HarfNode)].len(),
+            ));
         }
-        for &j in self.adjacencies[i].iter() {
-            for prefix in trans::single_harf_map(self.harfs[j]) {
+        for n in node.iter() {
+            for prefix in trans::single_harf_map(n.element) {
                 if let Some(subtext) = text.strip_prefix(prefix) {
-                    results.append(&mut self.rev_encode_sub_fa(j, subtext, prefix));
+                    results.append(&mut self.rev_encode_sub_fa(n, subtext, prefix));
                 }
             }
         }
         results
     }
 
-    fn containing_first_aya(&self, i: NodeIndex) -> bool {
+    fn containing_first_aya(&self, node: &HarfNode) -> bool {
         self.locations_index
-            .get(&i)
+            .get(&(node as *const HarfNode))
             .map(|l| l.iter().any(|&(_, a, _)| a == 1))
             .unwrap_or_default()
     }
 
-    fn rev_encode_sub_fa<'a>(&'a self, i: NodeIndex, text: &str, expl: &'a str) -> EncodeResults {
-        let mut results = self.rev_encode_first_aya(i, text);
+    fn rev_encode_sub_fa<'a>(&'a self, n: &HarfNode, text: &str, expl: &'a str) -> EncodeResults {
+        let mut results = self.rev_encode_first_aya(n, text);
         for (q, e, _) in results.iter_mut() {
-            q.push(self.harfs[i]);
+            q.push(n.element);
             e.push(expl);
         }
         results
@@ -208,18 +197,18 @@ impl Quranize {
     /// assert_eq!(q.get_locations("ن").first(), Some(&(68, 1, 1)));
     /// ```
     pub fn get_locations(&self, quran: &str) -> &[Location] {
-        self.get_locations_from(0, quran.chars())
+        self.get_locations_from(&self.root, quran.chars())
             .map(|v| v.as_slice())
             .unwrap_or_default()
     }
 
-    fn get_locations_from(&self, i: NodeIndex, mut harfs: Chars) -> Option<&Vec<Location>> {
+    fn get_locations_from(&self, node: &HarfNode, mut harfs: Chars) -> Option<&Vec<Location>> {
         match harfs.next() {
-            Some(harf) => self.adjacencies[i]
+            Some(harf) => node
                 .iter()
-                .find(|&&j| self.harfs[j] == harf)
-                .and_then(|&j| self.get_locations_from(j, harfs)),
-            None => self.locations_index.get(&i),
+                .find(|&n| n.element == harf)
+                .and_then(|n| self.get_locations_from(n, harfs)),
+            None => self.locations_index.get(&(node as *const HarfNode)),
         }
     }
 }
@@ -237,8 +226,8 @@ mod tests {
     #[test]
     fn test_build_root() {
         let q = Quranize::new(1);
-        assert_eq!(q.harfs[0], '\0');
-        assert_eq!(q.adjacencies[0].len(), 31);
+        assert_eq!(q.root.element, Default::default());
+        assert_eq!(q.root.iter().count(), 31);
     }
 
     #[test]
@@ -280,9 +269,6 @@ mod tests {
     fn test_quranize_full() {
         let q = Quranize::default();
 
-        assert_eq!(q.adjacencies.len(), 3_483_437);
-        let leaves_count = q.adjacencies.iter().filter(|v| v.is_empty()).count();
-        assert_eq!(leaves_count, 66_697);
         assert_eq!(q.locations_index.len(), 685_770);
 
         assert_eq!(
