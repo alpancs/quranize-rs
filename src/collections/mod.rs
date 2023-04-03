@@ -1,2 +1,2 @@
-mod list;
-pub use list::List;
+mod node;
+pub use node::Node;
