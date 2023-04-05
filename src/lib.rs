@@ -320,10 +320,7 @@ mod tests {
 
     fn is_unique(mut texts: Vec<String>) -> bool {
         texts.sort();
-        texts
-            .iter()
-            .zip(texts.iter().skip(1))
-            .fold(true, |acc, (t1, t2)| acc && t1 != t2)
+        texts.iter().skip(1).zip(&texts).all(|(t1, t0)| t0 != t1)
     }
 
     #[test]
