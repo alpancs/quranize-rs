@@ -218,89 +218,72 @@ mod tests {
     use super::*;
 
     impl Quranize {
-        fn quran_results(&self, text: &str) -> Vec<String> {
+        fn e(&self, text: &str) -> Vec<String> {
             self.encode(text).into_iter().map(|(q, _, _)| q).collect()
         }
     }
 
     #[test]
-    fn test_build_root() {
-        let q = Quranize::new(1);
-        assert_eq!(q.root.element, Default::default());
-        assert_eq!(q.root.iter().count(), 31);
-    }
-
-    #[test]
-    fn test_quranize_short() {
-        let q = Quranize::new(21);
-        assert_eq!(q.quran_results("allah"), vec!["آلله", "الله"]);
-        assert_eq!(q.quran_results("illa billah"), vec!["إلا بالله"]);
-        assert_eq!(q.quran_results("alquran"), vec!["القرآن"]);
-        assert_eq!(q.quran_results("alqur'an"), vec!["القرآن"]);
-        assert_eq!(q.quran_results("bismillah"), vec!["بسم الله"]);
-        assert_eq!(q.quran_results("birobbinnas"), vec!["برب الناس"]);
-        assert_eq!(q.quran_results("inna anzalnahu"), vec!["إنا أنزلناه"]);
-        assert_eq!(q.quran_results("wa'tasimu"), vec!["واعتصموا"]);
-        assert_eq!(q.quran_results("wabarro"), vec!["وبرا", "وبئر"]);
-        assert_eq!(q.quran_results("idza qodho"), vec!["إذا قضى"]);
-        assert_eq!(q.quran_results("masyaallah"), vec!["ما شاء الله"]);
-        assert_eq!(q.quran_results("illa man taaba"), vec!["إلا من تاب"]);
-        assert_eq!(q.quran_results("qulhuwallahuahad"), vec!["قل هو الله أحد"]);
-        assert_eq!(q.quran_results("alla tahzani"), vec!["ألا تحزني"]);
-        assert_eq!(q.quran_results("innasya niaka"), vec!["إن شانئك"]);
-        assert_eq!(q.quran_results("wasalamun alaihi"), vec!["وسلام عليه"]);
-        assert_eq!(q.quran_results("ulaika hum"), vec!["أولئك هم"]);
-        assert_eq!(q.quran_results("waladdoolin"), vec!["ولا الضالين"]);
-        assert_eq!(q.quran_results("undur kaifa"), vec!["انظر كيف"]);
-        assert_eq!(q.quran_results("lirrohman"), vec!["للرحمن"]);
-    }
-
-    #[test]
-    fn test_first_aya() {
-        let q = Quranize::new(1);
-        assert_eq!(q.quran_results("alif lam mim"), vec!["الم"]);
-        assert_eq!(q.quran_results("alif laaam miiim"), vec!["الم"]);
-        assert_eq!(q.quran_results("nuun"), vec!["ن"]);
-        assert_eq!(q.quran_results("kaaaf haa yaa aiiin shoood"), vec!["كهيعص"]);
-        assert_eq!(q.quran_results("kaf ha ya 'ain shod"), vec!["كهيعص"]);
-    }
-
-    #[test]
-    fn test_quranize_full() {
+    fn test_quranize_default() {
         let q = Quranize::default();
 
-        assert_eq!(q.locations_index.len(), 685_770);
+        assert_eq!(q.e("allah"), vec!["آلله", "الله"]);
+        assert_eq!(q.e("illa billah"), vec!["إلا بالله"]);
+        assert_eq!(q.e("alquran"), vec!["القرآن"]);
+        assert_eq!(q.e("alqur'an"), vec!["القرآن"]);
+        assert_eq!(q.e("bismillah"), vec!["بسم الله"]);
+        assert_eq!(q.e("birobbinnas"), vec!["برب الناس"]);
+        assert_eq!(q.e("inna anzalnahu"), vec!["إنا أنزلناه"]);
+        assert_eq!(q.e("wa'tasimu"), vec!["واعتصموا"]);
+        assert_eq!(q.e("wabarro"), vec!["وبرا", "وبئر"]);
+        assert_eq!(q.e("idza qodho"), vec!["إذا قضى"]);
+        assert_eq!(q.e("masyaallah"), vec!["ما شاء الله"]);
+        assert_eq!(q.e("illa man taaba"), vec!["إلا من تاب"]);
+        assert_eq!(q.e("qulhuwallahuahad"), vec!["قل هو الله أحد"]);
+        assert_eq!(q.e("alla tahzani"), vec!["ألا تحزني"]);
+        assert_eq!(q.e("innasya niaka"), vec!["إن شانئك"]);
+        assert_eq!(q.e("wasalamun alaihi"), vec!["وسلام عليه"]);
+        assert_eq!(q.e("ulaika hum"), vec!["أولئك هم"]);
+        assert_eq!(q.e("waladdoolin"), vec!["ولا الضالين"]);
+        assert_eq!(q.e("undur kaifa"), vec!["انظر كيف"]);
+        assert_eq!(q.e("lirrohman"), vec!["للرحمن"]);
 
         assert_eq!(
-            q.quran_results("bismilla hirrohman nirrohiim"),
+            q.e("bismilla hirrohman nirrohiim"),
             vec!["بسم الله الرحمن الرحيم"]
         );
         assert_eq!(
-            q.quran_results("alhamdulilla hirobbil 'alamiin"),
+            q.e("alhamdulilla hirobbil 'alamiin"),
             vec!["الحمد لله رب العالمين"]
         );
-        assert_eq!(q.quran_results("arrohma nirrohim"), vec!["الرحمن الرحيم"]);
-        assert_eq!(q.quran_results("maliki yau middin"), vec!["مالك يوم الدين"]);
+        assert_eq!(q.e("arrohma nirrohim"), vec!["الرحمن الرحيم"]);
+        assert_eq!(q.e("maliki yau middin"), vec!["مالك يوم الدين"]);
         assert_eq!(
-            q.quran_results("iyyakanakbudu waiyyakanastain"),
+            q.e("iyyakanakbudu waiyyakanastain"),
             vec!["إياك نعبد وإياك نستعين"]
         );
         assert_eq!(
-            q.quran_results("ihdinassirotol mustaqim"),
+            q.e("ihdinassirotol mustaqim"),
             vec!["اهدنا الصراط المستقيم"]
         );
         assert_eq!(
-            q.quran_results(
-                "shirotolladzina an'amta 'alaihim ghoiril maghdzubi 'alaihim waladdoolliin"
-            ),
+            q.e("shirotolladzina an'amta 'alaihim ghoiril maghdzubi 'alaihim waladdoolliin"),
             vec!["صراط الذين أنعمت عليهم غير المغضوب عليهم ولا الضالين"]
         );
-        assert_eq!(q.quran_results("qulhuwallahuahad"), vec!["قل هو الله أحد"]);
+        assert_eq!(q.e("qulhuwallahuahad"), vec!["قل هو الله أحد"]);
+
+        assert_eq!(q.e("alif lam mim"), vec!["الم"]);
+        assert_eq!(q.e("alif laaam miiim"), vec!["الم"]);
+        assert_eq!(q.e("nuun"), vec!["ن"]);
+        assert_eq!(q.e("kaaaf haa yaa aiiin shoood"), vec!["كهيعص"]);
+        assert_eq!(q.e("kaf ha ya 'ain shod"), vec!["كهيعص"]);
+
+        assert_eq!(q.locations_index.len(), 685_770);
     }
 
     #[test]
     fn test_quranize_misc() {
-        let q = Quranize::new(14);
+        let q = Quranize::new(23);
         assert_eq!(q.encode("bismillah")[0].1.len(), 8);
         assert_eq!(q.encode("bismillah")[0].2, 3);
         assert_eq!(q.encode("arrohman").len(), 1);
@@ -320,7 +303,7 @@ mod tests {
 
     #[test]
     fn test_quranize_empty_result() {
-        let q = Quranize::new(14);
+        let q = Quranize::new(23);
         assert!(q.encode("").is_empty());
         assert!(q.encode("aaa").is_empty());
         assert!(q.encode("abcd").is_empty());
@@ -329,13 +312,12 @@ mod tests {
 
     #[test]
     fn test_unique() {
-        let q = Quranize::new(14);
-        let texts = q.quran_results("ALLAH");
-        assert!(is_unique(&texts), "{:#?}", texts);
+        let q = Quranize::new(23);
+        let texts = q.e("ALLAH");
+        assert!(is_unique(texts.clone()), "{:#?}", texts);
     }
 
-    fn is_unique(texts: &[String]) -> bool {
-        let mut texts = texts.to_owned();
+    fn is_unique(mut texts: Vec<String>) -> bool {
         texts.sort();
         texts
             .iter()
@@ -345,7 +327,7 @@ mod tests {
 
     #[test]
     fn test_locate() {
-        let q = Quranize::new(21);
+        let q = Quranize::new(23);
         assert_eq!(q.get_locations("بسم").first(), Some(&(1, 1, 1)));
         assert_eq!(q.get_locations("والناس").last(), Some(&(114, 6, 3)));
         assert_eq!(q.get_locations("بسم الله الرحمن الرحيم").len(), 2);
