@@ -247,9 +247,10 @@ mod tests {
         assert_eq!(q.e("waladdoolin"), vec!["ولا الضالين"]);
         assert_eq!(q.e("undur kaifa"), vec!["انظر كيف"]);
         assert_eq!(q.e("lirrohman"), vec!["للرحمن"]);
+        assert_eq!(q.e("wantum muslimun"), vec!["وأنتم مسلمون"]);
 
         assert_eq!(
-            q.e("bismilla hirrohman nirrohiim"),
+            q.e("bismillahirrohmanirrohiim"),
             vec!["بسم الله الرحمن الرحيم"]
         );
         assert_eq!(
