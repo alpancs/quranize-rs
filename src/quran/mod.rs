@@ -8,7 +8,7 @@ use simple_plain::RAW_QURAN as SIMPLE_PLAIN;
 const SURA_COUNT: usize = 114;
 const AYA_COUNT: usize = 6236;
 
-/// Accept raw Quran string, return an iterator for each ayah in the Quran with surah number and ayah number.
+/// Returns an iterator of `(sura_number, aya_number, aya_text)` that iterates each ayah in the Quran.
 pub(crate) fn iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
     iter_quran(SIMPLE_PLAIN)
 }
