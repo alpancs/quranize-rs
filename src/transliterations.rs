@@ -1,3 +1,5 @@
+pub(crate) const TASYDID: char = '\u{0651}';
+
 pub(crate) fn map(c: char) -> &'static [&'static str] {
     match c {
         'ء' => &["'", "k", "a", "i", "u"],
@@ -43,7 +45,7 @@ pub(crate) fn map(c: char) -> &'static [&'static str] {
         'ف' => &["f", "fa", "fi", "fu"],
         'ق' => &["k", "ko", "ki", "ku", "q", "qo", "qi", "qu", "qa"],
         'ك' => &["k", "ka", "ki", "ku"],
-        'ل' => &["l", "ll", "lla", "la", "li", "lu"],
+        'ل' => &["l", "la", "li", "lu"],
         'م' => &["m", "ma", "mi", "mu"],
         'ن' => &["n", "na", "ni", "nu"],
         'ه' => &["h", "ha", "hi", "hu"],
@@ -57,9 +59,12 @@ pub(crate) fn map(c: char) -> &'static [&'static str] {
 
 pub(crate) fn contextual_map(prev_c: char, c: char) -> &'static [&'static str] {
     match (prev_c, c) {
-        (' ', 'ا') | ('ب', 'ا') | ('ا', 'ل') | ('و', 'ا') | ('أ', 'و') => &[""],
+        (' ', 'ا') | ('ب', 'ا') | ('ا', 'ل') | ('آ', 'ل') | ('و', 'ا') | ('أ', 'و') => {
+            &[""]
+        }
         ('\0', 'ا') => &["i", "u"],
         ('ل', 'ل') => &["i"],
+        (_, TASYDID) => map(prev_c),
         _ => &[],
     }
 }
