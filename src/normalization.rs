@@ -1,11 +1,8 @@
 pub(crate) fn normalize(text: &str) -> String {
-    let mut chars = Vec::from_iter(text.chars().filter_map(|c| match c.to_ascii_lowercase() {
+    let chars = Vec::from_iter(text.chars().filter_map(|c| match c.to_ascii_lowercase() {
         c @ ('a'..='z' | '\'' | ' ') => Some(c),
         _ => None,
     }));
-    chars.dedup_by(|&mut a, &mut b| {
-        a == b && !(a == 'l' || a == 'a' || a == 'o' || a == 'i' || a == 'u')
-    });
     chars.into_iter().filter(|&c| c != ' ').collect()
 }
 
@@ -28,8 +25,8 @@ mod tests {
         assert_eq!(normalize("'aalimul ghoibi"), "'aalimulghoibi");
         assert_eq!(normalize("Qul A'udzu"), "qula'udzu");
         assert_eq!(
-            normalize("bismilla hirrohman nirrohiim"),
-            "bismillahirohmannirohiim"
+            normalize("bismilla hirrohma nirrohiim"),
+            "bismillahirrohmanirrohiim"
         );
     }
 

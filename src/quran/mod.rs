@@ -8,7 +8,7 @@ use simple_plain::RAW_QURAN as SIMPLE_PLAIN;
 const SURA_COUNT: usize = 114;
 const AYA_COUNT: usize = 6236;
 
-/// Accept raw Quran string, return an iterator for each ayah in the Quran with surah number and ayah number.
+/// Returns an iterator of `(sura_number, aya_number, aya_text)` that iterates each ayah in the Quran.
 pub(crate) fn iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
     iter_quran(SIMPLE_PLAIN)
 }
@@ -33,10 +33,11 @@ pub(crate) trait CleanCharsExt {
     fn clean_chars(&self) -> Filter<Chars, fn(&char) -> bool>;
 }
 
-use crate::transliterations as trans;
+use crate::transliterations::{self as trans, TASYDID};
 impl CleanCharsExt for str {
     fn clean_chars(&self) -> Filter<Chars, fn(&char) -> bool> {
-        self.chars().filter(|&c| !trans::map(c).is_empty())
+        self.chars()
+            .filter(|&c| c == TASYDID || !trans::map(c).is_empty())
     }
 }
 
@@ -112,7 +113,7 @@ mod tests {
         assert_same_basmalah(SIMPLE_PLAIN);
         assert_eq!(iter_quran(SIMPLE_PLAIN).count(), AYA_COUNT);
         assert_eq!(count_unique_simple_clean_chars(), 37);
-        assert_eq!(count_unique_simple_plain_chars(), 37);
+        assert_eq!(count_unique_simple_plain_chars(), 38);
     }
 
     fn assert_same_basmalah(raw: &str) {
@@ -160,7 +161,13 @@ mod tests {
     #[test]
     fn test_clean_chars() {
         for ((_, _, clean), (_, _, plain)) in iter_quran(SIMPLE_CLEAN).zip(iter()) {
-            assert_eq!(clean, plain.clean_chars().collect::<String>());
+            assert_eq!(
+                clean,
+                plain
+                    .clean_chars()
+                    .filter(|&c| c != TASYDID)
+                    .collect::<String>()
+            );
         }
     }
 }

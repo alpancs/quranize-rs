@@ -14,7 +14,7 @@
 //!
 //! ```
 //! let q = quranize::Quranize::default();
-//! assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد لله");
+//! assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحمد للّه");
 //! ```
 //!
 //! ## Getting an aya text given surah number and ayah number
@@ -60,7 +60,7 @@ impl Default for Quranize {
     ///
     /// ```
     /// let q = quranize::Quranize::default(); // the same with `Quranize::new(usize::MAX)`
-    /// assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء الله");
+    /// assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء اللّه");
     /// ```
     fn default() -> Self {
         Self::new(usize::MAX)
@@ -77,7 +77,7 @@ impl Quranize {
     ///
     /// ```
     /// let q = quranize::Quranize::new(35);
-    /// assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء الله");
+    /// assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاء اللّه");
     /// let q = quranize::Quranize::new(1);
     /// assert_eq!(q.encode("masyaallah").first(), None);
     /// ```
@@ -215,11 +215,16 @@ impl Quranize {
 
 #[cfg(test)]
 mod tests {
+    use crate::transliterations::TASYDID;
+
     use super::*;
 
     impl Quranize {
         fn e(&self, text: &str) -> Vec<String> {
-            self.encode(text).into_iter().map(|(q, _, _)| q).collect()
+            self.encode(text)
+                .into_iter()
+                .map(|(q, _, _)| q.chars().filter(|&c| c != TASYDID).collect())
+                .collect()
         }
     }
 
@@ -235,7 +240,7 @@ mod tests {
         assert_eq!(q.e("birobbinnas"), vec!["برب الناس"]);
         assert_eq!(q.e("inna anzalnahu"), vec!["إنا أنزلناه"]);
         assert_eq!(q.e("wa'tasimu"), vec!["واعتصموا"]);
-        assert_eq!(q.e("wabarro"), vec!["وبرا", "وبئر"]);
+        assert_eq!(q.e("wabarro"), vec!["وبرا"]);
         assert_eq!(q.e("idza qodho"), vec!["إذا قضى"]);
         assert_eq!(q.e("masyaallah"), vec!["ما شاء الله"]);
         assert_eq!(q.e("illa man taaba"), vec!["إلا من تاب"]);
@@ -248,6 +253,7 @@ mod tests {
         assert_eq!(q.e("undur kaifa"), vec!["انظر كيف"]);
         assert_eq!(q.e("lirrohman"), vec!["للرحمن"]);
         assert_eq!(q.e("wantum muslimun"), vec!["وأنتم مسلمون"]);
+        assert_eq!(q.e("laa yukallifullah"), vec!["لا يكلف الله"]);
 
         assert_eq!(
             q.e("bismillahirrohmanirrohiim"),
@@ -279,26 +285,26 @@ mod tests {
         assert_eq!(q.e("kaaaf haa yaa aiiin shoood"), vec!["كهيعص"]);
         assert_eq!(q.e("kaf ha ya 'ain shod"), vec!["كهيعص"]);
 
-        assert_eq!(q.locations_index.len(), 685_770);
+        assert_eq!(q.locations_index.len(), 686_059);
     }
 
     #[test]
     fn test_quranize_misc() {
         let q = Quranize::new(23);
-        assert_eq!(q.encode("bismillah")[0].1.len(), 8);
+        assert_eq!(q.encode("bismillah")[0].1.len(), 9);
         assert_eq!(q.encode("bismillah")[0].2, 3);
         assert_eq!(q.encode("arrohman").len(), 1);
-        assert_eq!(q.encode("arrohman")[0].1.len(), 6);
+        assert_eq!(q.encode("arrohman")[0].1.len(), 7);
         assert_eq!(q.encode("alhamdu")[0].1, vec!["al", "ha", "m", "du"]);
         assert_eq!(
             q.encode("arrohman")[0].1,
-            vec!["a", "", "ro", "h", "ma", "n"]
+            vec!["a", "", "r", "ro", "h", "ma", "n"]
         );
         let result = &q.encode("masyaallah")[0];
         assert_eq!(result.0.chars().count(), result.1.len());
         assert_eq!(
             result.1,
-            vec!["m", "a", "", "sy", "a", "a", "", "", "l", "la", "h"]
+            vec!["m", "a", "", "sy", "a", "a", "", "", "", "l", "la", "h"]
         );
     }
 
@@ -306,7 +312,6 @@ mod tests {
     fn test_quranize_empty_result() {
         let q = Quranize::new(23);
         assert!(q.encode("").is_empty());
-        assert!(q.encode("aaa").is_empty());
         assert!(q.encode("abcd").is_empty());
         assert!(q.encode("1+2=3").is_empty());
     }
@@ -327,8 +332,8 @@ mod tests {
     fn test_locate() {
         let q = Quranize::new(23);
         assert_eq!(q.get_locations("بسم").first(), Some(&(1, 1, 1)));
-        assert_eq!(q.get_locations("والناس").last(), Some(&(114, 6, 3)));
-        assert_eq!(q.get_locations("بسم الله الرحمن الرحيم").len(), 2);
+        assert_eq!(q.get_locations("والنّاس").last(), Some(&(114, 6, 3)));
+        assert_eq!(q.get_locations("بسم اللّه الرّحمن الرّحيم").len(), 2);
         assert_eq!(q.get_locations("ن").first(), Some(&(68, 1, 1)));
         assert!(q.get_locations("").is_empty());
         assert!(q.get_locations("نن").is_empty());
