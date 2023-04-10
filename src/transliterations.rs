@@ -57,14 +57,18 @@ pub(crate) fn map(c: char) -> &'static [&'static str] {
     }
 }
 
-pub(crate) fn contextual_map(prev_c: char, c: char) -> &'static [&'static str] {
-    match (prev_c, c) {
-        (' ', 'ا') | ('ب', 'ا') | ('ا', 'ل') | ('آ', 'ل') | ('و', 'ا') | ('أ', 'و') => {
-            &[""]
-        }
+pub(crate) fn contextual_map(c0: char, c1: char) -> &'static [&'static str] {
+    match (c0, c1) {
+        (' ', 'ا')
+        | ('ب', 'ا')
+        | ('ا', 'ل')
+        | ('آ', 'ل')
+        | ('و', 'ا')
+        | ('أ', 'و')
+        | ('ع', 'ا') => &[""],
         ('\0', 'ا') => &["i", "u"],
         ('ل', 'ل') => &["i"],
-        (_, TASYDID) => map(prev_c),
+        (_, TASYDID) => map(c0),
         _ => &[],
     }
 }
