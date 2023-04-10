@@ -1,9 +1,10 @@
 pub(crate) fn normalize(text: &str) -> String {
-    let chars = Vec::from_iter(text.chars().filter_map(|c| match c.to_ascii_lowercase() {
-        c @ ('a'..='z' | '\'' | ' ') => Some(c),
-        _ => None,
-    }));
-    chars.into_iter().filter(|&c| c != ' ').collect()
+    text.chars()
+        .filter_map(|c| match c.to_ascii_lowercase() {
+            c @ ('a'..='z' | '\'') => Some(c),
+            _ => None,
+        })
+        .collect()
 }
 
 pub(crate) fn normalize_first_aya(text: &str) -> String {
