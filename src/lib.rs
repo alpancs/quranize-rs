@@ -254,6 +254,7 @@ mod tests {
         assert_eq!(q.e("lirrohman"), vec!["للرحمن"]);
         assert_eq!(q.e("wantum muslimun"), vec!["وأنتم مسلمون"]);
         assert_eq!(q.e("laa yukallifullah"), vec!["لا يكلف الله"]);
+        assert_eq!(q.e("robbil alamin"), vec!["رب العالمين"]);
 
         assert_eq!(
             q.e("bismillahirrohmanirrohiim"),
