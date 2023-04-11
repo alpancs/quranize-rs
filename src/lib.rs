@@ -228,9 +228,18 @@ mod tests {
         }
     }
 
+    fn sum_tree(node: &HarfNode, f: fn(&HarfNode) -> usize) -> usize {
+        f(node) + node.iter().map(|c| sum_tree(c, f)).sum::<usize>()
+    }
+
     #[test]
     fn test_quranize_default() {
         let q = Quranize::default();
+
+        let nc = sum_tree(&q.root, |_| 1);
+        let scc = sum_tree(&q.root, |node| (node.iter().count() == 1) as usize);
+        let ratio = scc as f64 / nc as f64;
+        println!("node count={nc}, single child count={scc}, ratio={ratio}");
 
         assert_eq!(q.e("allah"), vec!["آلله", "الله"]);
         assert_eq!(q.e("illa billah"), vec!["إلا بالله"]);
