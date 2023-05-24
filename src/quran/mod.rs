@@ -31,7 +31,7 @@ fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     raw.split('\n')
         .take(AYA_COUNT)
         .enumerate()
-        .map(move |(i, l)| {
+        .map(move |(i, aya_text)| {
             if i == AYA_STARTS[sura_number as usize] {
                 aya_number = 1;
                 sura_number += 1;
@@ -39,9 +39,9 @@ fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
                 aya_number += 1;
             }
             let aya_text = match (sura_number, aya_number) {
-                (1, _) | (9, _) => l,
-                (_, 1) => l.strip_prefix(&basmalah_prefix).unwrap(),
-                _ => l,
+                (1, _) | (9, _) => aya_text,
+                (_, 1) => aya_text.strip_prefix(&basmalah_prefix).unwrap(),
+                _ => aya_text,
             };
             (sura_number, aya_number, aya_text)
         })
