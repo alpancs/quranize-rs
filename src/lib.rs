@@ -21,7 +21,7 @@
 //!
 //! ```
 //! let aya_getter = quranize::AyaGetter::default();
-//! assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
+//! assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"));
 //! ```
 
 use std::{collections::HashMap, str::Chars};

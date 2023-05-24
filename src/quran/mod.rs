@@ -7,6 +7,16 @@ use simple_plain::RAW_QURAN as SIMPLE_PLAIN;
 
 const SURA_COUNT: usize = 114;
 const AYA_COUNT: usize = 6236;
+const AYA_STARTS: [usize; 115] = [
+    0, 7, 293, 493, 669, 789, 954, 1160, 1235, 1364, 1473, 1596, 1707, 1750, 1802, 1901, 2029,
+    2140, 2250, 2348, 2483, 2595, 2673, 2791, 2855, 2932, 3159, 3252, 3340, 3409, 3469, 3503, 3533,
+    3606, 3660, 3705, 3788, 3970, 4058, 4133, 4218, 4272, 4325, 4414, 4473, 4510, 4545, 4583, 4612,
+    4630, 4675, 4735, 4784, 4846, 4901, 4979, 5075, 5104, 5126, 5150, 5163, 5177, 5188, 5199, 5217,
+    5229, 5241, 5271, 5323, 5375, 5419, 5447, 5475, 5495, 5551, 5591, 5622, 5672, 5712, 5758, 5800,
+    5829, 5848, 5884, 5909, 5931, 5948, 5967, 5993, 6023, 6043, 6058, 6079, 6090, 6098, 6106, 6125,
+    6130, 6138, 6146, 6157, 6168, 6176, 6179, 6188, 6193, 6197, 6204, 6207, 6213, 6216, 6221, 6225,
+    6230, 6236,
+];
 
 /// Returns an iterator of `(sura_number, aya_number, aya_text)` that iterates each ayah in the Quran.
 pub(crate) fn iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
@@ -15,18 +25,26 @@ pub(crate) fn iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
 
 fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     let raw = raw.trim_start();
-    let basmalah = raw.split('\n').next().unwrap().split('|').nth(2).unwrap();
-    let basmalah_prefix = basmalah.to_string() + " ";
-    raw.split('\n').take(AYA_COUNT).map(move |l| {
-        let mut it = l.split('|');
-        let sura_number = it.next().unwrap().parse().unwrap();
-        let aya_number = it.next().unwrap().parse().unwrap();
-        let mut aya_text = it.next().unwrap();
-        if sura_number != 1 && sura_number != 9 && aya_number == 1 {
-            aya_text = aya_text.strip_prefix(&basmalah_prefix).unwrap();
-        }
-        (sura_number, aya_number, aya_text)
-    })
+    let basmalah_prefix = raw.split('\n').next().unwrap().to_string() + " ";
+    let mut aya_number = 0u16;
+    let mut sura_number = 0u8;
+    raw.split('\n')
+        .take(AYA_COUNT)
+        .enumerate()
+        .map(move |(i, aya_text)| {
+            if i == AYA_STARTS[sura_number as usize] {
+                aya_number = 1;
+                sura_number += 1;
+            } else {
+                aya_number += 1;
+            }
+            let aya_text = match (sura_number, aya_number) {
+                (1, _) | (9, _) => aya_text,
+                (_, 1) => aya_text.strip_prefix(&basmalah_prefix).unwrap(),
+                _ => aya_text,
+            };
+            (sura_number, aya_number, aya_text)
+        })
 }
 
 pub(crate) trait CleanCharsExt {
@@ -76,7 +94,7 @@ impl<'a> AyaGetter<'a> {
     /// ```
     /// use quranize::AyaGetter;
     /// let aya_getter = AyaGetter::default();
-    /// assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
+    /// assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"));
     /// assert_eq!(aya_getter.get(114, 6), Some("مِنَ الْجِنَّةِ وَالنَّاسِ"));
     /// ```
     pub fn get(&self, sura_number: u8, aya_number: u16) -> Option<&'a str> {
@@ -108,30 +126,10 @@ mod tests {
 
     #[test]
     fn test_properties() {
-        assert_same_basmalah(SIMPLE_CLEAN);
         assert_eq!(iter_quran(SIMPLE_CLEAN).count(), AYA_COUNT);
-        assert_same_basmalah(SIMPLE_PLAIN);
         assert_eq!(iter_quran(SIMPLE_PLAIN).count(), AYA_COUNT);
         assert_eq!(count_unique_simple_clean_chars(), 37);
         assert_eq!(count_unique_simple_plain_chars(), 38);
-    }
-
-    fn assert_same_basmalah(raw: &str) {
-        let mut lines = raw.trim_start().split('\n').take(AYA_COUNT);
-        let basmalah = lines.next().unwrap().split('|').nth(2).unwrap();
-        let basmalah = basmalah.to_string() + " ";
-        for line in lines {
-            let mut parts = line.split('|');
-            let sura_number: u8 = parts.next().unwrap().parse().unwrap();
-            let aya_number: u16 = parts.next().unwrap().parse().unwrap();
-            let aya_text = parts.next().unwrap();
-            if aya_number == 1 && sura_number != 9 {
-                assert!(
-                    aya_text.starts_with(&basmalah),
-                    "sura_number = {sura_number}, aya_number = {aya_number},\naya_text = {aya_text}"
-                );
-            }
-        }
     }
 
     fn count_unique_simple_clean_chars() -> usize {
@@ -153,7 +151,7 @@ mod tests {
     #[test]
     fn test_map() {
         let aya_getter = AyaGetter::new();
-        assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
+        assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"));
         assert_eq!(aya_getter.get(114, 6), Some("مِنَ الْجِنَّةِ وَالنَّاسِ"));
         assert_eq!(aya_getter.get(114, 7), None);
     }
