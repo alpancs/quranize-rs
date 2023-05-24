@@ -94,7 +94,7 @@ impl<'a> AyaGetter<'a> {
     /// ```
     /// use quranize::AyaGetter;
     /// let aya_getter = AyaGetter::default();
-    /// assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
+    /// assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"));
     /// assert_eq!(aya_getter.get(114, 6), Some("مِنَ الْجِنَّةِ وَالنَّاسِ"));
     /// ```
     pub fn get(&self, sura_number: u8, aya_number: u16) -> Option<&'a str> {
@@ -151,7 +151,7 @@ mod tests {
     #[test]
     fn test_map() {
         let aya_getter = AyaGetter::new();
-        assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"));
+        assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"));
         assert_eq!(aya_getter.get(114, 6), Some("مِنَ الْجِنَّةِ وَالنَّاسِ"));
         assert_eq!(aya_getter.get(114, 7), None);
     }
