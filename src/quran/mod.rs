@@ -3,7 +3,6 @@
 use std::{iter::Filter, str::Chars};
 
 const SIMPLE_PLAIN: &str = include_str!("quran-simple-plain.txt");
-
 const SURA_COUNT: usize = 114;
 const AYA_COUNT: usize = 6236;
 const AYA_STARTS: [usize; 115] = [
