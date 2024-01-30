@@ -2,9 +2,7 @@
 
 use std::{iter::Filter, str::Chars};
 
-mod simple_plain;
-use simple_plain::RAW_QURAN as SIMPLE_PLAIN;
-
+const SIMPLE_PLAIN: &str = include_str!("quran-simple-plain.txt");
 const SURA_COUNT: usize = 114;
 const AYA_COUNT: usize = 6236;
 const AYA_STARTS: [usize; 115] = [
@@ -104,14 +102,10 @@ impl<'a> AyaGetter<'a> {
 }
 
 #[cfg(test)]
-mod simple_clean;
-
-#[cfg(test)]
-use simple_clean::RAW_QURAN as SIMPLE_CLEAN;
-
-#[cfg(test)]
 mod tests {
     use super::*;
+
+    const SIMPLE_CLEAN: &str = include_str!("quran-simple-clean.txt");
 
     #[test]
     fn test_quran_version_compatibility() {
