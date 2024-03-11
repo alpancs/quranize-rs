@@ -2,7 +2,7 @@
 
 use std::{iter::Filter, str::Chars};
 
-const SIMPLE_PLAIN: &str = include_str!("quran-simple-plain.txt");
+const SIMPLE_PLAIN: &str = include_str!("quran-uthmani.txt");
 const SURA_COUNT: usize = 114;
 const AYA_COUNT: usize = 6236;
 const AYA_STARTS: [usize; 115] = [
@@ -23,7 +23,8 @@ pub(crate) fn iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
 
 fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     let raw = raw.trim_start();
-    let basmalah_prefix = raw.split('\n').next().unwrap().to_string() + " ";
+    let bsmlh_pre1 = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ";
+    let bsmlh_pre2 = "بِّسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ";
     let mut aya_number = 0u16;
     let mut sura_number = 0u8;
     raw.split('\n')
@@ -38,7 +39,10 @@ fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
             }
             let aya_text = match (sura_number, aya_number) {
                 (1, _) | (9, _) => aya_text,
-                (_, 1) => aya_text.strip_prefix(&basmalah_prefix).unwrap(),
+                (_, 1) => aya_text
+                    .strip_prefix(bsmlh_pre1)
+                    .or(aya_text.strip_prefix(bsmlh_pre2))
+                    .unwrap(),
                 _ => aya_text,
             };
             (sura_number, aya_number, aya_text)
@@ -105,36 +109,13 @@ impl<'a> AyaGetter<'a> {
 mod tests {
     use super::*;
 
-    const SIMPLE_CLEAN: &str = include_str!("quran-simple-clean.txt");
-
-    #[test]
-    fn test_quran_version_compatibility() {
-        let word_counter =
-            |(s, a, t): (u8, u16, &'static str)| (s, a, t, t.split_whitespace().count());
-        let simple_clean_wc_iter = iter_quran(SIMPLE_CLEAN).map(word_counter);
-        let simple_plain_wc_iter = iter_quran(SIMPLE_PLAIN).map(word_counter);
-        for ((s1, a1, t1, c1), (_, _, t2, c2)) in simple_clean_wc_iter.zip(simple_plain_wc_iter) {
-            assert_eq!(c1, c2, "sura_number = {s1}, aya_number = {a1},\naya_text = {t1} and {t2},\nword count = {c1} and {c2}");
-        }
-    }
-
     #[test]
     fn test_properties() {
-        assert_eq!(iter_quran(SIMPLE_CLEAN).count(), AYA_COUNT);
         assert_eq!(iter_quran(SIMPLE_PLAIN).count(), AYA_COUNT);
-        assert_eq!(count_unique_simple_clean_chars(), 37);
-        assert_eq!(count_unique_simple_plain_chars(), 38);
+        assert_eq!(count_unique_uthmani_chars(), 37);
     }
 
-    fn count_unique_simple_clean_chars() -> usize {
-        let mut set = std::collections::HashSet::new();
-        for (_, _, t) in iter_quran(SIMPLE_CLEAN) {
-            set.extend(t.chars());
-        }
-        set.len()
-    }
-
-    fn count_unique_simple_plain_chars() -> usize {
+    fn count_unique_uthmani_chars() -> usize {
         let mut set = std::collections::HashSet::new();
         for (_, _, t) in iter() {
             set.extend(t.clean_chars());
@@ -145,21 +126,8 @@ mod tests {
     #[test]
     fn test_map() {
         let aya_getter = AyaGetter::new();
-        assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"));
-        assert_eq!(aya_getter.get(114, 6), Some("مِنَ الْجِنَّةِ وَالنَّاسِ"));
+        assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ"));
+        assert_eq!(aya_getter.get(114, 6), Some("مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ"));
         assert_eq!(aya_getter.get(114, 7), None);
-    }
-
-    #[test]
-    fn test_clean_chars() {
-        for ((_, _, clean), (_, _, plain)) in iter_quran(SIMPLE_CLEAN).zip(iter()) {
-            assert_eq!(
-                clean,
-                plain
-                    .clean_chars()
-                    .filter(|&c| c != TASYDID)
-                    .collect::<String>()
-            );
-        }
     }
 }
