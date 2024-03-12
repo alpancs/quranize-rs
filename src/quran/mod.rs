@@ -1,8 +1,6 @@
 //! Helper module related to Quran stuffs.
 
-use std::{iter::Filter, str::Chars};
-
-const SIMPLE_PLAIN: &str = include_str!("quran-uthmani.txt");
+const UTHMANI_MIN: &str = include_str!("quran-uthmani-min.txt");
 const SURA_COUNT: usize = 114;
 const AYA_COUNT: usize = 6236;
 const AYA_STARTS: [usize; 115] = [
@@ -18,13 +16,10 @@ const AYA_STARTS: [usize; 115] = [
 
 /// Returns an iterator of `(sura_number, aya_number, aya_text)` that iterates each ayah in the Quran.
 pub(crate) fn iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
-    iter_quran(SIMPLE_PLAIN)
+    iter_quran(UTHMANI_MIN)
 }
 
 fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
-    let raw = raw.trim_start();
-    let bsmlh_pre1 = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ";
-    let bsmlh_pre2 = "بِّسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ";
     let mut aya_number = 0u16;
     let mut sura_number = 0u8;
     raw.split('\n')
@@ -39,26 +34,11 @@ fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
             }
             let aya_text = match (sura_number, aya_number) {
                 (1, _) | (9, _) => aya_text,
-                (_, 1) => aya_text
-                    .strip_prefix(bsmlh_pre1)
-                    .or(aya_text.strip_prefix(bsmlh_pre2))
-                    .unwrap(),
+                (_, 1) => aya_text.splitn(5, ' ').last().unwrap(),
                 _ => aya_text,
             };
             (sura_number, aya_number, aya_text)
         })
-}
-
-pub(crate) trait CleanCharsExt {
-    fn clean_chars(&self) -> Filter<Chars, fn(&char) -> bool>;
-}
-
-use crate::transliterations::{self as trans, TASYDID};
-impl CleanCharsExt for str {
-    fn clean_chars(&self) -> Filter<Chars, fn(&char) -> bool> {
-        self.chars()
-            .filter(|&c| c == TASYDID || !trans::map(c).is_empty())
-    }
 }
 
 /// Struct to get ayah texts by surah number and ayah number.
@@ -77,7 +57,7 @@ impl<'a> AyaGetter<'a> {
     fn new() -> Self {
         let mut aya_texts = Vec::with_capacity(AYA_COUNT);
         let mut aya_sums = Vec::with_capacity(SURA_COUNT);
-        for (i, (_, a, q)) in iter_quran(SIMPLE_PLAIN).enumerate() {
+        for (i, (_, a, q)) in iter_quran(UTHMANI_MIN).enumerate() {
             aya_texts.push(q);
             if a == 1 {
                 aya_sums.push(i);
@@ -111,23 +91,31 @@ mod tests {
 
     #[test]
     fn test_properties() {
-        assert_eq!(iter_quran(SIMPLE_PLAIN).count(), AYA_COUNT);
-        assert_eq!(count_unique_uthmani_chars(), 37);
-    }
-
-    fn count_unique_uthmani_chars() -> usize {
-        let mut set = std::collections::HashSet::new();
-        for (_, _, t) in iter() {
-            set.extend(t.clean_chars());
-        }
-        set.len()
+        assert_eq!(iter().count(), AYA_COUNT);
+        let unique_chars = {
+            let mut set = std::collections::BTreeSet::new();
+            for (_, _, t) in iter() {
+                set.extend(t.chars());
+            }
+            set.into_iter().collect::<Vec<_>>()
+        };
+        assert_eq!(
+            unique_chars,
+            [
+                ' ', 'ء', 'أ', 'ؤ', 'إ', 'ئ', 'ا', 'ب', 'ة', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ',
+                'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ـ', 'ف', 'ق', 'ك', 'ل', 'م',
+                'ن', 'ه', 'و', 'ى', 'ي', '\u{64b}', '\u{64c}', '\u{64d}', '\u{64e}', '\u{64f}',
+                '\u{650}', '\u{651}', '\u{654}', '\u{670}', '\u{6dc}', '\u{6df}', '\u{6e0}',
+                '\u{6e3}', 'ۥ', 'ۦ', '\u{6e7}', '\u{6e8}', '\u{6ea}', '\u{6eb}'
+            ]
+        );
     }
 
     #[test]
     fn test_map() {
         let aya_getter = AyaGetter::new();
-        assert_eq!(aya_getter.get(1, 1), Some("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ"));
-        assert_eq!(aya_getter.get(114, 6), Some("مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ"));
+        assert_eq!(aya_getter.get(1, 1), Some("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"));
+        assert_eq!(aya_getter.get(114, 6), Some("مِنَ الجِنَّةِ وَالنّاسِ"));
         assert_eq!(aya_getter.get(114, 7), None);
     }
 }
