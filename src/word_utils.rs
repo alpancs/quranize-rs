@@ -1,16 +1,13 @@
 pub(crate) struct WordSuffixIter<'a> {
-    chars: std::str::Chars<'a>,
+    splitted_str: Option<(&'a str, &'a str)>,
 }
 
 impl<'a> Iterator for WordSuffixIter<'a> {
     type Item = &'a str;
     fn next(&mut self) -> Option<Self::Item> {
-        let remaining_text = self.chars.as_str();
-        while !matches!(self.chars.next(), Some(' ') | None) {}
-        match remaining_text {
-            "" => None,
-            _ => Some(remaining_text),
-        }
+        let right_part = self.splitted_str.map(|(_, r)| r);
+        self.splitted_str = right_part.and_then(|r| r.split_once(' '));
+        right_part
     }
 }
 
@@ -21,7 +18,7 @@ pub(crate) trait WordSuffixIterExt {
 impl WordSuffixIterExt for str {
     fn word_suffixes(&self) -> WordSuffixIter {
         WordSuffixIter {
-            chars: self.chars(),
+            splitted_str: Some(("", self)),
         }
     }
 }
