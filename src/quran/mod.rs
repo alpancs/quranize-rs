@@ -1,5 +1,7 @@
 //! Helper module related to Quran stuffs.
 
+pub(crate) mod harf;
+
 const UTHMANI_MIN: &str = include_str!("quran-uthmani-min.txt");
 const SURA_COUNT: usize = 114;
 const AYA_COUNT: usize = 6236;
@@ -92,21 +94,24 @@ mod tests {
     #[test]
     fn test_properties() {
         assert_eq!(iter().count(), AYA_COUNT);
-        let unique_chars = {
+        let unique_unicodes: Vec<_> = {
             let mut set = std::collections::BTreeSet::new();
             for (_, _, t) in iter() {
                 set.extend(t.chars());
             }
-            set.into_iter().collect::<Vec<_>>()
+            set.iter().map(|c| c.escape_unicode().to_string()).collect()
         };
         assert_eq!(
-            unique_chars,
+            unique_unicodes,
             [
-                ' ', 'ء', 'أ', 'ؤ', 'إ', 'ئ', 'ا', 'ب', 'ة', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ',
-                'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ـ', 'ف', 'ق', 'ك', 'ل', 'م',
-                'ن', 'ه', 'و', 'ى', 'ي', '\u{64b}', '\u{64c}', '\u{64d}', '\u{64e}', '\u{64f}',
-                '\u{650}', '\u{651}', '\u{654}', '\u{670}', '\u{6dc}', '\u{6df}', '\u{6e0}',
-                '\u{6e3}', 'ۥ', 'ۦ', '\u{6e7}', '\u{6e8}', '\u{6ea}', '\u{6eb}'
+                "\\u{20}", "\\u{621}", "\\u{623}", "\\u{624}", "\\u{625}", "\\u{626}", "\\u{627}",
+                "\\u{628}", "\\u{629}", "\\u{62a}", "\\u{62b}", "\\u{62c}", "\\u{62d}", "\\u{62e}",
+                "\\u{62f}", "\\u{630}", "\\u{631}", "\\u{632}", "\\u{633}", "\\u{634}", "\\u{635}",
+                "\\u{636}", "\\u{637}", "\\u{638}", "\\u{639}", "\\u{63a}", "\\u{640}", "\\u{641}",
+                "\\u{642}", "\\u{643}", "\\u{644}", "\\u{645}", "\\u{646}", "\\u{647}", "\\u{648}",
+                "\\u{649}", "\\u{64a}", "\\u{64b}", "\\u{64c}", "\\u{64d}", "\\u{64e}", "\\u{64f}",
+                "\\u{650}", "\\u{651}", "\\u{654}", "\\u{670}", "\\u{6dc}", "\\u{6df}", "\\u{6e0}",
+                "\\u{6e3}", "\\u{6e5}", "\\u{6e6}", "\\u{6e7}", "\\u{6e8}", "\\u{6ea}", "\\u{6eb}"
             ]
         );
     }
