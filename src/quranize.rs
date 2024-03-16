@@ -246,7 +246,7 @@ mod tests {
 
     #[test]
     fn test_alfatihah() {
-        let q = Quranize::new(70);
+        let q = Quranize::default();
         assert_eq!(
             q.e("bismillahirrohmanirrohiim"),
             vec!["بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"]
