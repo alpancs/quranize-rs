@@ -25,7 +25,8 @@
 //! assert_eq!(aya_getter.get(1, 1), Some("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"));
 //! ```
 
-mod quran;
 mod quranize;
-pub use quran::AyaGetter;
 pub use quranize::Quranize;
+
+mod quran;
+pub use quran::AyaGetter;
