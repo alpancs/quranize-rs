@@ -67,6 +67,7 @@ pub(crate) fn contextual_map(c0: char, c1: char) -> &'static [&'static str] {
         (SPACE, LETTER_ALEF)
         | (LETTER_ALEF, LETTER_LAM)
         | (LETTER_HAMZA, LETTER_ALEF)
+        | (HAMZA_ABOVE, LETTER_ALEF)
         | (LETTER_ALEF_WITH_MADDA_ABOVE, LETTER_LAM)
         | (LETTER_WAW, LETTER_ALEF)
         | (LETTER_AIN, LETTER_ALEF)

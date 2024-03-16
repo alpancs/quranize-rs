@@ -255,6 +255,7 @@ mod tests {
         assert_eq!(q.e("laa yukallifullah"), vec!["لا يُكَلِّفُ اللَّهُ"]);
         assert_eq!(q.e("robbil alamin"), vec!["رَبِّ العٰلَمينَ"]);
         assert_eq!(q.e("qulhuwallahuahad"), vec!["قُل هُوَ اللَّهُ أَحَدٌ"]);
+        assert_eq!(q.e("husnul maab"), vec!["حُسنُ المَـٔابِ"]);
     }
 
     #[test]
