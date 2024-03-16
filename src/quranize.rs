@@ -160,7 +160,7 @@ impl Quranize {
     /// # Examples
     ///
     /// ```
-    /// let q = quranize::Quranize::default();
+    /// let q = quranize::Quranize::new(10);
     /// assert_eq!(q.get_locations("بِسمِ").first(), Some(&(1, 1, 1)));
     /// assert_eq!(q.get_locations("ن").first(), Some(&(68, 1, 1)));
     /// ```
@@ -207,7 +207,7 @@ mod tests {
 
     #[test]
     fn test_quranize_default() {
-        let q = Quranize::default();
+        let q = Quranize::new(70);
         assert_eq!(q.e("allah"), vec!["اللَّهَ", "اللَّهُ", "ءاللَّهُ", "اللَّهِ"]);
         assert_eq!(q.e("illa billah"), vec!["إِلّا بِاللَّهِ"]);
         assert_eq!(q.e("alquran"), vec!["القُرءانَ", "القُرءانُ", "القُرءانِ"]);
@@ -236,7 +236,7 @@ mod tests {
 
     #[test]
     fn test_first_aya() {
-        let q = Quranize::default();
+        let q = Quranize::new(70);
         assert_eq!(q.e("alif lam mim"), vec!["الم"]);
         assert_eq!(q.e("alif laaam miiim"), vec!["الم"]);
         assert_eq!(q.e("nuun"), vec!["ن"]);
@@ -246,7 +246,7 @@ mod tests {
 
     #[test]
     fn test_alfatihah() {
-        let q = Quranize::default();
+        let q = Quranize::new(70);
         assert_eq!(
             q.e("bismillahirrohmanirrohiim"),
             vec!["بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"]
@@ -270,7 +270,7 @@ mod tests {
 
     #[test]
     fn test_al_ikhlas() {
-        let q = Quranize::default();
+        let q = Quranize::new(70);
         assert_eq!(q.e("qulhuwallahuahad"), vec!["قُل هُوَ اللَّهُ أَحَدٌ"]);
         assert_eq!(q.e("allahussomad"), vec!["اللَّهُ الصَّمَدُ"]);
         assert_eq!(q.e("lam yalid walam yulad"), vec!["لَم يَلِد وَلَم يولَد"]);
@@ -282,7 +282,7 @@ mod tests {
 
     #[test]
     fn test_quranize_misc() {
-        let q = Quranize::default();
+        let q = Quranize::new(70);
         assert_eq!(q.encode("bismillah")[0].1.len(), 13);
         assert_eq!(q.encode("bismillah")[0].2, 3);
         assert_eq!(q.encode("arrohman").len(), 3);
@@ -321,7 +321,7 @@ mod tests {
 
     #[test]
     fn test_locate() {
-        let q = Quranize::default();
+        let q = Quranize::new(70);
         assert_eq!(q.get_locations("بِسمِ").first(), Some(&(1, 1, 1)));
         assert_eq!(q.get_locations("وَالنّاسِ").last(), Some(&(114, 6, 3)));
         assert_eq!(q.get_locations("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ").len(), 2);
