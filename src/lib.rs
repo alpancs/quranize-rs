@@ -254,7 +254,6 @@ mod tests {
         assert_eq!(q.e("wantum muslimun"), vec!["وَأَنتُم مُسلِمونَ"]);
         assert_eq!(q.e("laa yukallifullah"), vec!["لا يُكَلِّفُ اللَّهُ"]);
         assert_eq!(q.e("robbil alamin"), vec!["رَبِّ العٰلَمينَ"]);
-        assert_eq!(q.e("qulhuwallahuahad"), vec!["قُل هُوَ اللَّهُ أَحَدٌ"]);
         assert_eq!(q.e("husnul maab"), vec!["حُسنُ المَـٔابِ"]);
     }
 
@@ -289,6 +288,18 @@ mod tests {
         assert_eq!(
             q.e("shirotolladzina an'amta 'alaihim ghoiril maghdzubi 'alaihim waladdoolliin"),
             vec!["صِرٰطَ الَّذينَ أَنعَمتَ عَلَيهِم غَيرِ المَغضوبِ عَلَيهِم وَلَا الضّالّينَ"]
+        );
+    }
+
+    #[test]
+    fn test_al_ikhlas() {
+        let q = Quranize::default();
+        assert_eq!(q.e("qulhuwallahuahad"), vec!["قُل هُوَ اللَّهُ أَحَدٌ"]);
+        assert_eq!(q.e("allahussomad"), vec!["اللَّهُ الصَّمَدُ"]);
+        assert_eq!(q.e("lam yalid walam yulad"), vec!["لَم يَلِد وَلَم يولَد"]);
+        assert_eq!(
+            q.e("walam yakun lahu kufuwan ahad"),
+            vec!["وَلَم يَكُن لَهُ كُفُوًا أَحَدٌ"]
         );
     }
 
