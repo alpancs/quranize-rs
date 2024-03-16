@@ -7,7 +7,7 @@ mod normalization;
 use normalization::{normalize, normalize_first_aya};
 
 mod transliterations;
-use transliterations::{self as trans, mappable};
+use transliterations::*;
 
 mod word_utils;
 use word_utils::WordSuffixIterExt;
@@ -98,9 +98,9 @@ impl Quranize {
             }
         }
         for n in node.iter() {
-            let prefixes = trans::map(n.element)
+            let prefixes = map(n.element)
                 .iter()
-                .chain(trans::contextual_map(node.element, n.element));
+                .chain(contextual_map(node.element, n.element));
             for prefix in prefixes {
                 if let Some(subtext) = text.strip_prefix(prefix) {
                     results.append(&mut self.rev_encode_sub(n, subtext, prefix));
@@ -129,7 +129,7 @@ impl Quranize {
             ));
         }
         for n in node.iter() {
-            for prefix in trans::single_harf_map(n.element) {
+            for prefix in single_harf_map(n.element) {
                 if let Some(subtext) = text.strip_prefix(prefix) {
                     results.append(&mut self.rev_encode_sub_fa(n, subtext, prefix));
                 }
@@ -182,7 +182,7 @@ impl Quranize {
 }
 
 fn clean_aya(aya: &str) -> String {
-    aya.chars().filter(mappable).collect()
+    aya.chars().filter(|&c| mappable(c)).collect()
 }
 
 #[cfg(test)]
