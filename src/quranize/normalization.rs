@@ -1,4 +1,4 @@
-pub(crate) fn normalize(text: &str) -> String {
+pub(super) fn normalize(text: &str) -> String {
     text.chars()
         .filter_map(|c| match c.to_ascii_lowercase() {
             c @ ('a'..='z' | '\'') => Some(c),
@@ -7,7 +7,7 @@ pub(crate) fn normalize(text: &str) -> String {
         .collect()
 }
 
-pub(crate) fn normalize_first_aya(text: &str) -> String {
+pub(super) fn normalize_first_aya(text: &str) -> String {
     let mut chars = Vec::from_iter(text.chars().filter_map(|c| match c.to_ascii_lowercase() {
         c @ ('a'..='z' | '\'' | ' ') => Some(c),
         _ => None,
