@@ -338,12 +338,8 @@ mod tests {
     fn test_unique() {
         let q = Quranize::new(23);
         let texts = q.e("ALLAH");
-        assert!(is_unique(texts.clone()), "{:#?}", texts);
-    }
-
-    fn is_unique(mut texts: Vec<String>) -> bool {
-        texts.sort();
-        texts.iter().skip(1).zip(&texts).all(|(t1, t0)| t0 != t1)
+        let set = std::collections::HashSet::<&String>::from_iter(texts.iter());
+        assert_eq!(texts.len(), set.len(), "{:#?}", texts);
     }
 
     #[test]
