@@ -1,68 +1,62 @@
 use crate::quran::harf::*;
 
+pub(super) fn mappable(&c: &char) -> bool {
+    c == SHADDA || !map(c).is_empty()
+}
+
 pub(crate) fn map(c: char) -> &'static [&'static str] {
     match c {
         SPACE => &["", "n"],
 
         LETTER_HAMZA => &["'", "k", "a", "i", "u"],
         LETTER_ALEF_WITH_MADDA_ABOVE => &["a", "'a", "aa"],
-        LETTER_ALEF_WITH_HAMZA_ABOVE => &["'", "k", "a", "u", "al"],
+        LETTER_ALEF_WITH_HAMZA_ABOVE => &["'", "k", "a", "u"],
         LETTER_WAW_WITH_HAMZA_ABOVE => &["'", "k", "u"],
-        LETTER_ALEF_WITH_HAMZA_BELOW => &["i", "il"],
+        LETTER_ALEF_WITH_HAMZA_BELOW => &["i"],
         LETTER_YEH_WITH_HAMZA_ABOVE => &["'", "k", "a", "i"],
-        LETTER_ALEF => &["a", "o"],
-        LETTER_BEH => &["b", "ba", "bi", "bu"],
-        LETTER_TEH_MARBUTA => &["h", "ta", "ti", "tu", "t"],
-        LETTER_TEH => &["t", "ta", "ti", "tu"],
-        LETTER_THEH => &["ts", "tsa", "tsi", "tsu", "s", "sa", "si", "su"],
-        LETTER_JEEM => &["j", "ja", "ji", "ju"],
-        LETTER_HAH => &["h", "ha", "hi", "hu", "ch", "cha", "chi", "chu"],
-        LETTER_KHAH => &["kh", "kho", "khi", "khu"],
-        LETTER_DAL => &["d", "da", "di", "du"],
-        LETTER_THAL => &[
-            "d", "da", "di", "du", "dh", "dha", "dhi", "dhu", "dz", "dza", "dzi", "dzu",
-        ],
-        LETTER_REH => &["r", "ro", "ri", "ru", "ra"],
-        LETTER_ZAIN => &["z", "za", "zi", "zu"],
-        LETTER_SEEN => &["s", "sa", "si", "su"],
-        LETTER_SHEEN => &[
-            "s", "sa", "si", "su", "sy", "sya", "syi", "syu", "sh", "sha", "shi", "shu",
-        ],
-        LETTER_SAD => &[
-            "s", "so", "si", "su", "sh", "sho", "shi", "shu", "sa", "sha",
-        ],
-        LETTER_DAD => &[
-            "d", "do", "di", "du", "dh", "dho", "dhi", "dhu", "dz", "dzo", "dzi", "dzu",
-        ],
-        LETTER_TAH => &[
-            "t", "to", "ti", "tu", "th", "tho", "thi", "thu", "ta", "tha",
-        ],
-        LETTER_ZAH => &[
-            "d", "do", "di", "du", "dh", "dho", "dhi", "dhu", "dz", "dzo", "dzi", "dzu",
-        ],
+        LETTER_ALEF => &["a", "o", "aa", "oo"],
+        LETTER_BEH => &["b"],
+        LETTER_TEH_MARBUTA => &["h", "t"],
+        LETTER_TEH => &["t"],
+        LETTER_THEH => &["ts", "s"],
+        LETTER_JEEM => &["j"],
+        LETTER_HAH => &["h", "ch"],
+        LETTER_KHAH => &["kh"],
+        LETTER_DAL => &["d"],
+        LETTER_THAL => &["d", "dh", "dz"],
+        LETTER_REH => &["r"],
+        LETTER_ZAIN => &["z"],
+        LETTER_SEEN => &["s"],
+        LETTER_SHEEN => &["s", "sy", "sh"],
+        LETTER_SAD => &["s", "sh"],
+        LETTER_DAD => &["d", "dh", "dz"],
+        LETTER_TAH => &["t", "th"],
+        LETTER_ZAH => &["d", "dh", "dz"],
         LETTER_AIN => &["'", "'a", "'i", "'u", "k", "a", "i", "u"],
-        LETTER_GHAIN => &[
-            "g", "go", "gi", "gu", "gh", "gho", "ghi", "ghu", "ga", "gha",
-        ],
-        LETTER_FEH => &["f", "fa", "fi", "fu"],
-        LETTER_QAF => &["k", "ko", "ki", "ku", "q", "qo", "qi", "qu", "qa"],
-        LETTER_KAF => &["k", "ka", "ki", "ku"],
-        LETTER_LAM => &["l", "la", "li", "lu"],
-        LETTER_MEEM => &["m", "ma", "mi", "mu"],
-        LETTER_NOON => &["n", "na", "ni", "nu"],
-        LETTER_HEH => &["h", "ha", "hi", "hu"],
-        LETTER_WAW => &["w", "wa", "wi", "wu", "u"],
-        LETTER_ALEF_MAKSURA => &["a", "o"],
-        LETTER_YEH => &["y", "ya", "yi", "yu", "i", "ii", "iya", "iyi", "iyu"],
+        LETTER_GHAIN => &["g", "gh"],
 
-        FATHATAN => &["an", "am"],
-        DAMMATAN => &["un", "um"],
-        KASRATAN => &["in", "im"],
-        FATHA => &["a"],
-        DAMMA => &["u"],
-        KASRA => &["i"],
+        TATWEEL => &["a", "o"],
 
-        TATWEEL | HAMZA_ABOVE | LETTER_SUPERSCRIPT_ALEF => &[""],
+        LETTER_FEH => &["f"],
+        LETTER_QAF => &["k", "q"],
+        LETTER_KAF => &["k"],
+        LETTER_LAM => &["l"],
+        LETTER_MEEM => &["m"],
+        LETTER_NOON => &["n"],
+        LETTER_HEH => &["h"],
+        LETTER_WAW => &["w", "u"],
+        LETTER_ALEF_MAKSURA => &["a", "o", "i"],
+        LETTER_YEH => &["y", "i", "ii", "iya", "iyi", "iyu"],
+
+        FATHATAN => &["an", "on", "am", "om", ""],
+        DAMMATAN => &["un", "um", ""],
+        KASRATAN => &["in", "im", ""],
+        FATHA => &["a", "o", ""],
+        DAMMA => &["u", ""],
+        KASRA => &["i", ""],
+
+        HAMZA_ABOVE => &["'", "a"],
+        LETTER_SUPERSCRIPT_ALEF => &["a", "aa", "o", "oo", ""],
 
         _ => &[],
     }
@@ -71,12 +65,14 @@ pub(crate) fn map(c: char) -> &'static [&'static str] {
 pub(crate) fn contextual_map(c0: char, c1: char) -> &'static [&'static str] {
     match (c0, c1) {
         (SPACE, LETTER_ALEF)
-        | (LETTER_BEH, LETTER_ALEF)
         | (LETTER_ALEF, LETTER_LAM)
+        | (LETTER_HAMZA, LETTER_ALEF)
         | (LETTER_ALEF_WITH_MADDA_ABOVE, LETTER_LAM)
         | (LETTER_WAW, LETTER_ALEF)
-        | (LETTER_ALEF_WITH_HAMZA_ABOVE, LETTER_WAW)
-        | (LETTER_AIN, LETTER_ALEF) => &[""],
+        | (LETTER_AIN, LETTER_ALEF)
+        | (DAMMA, LETTER_WAW)
+        | (KASRA, LETTER_ALEF)
+        | (KASRA, LETTER_LAM) => &[""],
         ('\0', LETTER_ALEF) => &["i", "u"],
         (LETTER_LAM, LETTER_LAM) => &["i"],
         (_, SHADDA) => map(c0),
