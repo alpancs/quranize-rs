@@ -1,13 +1,13 @@
 pub(crate) struct WordSuffixIter<'a> {
-    text: Option<&'a str>,
+    next: Option<&'a str>,
 }
 
 impl<'a> Iterator for WordSuffixIter<'a> {
     type Item = &'a str;
     fn next(&mut self) -> Option<Self::Item> {
-        let current_text = self.text;
-        self.text = current_text.and_then(|t| t.split_once(' ').map(|(_, r)| r.trim_start()));
-        current_text
+        let next = self.next;
+        self.next = next.and_then(|t| t.split_once(' ').map(|(_, r)| r.trim_start()));
+        next
     }
 }
 
@@ -17,7 +17,7 @@ pub(crate) trait WordSuffixIterExt {
 
 impl WordSuffixIterExt for str {
     fn word_suffixes(&self) -> WordSuffixIter {
-        WordSuffixIter { text: Some(self) }
+        WordSuffixIter { next: Some(self) }
     }
 }
 
