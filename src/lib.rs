@@ -227,9 +227,10 @@ mod tests {
 
     #[test]
     fn test_clean_aya() {
-        for (_, _, q) in quran::iter() {
-            let clean_q = clean_aya(q);
-            assert_eq!(q.word_suffixes().count(), clean_q.word_suffixes().count());
+        for (s, a, q) in quran::iter() {
+            let q_words = q.word_suffixes().count();
+            let clean_q_words = clean_aya(q).word_suffixes().count();
+            assert_eq!(q_words, clean_q_words, "sura={} aya={}", s, a);
         }
     }
 
