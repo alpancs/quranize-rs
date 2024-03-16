@@ -85,16 +85,9 @@ impl Quranize {
             locations_index: Default::default(),
         };
         for (s, a, q) in quran::iter() {
-            let filtd_q: String = q.chars().filter(mappable).collect();
-            for (q, w) in filtd_q.trim().word_suffixes().zip(1..) {
+            for (q, w) in clean_aya(q).word_suffixes().zip(1..) {
                 quranize.index(q, (s, a, w), min_harfs);
             }
-            // if filtd_q.trim().contains("  ") {
-            //     println!("\n\n=={} {}==", s, a);
-            //     println!("=={}==", q);
-            //     println!("=={}==\n\n", nomd_q);
-            //     panic!();
-            // }
         }
         quranize
     }
@@ -217,6 +210,10 @@ impl Quranize {
     }
 }
 
+fn clean_aya(aya: &str) -> String {
+    aya.chars().filter(mappable).collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -225,6 +222,14 @@ mod tests {
     impl Quranize {
         fn e(&self, text: &str) -> Vec<String> {
             self.encode(text).into_iter().map(|(q, _, _)| q).collect()
+        }
+    }
+
+    #[test]
+    fn test_clean_aya() {
+        for (_, _, q) in quran::iter() {
+            let clean_q = clean_aya(q);
+            assert_eq!(q.word_suffixes().count(), clean_q.word_suffixes().count());
         }
     }
 
