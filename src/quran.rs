@@ -2,7 +2,7 @@
 
 pub(crate) mod harf;
 
-const UTHMANI_MIN: &str = include_str!("quran-uthmani-min.txt");
+const UTHMANI_MIN: &str = include_str!("quran/quran-uthmani-min.txt");
 const SURA_COUNT: usize = 114;
 const AYA_COUNT: usize = 6236;
 const AYA_STARTS: [usize; 115] = [
@@ -44,6 +44,15 @@ fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
 }
 
 /// Struct to get ayah texts by surah number and ayah number.
+///
+/// # Examples
+///
+/// ```
+/// use quranize::AyaGetter;
+/// let aya_getter = AyaGetter::new();
+/// assert_eq!(aya_getter.get(1, 1), Some("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"));
+/// assert_eq!(aya_getter.get(114, 6), Some("مِنَ الجِنَّةِ وَالنّاسِ"));
+/// ```
 pub struct AyaGetter<'a> {
     aya_texts: Vec<&'a str>,
     aya_sums: Vec<usize>,
@@ -56,7 +65,7 @@ impl Default for AyaGetter<'_> {
 }
 impl<'a> AyaGetter<'a> {
     /// Create a new `AyaGetter`.
-    fn new() -> Self {
+    pub fn new() -> Self {
         let mut aya_texts = Vec::with_capacity(AYA_COUNT);
         let mut aya_sums = Vec::with_capacity(SURA_COUNT);
         for (i, (_, a, q)) in iter_quran(UTHMANI_MIN).enumerate() {
@@ -72,15 +81,6 @@ impl<'a> AyaGetter<'a> {
     }
 
     /// Get an ayah text given a surah number and an ayah number.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use quranize::AyaGetter;
-    /// let aya_getter = AyaGetter::default();
-    /// assert_eq!(aya_getter.get(1, 1), Some("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"));
-    /// assert_eq!(aya_getter.get(114, 6), Some("مِنَ الجِنَّةِ وَالنّاسِ"));
-    /// ```
     pub fn get(&self, sura_number: u8, aya_number: u16) -> Option<&'a str> {
         let aya_sum = *self.aya_sums.get(sura_number as usize - 1)?;
         Some(*self.aya_texts.get(aya_sum + aya_number as usize - 1)?)
