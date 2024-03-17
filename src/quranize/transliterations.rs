@@ -48,9 +48,9 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
         LETTER_ALEF_MAKSURA => &["a", "o", "i"],
         LETTER_YEH => &["y", "i", "ii", "iya", "iyi", "iyu"],
 
-        FATHATAN => &["an", "on", "am", "om", ""],
-        DAMMATAN => &["un", "um", ""],
-        KASRATAN => &["in", "im", ""],
+        FATHATAN => &["an", "on", ""],
+        DAMMATAN => &["un", ""],
+        KASRATAN => &["in", ""],
         FATHA => &["a", "o", ""],
         DAMMA => &["u", ""],
         KASRA => &["i", ""],
