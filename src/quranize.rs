@@ -216,8 +216,10 @@ mod tests {
         assert_eq!(q.e("birobbinnas"), vec!["بِرَبِّ النّاسِ"]);
         assert_eq!(q.e("inna anzalnahu"), vec!["إِنّا أَنزَلنٰهُ"]);
         assert_eq!(q.e("wa'tasimu"), vec!["وَاعتَصِموا"]);
+        assert_eq!(q.e("wa'tasimu bihablillah"), vec!["وَاعتَصِموا بِحَبلِ اللَّهِ"]);
         assert_eq!(q.e("wabarro"), vec!["وَبَرًّا"]);
-        assert_eq!(q.e("idza qodho"), vec!["إِذا قَضَى", "إِذا قَضىٰ"]);
+        assert_eq!(q.e("idza qodho"), vec!["إِذا قَضَى"]);
+        assert_eq!(q.e("idza qodhoo"), vec!["إِذا قَضَى", "إِذا قَضىٰ"]);
         assert_eq!(q.e("masyaallah"), vec!["ما شاءَ اللَّهُ"]);
         assert_eq!(q.e("illa man taba"), vec!["إِلّا مَن تابَ"]);
         assert_eq!(q.e("qulhuwallahuahad"), vec!["قُل هُوَ اللَّهُ أَحَدٌ"]);
@@ -232,6 +234,7 @@ mod tests {
         assert_eq!(q.e("laa yukallifullah"), vec!["لا يُكَلِّفُ اللَّهُ"]);
         assert_eq!(q.e("robbil alamin"), vec!["رَبِّ العٰلَمينَ"]);
         assert_eq!(q.e("husnul maab"), vec!["حُسنُ المَـٔابِ"]);
+        assert_eq!(q.e("kufuwan"), vec!["كُفُوًا"]);
     }
 
     #[test]

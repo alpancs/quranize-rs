@@ -6,7 +6,7 @@ pub(super) fn mappable(c: char) -> bool {
 
 pub(super) fn map(c: char) -> &'static [&'static str] {
     match c {
-        SPACE => &["", "n"],
+        SPACE => &[""],
 
         LETTER_HAMZA => &["'", "k", "a", "i", "u"],
         LETTER_ALEF_WITH_MADDA_ABOVE => &["a", "'a", "aa"],
@@ -56,7 +56,7 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
         KASRA => &["i", ""],
 
         HAMZA_ABOVE => &["'", "a"],
-        LETTER_SUPERSCRIPT_ALEF => &["a", "aa", "o", "oo", ""],
+        LETTER_SUPERSCRIPT_ALEF => &["a", "aa", "o", "oo"],
 
         _ => &[],
     }
@@ -68,9 +68,9 @@ pub(super) fn contextual_map(c0: char, c1: char) -> &'static [&'static str] {
         | (LETTER_ALEF, LETTER_LAM)
         | (LETTER_HAMZA, LETTER_ALEF)
         | (HAMZA_ABOVE, LETTER_ALEF)
-        | (LETTER_ALEF_WITH_MADDA_ABOVE, LETTER_LAM)
         | (LETTER_WAW, LETTER_ALEF)
-        | (LETTER_AIN, LETTER_ALEF)
+        | (LETTER_AIN, LETTER_SUPERSCRIPT_ALEF)
+        | (FATHATAN, LETTER_ALEF)
         | (DAMMA, LETTER_WAW)
         | (KASRA, LETTER_ALEF)
         | (KASRA, LETTER_LAM) => &[""],
