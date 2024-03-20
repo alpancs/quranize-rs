@@ -239,6 +239,7 @@ mod tests {
         assert_eq!(q.e("yukhodiun"), vec!["يُخٰدِعونَ"]);
         assert_eq!(q.e("indallah"), vec!["عِندَ اللَّهِ", "عِندِ اللَّهِ"]);
         assert_eq!(q.e("alimul ghoibi"), vec!["عٰلِمُ الغَيبِ"]);
+        assert_eq!(q.e("kaana dhoifa"), vec!["كانَ ضَعيفًا"]);
     }
 
     #[test]
