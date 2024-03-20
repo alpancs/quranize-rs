@@ -207,7 +207,7 @@ mod tests {
 
     #[test]
     fn test_quranize_default() {
-        let q = Quranize::new(70);
+        let q = Quranize::default();
         assert_eq!(q.e("allah"), vec!["اللَّهَ", "اللَّهُ", "ءاللَّهُ", "اللَّهِ"]);
         assert_eq!(q.e("illa billah"), vec!["إِلّا بِاللَّهِ"]);
         assert_eq!(q.e("alquran"), vec!["القُرءانَ", "القُرءانُ", "القُرءانِ"]);
@@ -239,7 +239,7 @@ mod tests {
 
     #[test]
     fn test_first_aya() {
-        let q = Quranize::new(70);
+        let q = Quranize::new(25);
         assert_eq!(q.e("alif lam mim"), vec!["الم"]);
         assert_eq!(q.e("alif laaam miiim"), vec!["الم"]);
         assert_eq!(q.e("nuun"), vec!["ن"]);
@@ -249,7 +249,7 @@ mod tests {
 
     #[test]
     fn test_alfatihah() {
-        let q = Quranize::default();
+        let q = Quranize::new(100);
         assert_eq!(
             q.e("bismillahirrohmanirrohiim"),
             vec!["بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"]
@@ -273,7 +273,7 @@ mod tests {
 
     #[test]
     fn test_al_ikhlas() {
-        let q = Quranize::new(70);
+        let q = Quranize::new(50);
         assert_eq!(q.e("qulhuwallahuahad"), vec!["قُل هُوَ اللَّهُ أَحَدٌ"]);
         assert_eq!(q.e("allahussomad"), vec!["اللَّهُ الصَّمَدُ"]);
         assert_eq!(q.e("lam yalid walam yulad"), vec!["لَم يَلِد وَلَم يولَد"]);
