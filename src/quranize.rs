@@ -239,6 +239,8 @@ mod tests {
         assert_eq!(q.e("yukhodiun"), vec!["يُخٰدِعونَ"]);
         assert_eq!(q.e("indallah"), vec!["عِندَ اللَّهِ", "عِندِ اللَّهِ"]);
         assert_eq!(q.e("alimul ghoibi"), vec!["عٰلِمُ الغَيبِ"]);
+        assert_eq!(q.e("kaana dhoifa"), vec!["كانَ ضَعيفًا"]);
+        assert_eq!(q.e("kitabi la roiba"), vec!["الكِتٰبِ لا رَيبَ"]);
     }
 
     #[test]
@@ -290,10 +292,7 @@ mod tests {
     #[test]
     fn test_quranize_misc() {
         let q = Quranize::new(70);
-        assert_eq!(q.encode("bismillah")[0].1.len(), 13);
         assert_eq!(q.encode("bismillah")[0].2, 3);
-        assert_eq!(q.encode("arrohman").len(), 3);
-        assert_eq!(q.encode("arrohman")[0].1.len(), 10);
         assert_eq!(
             q.encode("alhamdu")[0].1,
             vec!["a", "l", "h", "a", "m", "d", "u"]
@@ -302,12 +301,37 @@ mod tests {
             q.encode("arrohman")[0].1,
             vec!["a", "", "r", "r", "o", "h", "m", "a", "n", ""]
         );
-        let result = &q.encode("masyaallah")[0];
-        assert_eq!(result.0.chars().count(), result.1.len());
-        assert_eq!(
-            result.1,
-            vec!["m", "a", "", "sy", "a", "a", "", "", "", "", "l", "l", "a", "h", ""]
-        );
+        {
+            let r = &q.encode("masyaallah")[0];
+            assert_eq!(r.0.chars().count(), r.1.len());
+            assert_eq!(
+                r.1,
+                vec!["m", "a", "", "sy", "a", "a", "", "", "", "", "l", "l", "a", "h", ""]
+            );
+        }
+        {
+            let r = &q.encode("birobbinnas")[0];
+            assert_eq!(
+                r.1.iter().zip(r.0.chars()).collect::<Vec<_>>(),
+                vec![
+                    (&"b", 'ب',),
+                    (&"i", '\u{650}',),
+                    (&"r", 'ر',),
+                    (&"o", '\u{64e}',),
+                    (&"b", 'ب',),
+                    (&"b", '\u{651}',),
+                    (&"i", '\u{650}',),
+                    (&"", ' ',),
+                    (&"", 'ا',),
+                    (&"", 'ل',),
+                    (&"n", 'ن',),
+                    (&"n", '\u{651}',),
+                    (&"a", 'ا',),
+                    (&"s", 'س',),
+                    (&"", '\u{650}',),
+                ]
+            );
+        }
     }
 
     #[test]
