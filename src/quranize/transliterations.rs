@@ -8,12 +8,12 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
     match c {
         SPACE => &[""],
 
-        LETTER_HAMZA => &["'", "k", "a", "i", "u"],
-        LETTER_ALEF_WITH_MADDA_ABOVE => &["a", "'a", "aa"],
-        LETTER_ALEF_WITH_HAMZA_ABOVE => &["'", "k", "a", "u"],
-        LETTER_WAW_WITH_HAMZA_ABOVE => &["'", "k", "u"],
+        LETTER_HAMZA => &["'", "a"],
+        LETTER_ALEF_WITH_MADDA_ABOVE => &["a", "aa"],
+        LETTER_ALEF_WITH_HAMZA_ABOVE => &["a", "u"],
+        LETTER_WAW_WITH_HAMZA_ABOVE => &["u"],
         LETTER_ALEF_WITH_HAMZA_BELOW => &["i"],
-        LETTER_YEH_WITH_HAMZA_ABOVE => &["'", "k", "a", "i"],
+        LETTER_YEH_WITH_HAMZA_ABOVE => &["'", "a", "i"],
         LETTER_ALEF => &["a", "o", "aa", "oo"],
         LETTER_BEH => &["b"],
         LETTER_TEH_MARBUTA => &["h", "t"],
@@ -32,7 +32,7 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
         LETTER_DAD => &["d", "dh", "dz"],
         LETTER_TAH => &["t", "th"],
         LETTER_ZAH => &["d", "dh", "dz"],
-        LETTER_AIN => &["'", "'a", "'i", "'u", "k", "a", "i", "u"],
+        LETTER_AIN => &["'", "a", "k"],
         LETTER_GHAIN => &["g", "gh"],
 
         TATWEEL => &["a", "o"],
@@ -46,7 +46,7 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
         LETTER_HEH => &["h"],
         LETTER_WAW => &["w", "u"],
         LETTER_ALEF_MAKSURA => &["a", "o", "i"],
-        LETTER_YEH => &["y", "i", "ii", "iya", "iyi", "iyu"],
+        LETTER_YEH => &["y", "i", "ii"],
 
         FATHATAN => &["an", "on", ""],
         DAMMATAN => &["un", ""],

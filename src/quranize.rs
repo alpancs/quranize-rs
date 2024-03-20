@@ -225,6 +225,7 @@ mod tests {
         assert_eq!(q.e("qulhuwallahuahad"), vec!["قُل هُوَ اللَّهُ أَحَدٌ"]);
         assert_eq!(q.e("alla tahzani"), vec!["أَلّا تَحزَنى"]);
         assert_eq!(q.e("innasya niaka"), vec!["إِنَّ شانِئَكَ"]);
+        assert_eq!(q.e("innasya ni'aka"), vec!["إِنَّ شانِئَكَ"]);
         assert_eq!(q.e("wasalamun alaihi"), vec!["وَسَلٰمٌ عَلَيهِ"]);
         assert_eq!(q.e("ulaika hum"), vec!["أُولٰئِكَ هُم", "أُولٰئِكَ هُمُ"]);
         assert_eq!(q.e("waladdoollin"), vec!["وَلَا الضّالّينَ"]);
