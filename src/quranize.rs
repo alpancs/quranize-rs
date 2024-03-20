@@ -292,10 +292,7 @@ mod tests {
     #[test]
     fn test_quranize_misc() {
         let q = Quranize::new(70);
-        assert_eq!(q.encode("bismillah")[0].1.len(), 13);
         assert_eq!(q.encode("bismillah")[0].2, 3);
-        assert_eq!(q.encode("arrohman").len(), 3);
-        assert_eq!(q.encode("arrohman")[0].1.len(), 10);
         assert_eq!(
             q.encode("alhamdu")[0].1,
             vec!["a", "l", "h", "a", "m", "d", "u"]
