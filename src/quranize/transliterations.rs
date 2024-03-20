@@ -14,7 +14,7 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
         LETTER_WAW_WITH_HAMZA_ABOVE => &["u"],
         LETTER_ALEF_WITH_HAMZA_BELOW => &["i"],
         LETTER_YEH_WITH_HAMZA_ABOVE => &["'", "a", "i"],
-        LETTER_ALEF => &["a", "o", "aa", "oo"],
+        LETTER_ALEF => &["a", "aa", "o", "oo"],
         LETTER_BEH => &["b"],
         LETTER_TEH_MARBUTA => &["h", "t"],
         LETTER_TEH => &["t"],
@@ -32,7 +32,7 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
         LETTER_DAD => &["d", "dh", "dz"],
         LETTER_TAH => &["t", "th"],
         LETTER_ZAH => &["d", "dh", "dz"],
-        LETTER_AIN => &["'", "a", "k"],
+        LETTER_AIN => &["'", "a", "u", "i", "k"],
         LETTER_GHAIN => &["g", "gh"],
 
         TATWEEL => &["a", "o"],
@@ -44,7 +44,7 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
         LETTER_MEEM => &["m"],
         LETTER_NOON => &["n"],
         LETTER_HEH => &["h"],
-        LETTER_WAW => &["w", "u"],
+        LETTER_WAW => &["w", "u", "uu"],
         LETTER_ALEF_MAKSURA => &["a", "o", "i"],
         LETTER_YEH => &["y", "i", "ii"],
 
@@ -67,6 +67,7 @@ pub(super) fn contextual_map(c0: char, c1: char) -> &'static [&'static str] {
         (SPACE, LETTER_ALEF)
         | (LETTER_HAMZA, LETTER_ALEF)
         | (LETTER_ALEF, LETTER_LAM)
+        | (LETTER_AIN, LETTER_WAW)
         | (LETTER_AIN, LETTER_SUPERSCRIPT_ALEF)
         | (LETTER_WAW, LETTER_ALEF)
         | (FATHATAN, LETTER_ALEF)
