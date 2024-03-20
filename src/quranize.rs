@@ -301,12 +301,37 @@ mod tests {
             q.encode("arrohman")[0].1,
             vec!["a", "", "r", "r", "o", "h", "m", "a", "n", ""]
         );
-        let result = &q.encode("masyaallah")[0];
-        assert_eq!(result.0.chars().count(), result.1.len());
-        assert_eq!(
-            result.1,
-            vec!["m", "a", "", "sy", "a", "a", "", "", "", "", "l", "l", "a", "h", ""]
-        );
+        {
+            let r = &q.encode("masyaallah")[0];
+            assert_eq!(r.0.chars().count(), r.1.len());
+            assert_eq!(
+                r.1,
+                vec!["m", "a", "", "sy", "a", "a", "", "", "", "", "l", "l", "a", "h", ""]
+            );
+        }
+        {
+            let r = &q.encode("birobbinnas")[0];
+            assert_eq!(
+                r.1.iter().zip(r.0.chars()).collect::<Vec<_>>(),
+                vec![
+                    (&"b", 'ب',),
+                    (&"i", '\u{650}',),
+                    (&"r", 'ر',),
+                    (&"o", '\u{64e}',),
+                    (&"b", 'ب',),
+                    (&"b", '\u{651}',),
+                    (&"i", '\u{650}',),
+                    (&"", ' ',),
+                    (&"", 'ا',),
+                    (&"", 'ل',),
+                    (&"n", 'ن',),
+                    (&"n", '\u{651}',),
+                    (&"a", 'ا',),
+                    (&"s", 'س',),
+                    (&"", '\u{650}',),
+                ]
+            );
+        }
     }
 
     #[test]
