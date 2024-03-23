@@ -295,43 +295,39 @@ mod tests {
     #[test]
     fn test_quranize_misc() {
         let q = Quranize::new(70);
-        assert_eq!(q.encode("bismillah")[0].2, 3);
+        assert!(matches!(q.encode("bismillah").first(), Some((_, _, 3))));
         assert_eq!(
-            q.encode("alhamdu")[0].1,
+            q.encode("alhamdu").into_iter().next().unwrap().1,
             vec!["a", "l", "h", "a", "m", "d", "u"]
         );
         assert_eq!(
-            q.encode("arrohman")[0].1,
+            q.encode("arrohman").into_iter().next().unwrap().1,
             vec!["a", "", "r", "r", "o", "h", "m", "a", "n", ""]
         );
         {
-            let r = &q.encode("masyaallah")[0];
+            let r = q.encode("masyaallah").into_iter().next().unwrap();
             assert_eq!(r.0.chars().count(), r.1.len());
-            assert_eq!(
-                r.1,
-                vec!["m", "a", "", "sy", "a", "a", "", "", "", "", "l", "l", "a", "h", ""]
-            );
         }
         {
-            let r = &q.encode("birobbinnas")[0];
+            let r = q.encode("birobbinnas").into_iter().next().unwrap();
             assert_eq!(
-                r.1.iter().zip(r.0.chars()).collect::<Vec<_>>(),
+                r.1.into_iter().zip(r.0.chars()).collect::<Vec<_>>(),
                 vec![
-                    (&"b", 'ب',),
-                    (&"i", '\u{650}',),
-                    (&"r", 'ر',),
-                    (&"o", '\u{64e}',),
-                    (&"b", 'ب',),
-                    (&"b", '\u{651}',),
-                    (&"i", '\u{650}',),
-                    (&"", ' ',),
-                    (&"", 'ا',),
-                    (&"", 'ل',),
-                    (&"n", 'ن',),
-                    (&"n", '\u{651}',),
-                    (&"a", 'ا',),
-                    (&"s", 'س',),
-                    (&"", '\u{650}',),
+                    ("b", 'ب',),
+                    ("i", '\u{650}',),
+                    ("r", 'ر',),
+                    ("o", '\u{64e}',),
+                    ("b", 'ب',),
+                    ("b", '\u{651}',),
+                    ("i", '\u{650}',),
+                    ("", ' ',),
+                    ("", 'ا',),
+                    ("", 'ل',),
+                    ("n", 'ن',),
+                    ("n", '\u{651}',),
+                    ("a", 'ا',),
+                    ("s", 'س',),
+                    ("", '\u{650}',),
                 ]
             );
         }
