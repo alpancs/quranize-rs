@@ -10,8 +10,8 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
 
         LETTER_HAMZA => &["'", "a"],
         LETTER_ALEF_WITH_MADDA_ABOVE => &["a", "aa"],
-        LETTER_ALEF_WITH_HAMZA_ABOVE => &["a", "u"],
-        LETTER_WAW_WITH_HAMZA_ABOVE => &["u"],
+        LETTER_ALEF_WITH_HAMZA_ABOVE => &["a", "u", "k", "'"],
+        LETTER_WAW_WITH_HAMZA_ABOVE => &["u", "k", "'"],
         LETTER_ALEF_WITH_HAMZA_BELOW => &["i"],
         LETTER_YEH_WITH_HAMZA_ABOVE => &["'", "a", "i"],
         LETTER_ALEF => &["a", "aa", "o", "oo"],
