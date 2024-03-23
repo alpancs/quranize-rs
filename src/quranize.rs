@@ -243,6 +243,7 @@ mod tests {
         assert_eq!(q.e("kitabi la roiba"), vec!["الكِتٰبِ لا رَيبَ"]);
         assert_eq!(q.e("takwili"), vec!["تَأويلِ"]);
         assert_eq!(q.e("yu'minun"), vec!["يُؤمِنونَ"]);
+        assert_eq!(q.e("hudan lil muttaqin"), vec!["هُدًى لِلمُتَّقينَ"]);
     }
 
     #[test]

@@ -67,6 +67,7 @@ pub(super) fn contextual_map(c0: char, c1: char) -> &'static [&'static str] {
         (SPACE | LETTER_HAMZA | LETTER_WAW | FATHATAN | KASRA | HAMZA_ABOVE, LETTER_ALEF)
         | (LETTER_ALEF | KASRA, LETTER_LAM)
         | (LETTER_AIN, LETTER_WAW | LETTER_YEH | LETTER_SUPERSCRIPT_ALEF)
+        | (FATHATAN, LETTER_ALEF_MAKSURA)
         | (DAMMA, LETTER_WAW) => &[""],
         ('\0', LETTER_ALEF) => &["u", "i", ""],
         (_, SHADDA) => map(c0),
