@@ -295,6 +295,7 @@ mod tests {
         let q = Quranize::new(50);
         assert_eq!(q.e("sami'am bashiro"), vec!["سَميعًا بَصيرًا"]);
         assert_eq!(q.e("mim baini"), vec!["مِن بَينِ"]);
+        assert_eq!(q.e("baghyam bainahum"), vec!["بَغيًا بَينَهُم"]);
     }
 
     #[test]
