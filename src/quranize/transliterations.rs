@@ -1,10 +1,10 @@
 use crate::quran::harf::*;
 
 pub(super) fn mappable(c: char) -> bool {
-    c == SHADDA || !map(c).is_empty()
+    c == SHADDA || !map1(c).is_empty()
 }
 
-pub(super) fn map(c: char) -> &'static [&'static str] {
+pub(super) fn map1(c: char) -> &'static [&'static str] {
     match c {
         SPACE => &[""],
 
@@ -62,7 +62,7 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
     }
 }
 
-pub(super) fn contextual_map(c0: char, c1: char) -> &'static [&'static str] {
+pub(super) fn map2(c0: char, c1: char) -> &'static [&'static str] {
     match (c0, c1) {
         (SPACE | LETTER_HAMZA | LETTER_WAW | FATHATAN | KASRA | HAMZA_ABOVE, LETTER_ALEF)
         | (LETTER_ALEF | KASRA, LETTER_LAM)
@@ -70,7 +70,7 @@ pub(super) fn contextual_map(c0: char, c1: char) -> &'static [&'static str] {
         | (FATHATAN, LETTER_ALEF_MAKSURA)
         | (DAMMA, LETTER_WAW) => &[""],
         ('\0', LETTER_ALEF) => &["u", "i", ""],
-        (_, SHADDA) => map(c0),
+        (_, SHADDA) => map1(c0),
         _ => &[],
     }
 }

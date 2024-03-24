@@ -19,7 +19,7 @@ type Location = (u8, u16, u8);
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
     root: HarfNode,
-    locations_index: HashMap<*const HarfNode, Vec<Location>>,
+    node_locations: HashMap<*const HarfNode, Vec<Location>>,
 }
 
 impl Default for Quranize {
@@ -53,7 +53,7 @@ impl Quranize {
     pub fn new(min_harfs: usize) -> Self {
         let mut quranize = Quranize {
             root: Default::default(),
-            locations_index: Default::default(),
+            node_locations: Default::default(),
         };
         for (s, a, q) in crate::quran::iter() {
             for (q, w) in clean_aya(q).word_suffixes().zip(1..) {
@@ -69,7 +69,7 @@ impl Quranize {
         for ((c, next_c), harfs) in quran.chars().zip(next_chars).zip(1..) {
             node = node.get_mut_or_add(c);
             if next_c == ' ' {
-                self.locations_index.entry(node).or_default().push(location);
+                self.node_locations.entry(node).or_default().push(location);
                 if harfs >= min_harfs {
                     break;
                 }
@@ -93,17 +93,17 @@ impl Quranize {
     fn rev_encode(&self, node: &HarfNode, text: &str) -> EncodeResults {
         let mut results = EncodeResults::new();
         if text.is_empty() {
-            if let Some(locations) = self.locations_index.get(&(node as *const HarfNode)) {
+            if let Some(locations) = self.node_locations.get(&(node as *const HarfNode)) {
                 results.push((String::new(), Vec::new(), locations.len()));
             }
         }
-        for n in node.iter() {
-            let prefixes = map(n.element)
-                .iter()
-                .chain(contextual_map(node.element, n.element));
+        let element = node.element;
+        for subnode in node.iter() {
+            let subelement = subnode.element;
+            let prefixes = map1(subelement).iter().chain(map2(element, subelement));
             for prefix in prefixes {
                 if let Some(subtext) = text.strip_prefix(prefix) {
-                    results.append(&mut self.rev_encode_sub(n, subtext, prefix));
+                    results.append(&mut self.rev_encode_sub(subnode, subtext, prefix));
                 }
             }
         }
@@ -125,7 +125,7 @@ impl Quranize {
             results.push((
                 String::new(),
                 Vec::new(),
-                self.locations_index[&(node as *const HarfNode)].len(),
+                self.node_locations[&(node as *const HarfNode)].len(),
             ));
         }
         for n in node.iter() {
@@ -139,7 +139,7 @@ impl Quranize {
     }
 
     fn containing_first_aya(&self, node: &HarfNode) -> bool {
-        self.locations_index
+        self.node_locations
             .get(&(node as *const HarfNode))
             .map(|l| l.iter().any(|&(_, a, _)| a == 1))
             .unwrap_or_default()
@@ -176,7 +176,7 @@ impl Quranize {
                 .iter()
                 .find(|n| n.element == harf)
                 .and_then(|n| self.get_locations_from(n, harfs)),
-            None => self.locations_index.get(&(node as *const HarfNode)),
+            None => self.node_locations.get(&(node as *const HarfNode)),
         }
     }
 }
