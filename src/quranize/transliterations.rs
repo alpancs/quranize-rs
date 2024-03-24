@@ -42,7 +42,7 @@ pub(super) fn map1(c: char) -> &'static [&'static str] {
         LETTER_KAF => &["k"],
         LETTER_LAM => &["l"],
         LETTER_MEEM => &["m"],
-        LETTER_NOON => &["n"],
+        LETTER_NOON => &["n", "m"],
         LETTER_HEH => &["h"],
         LETTER_WAW => &["w", "u", "uu"],
         LETTER_ALEF_MAKSURA => &["a", "o", "i"],
@@ -75,8 +75,17 @@ pub(super) fn map2(c0: char, c1: char) -> &'static [&'static str] {
     }
 }
 
-pub(super) fn mapn(_s: &str, _c: char) -> &'static [&'static str] {
-    &[]
+pub(super) fn mapn(s: &str, c: char) -> &'static [&'static str] {
+    let last_non_alef = s
+        .chars()
+        .rfind(|&c| !matches!(c, SPACE | LETTER_ALEF | LETTER_ALEF_MAKSURA));
+    match (last_non_alef, c) {
+        (Some(LETTER_NOON), LETTER_BEH) => &["mb"],
+        (Some(FATHATAN), LETTER_BEH) => &["amb", "omb"],
+        (Some(DAMMATAN), LETTER_BEH) => &["umb"],
+        (Some(KASRATAN), LETTER_BEH) => &["imb"],
+        _ => &[],
+    }
 }
 
 pub(super) fn single_harf_map(c: char) -> &'static [&'static str] {

@@ -97,8 +97,8 @@ impl Quranize {
                 results.push((String::new(), Vec::new(), locations.len()));
             }
         }
+        ctx.push(node.element);
         for subnode in node.iter() {
-            ctx.push(subnode.element);
             let prefixes = { map1(subnode.element).iter() }
                 .chain(map2(node.element, subnode.element))
                 .chain(mapn(ctx, subnode.element));
@@ -112,8 +112,8 @@ impl Quranize {
                     results.append(&mut subresults);
                 }
             }
-            ctx.pop();
         }
+        ctx.pop();
         results
     }
 
@@ -288,6 +288,13 @@ mod tests {
             q.e("walam yakun lahu kufuwan ahad"),
             vec!["وَلَم يَكُن لَهُ كُفُوًا أَحَدٌ"]
         );
+    }
+
+    #[test]
+    fn test_tajwid() {
+        let q = Quranize::new(50);
+        assert_eq!(q.e("sami'am bashiro"), vec!["سَميعًا بَصيرًا"]);
+        assert_eq!(q.e("mim baini"), vec!["مِن بَينِ"]);
     }
 
     #[test]
