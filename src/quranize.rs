@@ -79,7 +79,7 @@ impl Quranize {
 
     /// Encode `text` back into Quran form.
     pub fn encode(&self, text: &str) -> EncodeResults {
-        let mut results = self.rev_encode(&self.root, &normalize(text));
+        let mut results = self.rev_encode(&self.root, &normalize(text), &mut String::new());
         results.append(&mut self.rev_encode_first_aya(&self.root, &normalize_first_aya(text)));
         results.sort_unstable_by(|(q1, _, _), (q2, _, _)| q1.cmp(q2));
         results.dedup_by(|(q1, _, _), (q2, _, _)| q1 == q2);
@@ -90,31 +90,29 @@ impl Quranize {
         results
     }
 
-    fn rev_encode(&self, node: &HarfNode, text: &str) -> EncodeResults {
+    fn rev_encode(&self, node: &HarfNode, text: &str, ctx: &mut String) -> EncodeResults {
         let mut results = EncodeResults::new();
         if text.is_empty() {
             if let Some(locations) = self.node_locations.get(&(node as *const HarfNode)) {
                 results.push((String::new(), Vec::new(), locations.len()));
             }
         }
-        let element = node.element;
         for subnode in node.iter() {
-            let subelement = subnode.element;
-            let prefixes = map1(subelement).iter().chain(map2(element, subelement));
+            ctx.push(subnode.element);
+            let prefixes = { map1(subnode.element).iter() }
+                .chain(map2(node.element, subnode.element))
+                .chain(mapn(ctx, subnode.element));
             for prefix in prefixes {
                 if let Some(subtext) = text.strip_prefix(prefix) {
-                    results.append(&mut self.rev_encode_sub(subnode, subtext, prefix));
+                    let mut subresults = self.rev_encode(subnode, subtext, ctx);
+                    for (q, e, _) in subresults.iter_mut() {
+                        q.push(subnode.element);
+                        e.push(prefix);
+                    }
+                    results.append(&mut subresults);
                 }
             }
-        }
-        results
-    }
-
-    fn rev_encode_sub<'a>(&'a self, n: &HarfNode, text: &str, expl: &'a str) -> EncodeResults {
-        let mut results = self.rev_encode(n, text);
-        for (q, e, _) in results.iter_mut() {
-            q.push(n.element);
-            e.push(expl);
+            ctx.pop();
         }
         results
     }

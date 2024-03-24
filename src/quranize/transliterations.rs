@@ -75,6 +75,10 @@ pub(super) fn map2(c0: char, c1: char) -> &'static [&'static str] {
     }
 }
 
+pub(super) fn mapn(_s: &str, _c: char) -> &'static [&'static str] {
+    &[]
+}
+
 pub(super) fn single_harf_map(c: char) -> &'static [&'static str] {
     match c {
         LETTER_ALEF => &["alif"],
