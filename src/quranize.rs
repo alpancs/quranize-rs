@@ -29,11 +29,11 @@ impl Default for Quranize {
     /// # Examples
     ///
     /// ```
-    /// let q = quranize::Quranize::default(); // the same with `Quranize::new(usize::MAX)`
+    /// let q = quranize::Quranize::default(); // the same with `Quranize::new(u16::MAX)`
     /// assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاءَ اللَّهُ");
     /// ```
     fn default() -> Self {
-        Self::new(usize::MAX)
+        Self::new(u16::MAX)
     }
 }
 
@@ -50,7 +50,7 @@ impl Quranize {
     /// assert_eq!(q.encode("nun").first().unwrap().0, "ن");
     /// assert_eq!(q.encode("masyaallah").first(), None);
     /// ```
-    pub fn new(min_harfs: usize) -> Self {
+    pub fn new(min_harfs: u16) -> Self {
         let mut quranize = Quranize {
             root: Default::default(),
             locations_index: Default::default(),
@@ -63,7 +63,7 @@ impl Quranize {
         quranize
     }
 
-    fn index(&mut self, quran: &str, location: Location, min_harfs: usize) {
+    fn index(&mut self, quran: &str, location: Location, min_harfs: u16) {
         let mut node = &mut self.root;
         let next_chars = quran.chars().skip(1).chain(once(' '));
         for ((c, next_c), harfs) in quran.chars().zip(next_chars).zip(1..) {
