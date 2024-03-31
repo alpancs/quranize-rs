@@ -21,12 +21,12 @@ pub(crate) fn iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
 }
 
 fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
-    let mut aya_number = 0;
-    let mut sura_number = 0;
+    let mut sura_number = 0u8;
+    let mut aya_number = 0u16;
     (0..AYA_COUNT)
         .zip(raw.split('\n'))
         .map(move |(i, aya_text)| {
-            if i == AYA_STARTS[sura_number] {
+            if i == AYA_STARTS[sura_number as usize] {
                 aya_number = 1;
                 sura_number += 1;
             } else {
@@ -37,7 +37,7 @@ fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
                 (_, 1) => aya_text.splitn(5, ' ').last().unwrap(),
                 _ => aya_text,
             };
-            (sura_number as u8, aya_number as u16, aya_text)
+            (sura_number, aya_number, aya_text)
         })
 }
 
