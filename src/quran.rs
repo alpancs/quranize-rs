@@ -3,9 +3,8 @@
 pub(crate) mod harf;
 
 const UTHMANI_MIN: &str = include_str!("quran/quran-uthmani-min.txt");
-const SURA_COUNT: usize = 114;
-const AYA_COUNT: usize = 6236;
-const AYA_STARTS: [usize; 115] = [
+const AYA_COUNT: u16 = 6236;
+const AYA_STARTS: [u16; 115] = [
     0, 7, 293, 493, 669, 789, 954, 1160, 1235, 1364, 1473, 1596, 1707, 1750, 1802, 1901, 2029,
     2140, 2250, 2348, 2483, 2595, 2673, 2791, 2855, 2932, 3159, 3252, 3340, 3409, 3469, 3503, 3533,
     3606, 3660, 3705, 3788, 3970, 4058, 4133, 4218, 4272, 4325, 4414, 4473, 4510, 4545, 4583, 4612,
@@ -22,13 +21,12 @@ pub(crate) fn iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
 }
 
 fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
-    let mut aya_number = 0u16;
-    let mut sura_number = 0u8;
-    raw.split('\n')
-        .take(AYA_COUNT)
-        .enumerate()
+    let mut aya_number = 0;
+    let mut sura_number = 0;
+    (0..AYA_COUNT)
+        .zip(raw.split('\n'))
         .map(move |(i, aya_text)| {
-            if i == AYA_STARTS[sura_number as usize] {
+            if i == AYA_STARTS[sura_number] {
                 aya_number = 1;
                 sura_number += 1;
             } else {
@@ -39,7 +37,7 @@ fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
                 (_, 1) => aya_text.splitn(5, ' ').last().unwrap(),
                 _ => aya_text,
             };
-            (sura_number, aya_number, aya_text)
+            (sura_number as u8, aya_number as u16, aya_text)
         })
 }
 
@@ -55,7 +53,6 @@ fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
 /// ```
 pub struct AyaGetter<'a> {
     aya_texts: Vec<&'a str>,
-    aya_sums: Vec<usize>,
 }
 
 impl Default for AyaGetter<'_> {
@@ -66,24 +63,14 @@ impl Default for AyaGetter<'_> {
 impl<'a> AyaGetter<'a> {
     /// Create a new `AyaGetter`.
     pub fn new() -> Self {
-        let mut aya_texts = Vec::with_capacity(AYA_COUNT);
-        let mut aya_sums = Vec::with_capacity(SURA_COUNT);
-        for (i, (_, a, q)) in iter_quran(UTHMANI_MIN).enumerate() {
-            aya_texts.push(q);
-            if a == 1 {
-                aya_sums.push(i);
-            }
-        }
-        Self {
-            aya_texts,
-            aya_sums,
-        }
+        let aya_texts = iter().map(|(_, _, q)| q).collect();
+        Self { aya_texts }
     }
 
     /// Get an ayah text given a surah number and an ayah number.
     pub fn get(&self, sura_number: u8, aya_number: u16) -> Option<&'a str> {
-        let aya_sum = *self.aya_sums.get(sura_number as usize - 1)?;
-        Some(*self.aya_texts.get(aya_sum + aya_number as usize - 1)?)
+        let aya_sum = AYA_STARTS.get(sura_number as usize - 1)?;
+        Some(self.aya_texts.get((aya_sum + aya_number) as usize - 1)?)
     }
 }
 
@@ -93,7 +80,7 @@ mod tests {
 
     #[test]
     fn test_properties() {
-        assert_eq!(iter().count(), AYA_COUNT);
+        assert_eq!(iter().count(), AYA_COUNT.into());
         let unique_unicodes: Vec<_> = {
             let mut set = std::collections::BTreeSet::new();
             for (_, _, t) in iter() {
