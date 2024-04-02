@@ -68,9 +68,9 @@ impl<'a> AyaGetter<'a> {
     }
 
     /// Get an ayah text given a surah number and an ayah number.
-    pub fn get(&self, sura_number: u8, aya_number: u16) -> Option<&'a str> {
-        let aya_sum = AYA_STARTS.get(sura_number as usize - 1)?;
-        Some(self.aya_texts.get((aya_sum + aya_number) as usize - 1)?)
+    pub fn get(&self, sura: u8, aya: u16) -> Option<&'a str> {
+        let offset = AYA_STARTS.get(sura as usize - 1)?;
+        self.aya_texts.get((offset + aya) as usize - 1).copied()
     }
 }
 
