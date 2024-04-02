@@ -13,13 +13,15 @@ mod word_utils;
 use word_utils::WordSuffixIterExt;
 
 type HarfNode = Node<char>;
-type EncodeResults<'a> = Vec<(String, Vec<&'a str>, usize)>;
+type EncodeResult<'a> = (String, Vec<&'a str>, usize);
+type EncodeResults<'a> = Vec<EncodeResult<'a>>;
 type Location = (u8, u16, u8);
+type Locations = Vec<Location>;
 
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
     root: HarfNode,
-    locations_index: HashMap<*const HarfNode, Vec<Location>>,
+    locations_index: HashMap<*const HarfNode, Locations>,
 }
 
 impl Default for Quranize {
@@ -170,7 +172,7 @@ impl Quranize {
             .unwrap_or_default()
     }
 
-    fn get_locations_from(&self, node: &HarfNode, mut harfs: Chars) -> Option<&Vec<Location>> {
+    fn get_locations_from(&self, node: &HarfNode, mut harfs: Chars) -> Option<&Locations> {
         match harfs.next() {
             Some(harf) => node
                 .iter()
