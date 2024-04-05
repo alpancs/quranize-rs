@@ -58,7 +58,7 @@ impl Quranize {
             locations_index: Default::default(),
         };
         for (s, a, q) in crate::quran::iter() {
-            for (q, w) in clean_aya(q).word_suffixes().zip(1..) {
+            for (q, w) in q.word_suffixes().zip(1..) {
                 quranize.index(q, (s, a, w), min_harfs);
             }
         }
@@ -183,10 +183,6 @@ impl Quranize {
     }
 }
 
-fn clean_aya(aya: &str) -> String {
-    aya.chars().filter(|&c| mappable(c)).collect()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -196,15 +192,6 @@ mod tests {
         fn assert_encode(&self, text: &str, expected: &[&str]) {
             let actual: Vec<_> = self.encode(text).into_iter().map(|(q, _, _)| q).collect();
             assert_eq!(expected, actual, "text: {}", text);
-        }
-    }
-
-    #[test]
-    fn test_clean_aya() {
-        for (s, a, q) in crate::quran::iter() {
-            let q_words = q.word_suffixes().count();
-            let clean_q_words = clean_aya(q).word_suffixes().count();
-            assert_eq!(q_words, clean_q_words, "sura={} aya={}", s, a);
         }
     }
 
