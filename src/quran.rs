@@ -48,8 +48,8 @@ fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
 /// ```
 /// use quranize::AyaGetter;
 /// let aya_getter = AyaGetter::new();
-/// assert_eq!(aya_getter.get(1, 1), Some("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"));
-/// assert_eq!(aya_getter.get(114, 6), Some("مِنَ الجِنَّةِ وَالنّاسِ"));
+/// assert_eq!(Some("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"), aya_getter.get(1, 1));
+/// assert_eq!(Some("مِنَ الجِنَّةِ وَالنّاسِ"), aya_getter.get(114, 6));
 /// ```
 pub struct AyaGetter<'a> {
     aya_texts: Vec<&'a str>,
@@ -81,7 +81,7 @@ mod tests {
 
     #[test]
     fn test_properties() {
-        assert_eq!(iter().count(), AYA_COUNT.into());
+        assert!(iter().count() == AYA_COUNT.into());
         let unique_unicodes: Vec<_> = {
             let mut set = std::collections::BTreeSet::new();
             for (_, _, t) in iter() {
@@ -108,8 +108,8 @@ mod tests {
     #[test]
     fn test_map() {
         let aya_getter = AyaGetter::new();
-        assert_eq!(aya_getter.get(1, 1), Some("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"));
-        assert_eq!(aya_getter.get(114, 6), Some("مِنَ الجِنَّةِ وَالنّاسِ"));
-        assert_eq!(aya_getter.get(114, 7), None);
+        assert_eq!(Some("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"), aya_getter.get(1, 1));
+        assert_eq!(Some("مِنَ الجِنَّةِ وَالنّاسِ"), aya_getter.get(114, 6));
+        assert_eq!(None, aya_getter.get(114, 7));
     }
 }

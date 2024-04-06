@@ -19,33 +19,35 @@ pub(super) fn normalize_first_aya(text: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
+
     #[test]
     fn test_normalize() {
-        assert_eq!(normalize(""), "");
-        assert_eq!(normalize("bismi"), "bismi");
-        assert_eq!(normalize("'aalimul ghoibi"), "'aalimulghoibi");
-        assert_eq!(normalize("Qul A'udzu"), "qula'udzu");
+        assert_eq!("", normalize(""));
+        assert_eq!("bismi", normalize("bismi"));
+        assert_eq!("'aalimulghoibi", normalize("'aalimul ghoibi"));
+        assert_eq!("qula'udzu", normalize("Qul A'udzu"));
         assert_eq!(
+            "bismillahirrohmanirrohiim",
             normalize("bismilla hirrohma nirrohiim"),
-            "bismillahirrohmanirrohiim"
         );
     }
 
     #[test]
     fn test_normalize_first_aya() {
-        assert_eq!(normalize_first_aya(""), "");
-        assert_eq!(normalize_first_aya("alif"), "alif");
-        assert_eq!(normalize_first_aya("laam"), "lam");
-        assert_eq!(normalize_first_aya("laaam"), "lam");
-        assert_eq!(normalize_first_aya("laaaam"), "lam");
-        assert_eq!(normalize_first_aya("laaaam"), "lam");
+        assert_eq!("", normalize_first_aya(""));
+        assert_eq!("alif", normalize_first_aya("alif"));
+        assert_eq!("lam", normalize_first_aya("laam"));
+        assert_eq!("lam", normalize_first_aya("laaam"));
+        assert_eq!("lam", normalize_first_aya("laaaam"));
+        assert_eq!("lam", normalize_first_aya("laaaam"));
         assert_eq!(
+            "kafhayaainshod",
             normalize_first_aya("kaaaf haa yaa aiiin shoood"),
-            "kafhayaainshod"
         );
         assert_eq!(
+            "kafhaya'ainshod",
             normalize_first_aya("kaaaf haa yaa 'aiiin shoood"),
-            "kafhaya'ainshod"
         );
     }
 }

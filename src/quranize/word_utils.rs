@@ -37,10 +37,10 @@ mod tests {
     #[test]
     fn test_word_suffix_iter() {
         let mut word_suffix_iter = "ab cde  fg   h".word_suffixes();
-        assert_eq!(word_suffix_iter.next(), Some((0, "ab cde  fg   h")));
-        assert_eq!(word_suffix_iter.next(), Some((3, "cde  fg   h")));
-        assert_eq!(word_suffix_iter.next(), Some((8, "fg   h")));
-        assert_eq!(word_suffix_iter.next(), Some((13, "h")));
-        assert_eq!(word_suffix_iter.next(), None);
+        assert_eq!(Some((0, "ab cde  fg   h")), word_suffix_iter.next());
+        assert_eq!(Some((3, "cde  fg   h")), word_suffix_iter.next());
+        assert_eq!(Some((8, "fg   h")), word_suffix_iter.next());
+        assert_eq!(Some((13, "h")), word_suffix_iter.next());
+        assert_eq!(None, word_suffix_iter.next());
     }
 }
