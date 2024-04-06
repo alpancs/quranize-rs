@@ -3,9 +3,8 @@
 pub(crate) mod harf;
 
 const UTHMANI_MIN: &str = include_str!("quran/quran-uthmani-min.txt");
-const SURA_COUNT: usize = 114;
-const AYA_COUNT: usize = 6236;
-const AYA_STARTS: [usize; 115] = [
+const AYA_COUNT: u16 = 6236;
+const AYA_STARTS: [u16; 115] = [
     0, 7, 293, 493, 669, 789, 954, 1160, 1235, 1364, 1473, 1596, 1707, 1750, 1802, 1901, 2029,
     2140, 2250, 2348, 2483, 2595, 2673, 2791, 2855, 2932, 3159, 3252, 3340, 3409, 3469, 3503, 3533,
     3606, 3660, 3705, 3788, 3970, 4058, 4133, 4218, 4272, 4325, 4414, 4473, 4510, 4545, 4583, 4612,
@@ -22,11 +21,10 @@ pub(crate) fn iter() -> impl Iterator<Item = (u8, u16, &'static str)> {
 }
 
 fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
-    let mut aya_number = 0u16;
     let mut sura_number = 0u8;
-    raw.split('\n')
-        .take(AYA_COUNT)
-        .enumerate()
+    let mut aya_number = 0u16;
+    (0..AYA_COUNT)
+        .zip(raw.split('\n'))
         .map(move |(i, aya_text)| {
             if i == AYA_STARTS[sura_number as usize] {
                 aya_number = 1;
@@ -50,12 +48,11 @@ fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
 /// ```
 /// use quranize::AyaGetter;
 /// let aya_getter = AyaGetter::new();
-/// assert_eq!(aya_getter.get(1, 1), Some("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"));
-/// assert_eq!(aya_getter.get(114, 6), Some("مِنَ الجِنَّةِ وَالنّاسِ"));
+/// assert_eq!(Some("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"), aya_getter.get(1, 1));
+/// assert_eq!(Some("مِنَ الجِنَّةِ وَالنّاسِ"), aya_getter.get(114, 6));
 /// ```
 pub struct AyaGetter<'a> {
     aya_texts: Vec<&'a str>,
-    aya_sums: Vec<usize>,
 }
 
 impl Default for AyaGetter<'_> {
@@ -66,34 +63,25 @@ impl Default for AyaGetter<'_> {
 impl<'a> AyaGetter<'a> {
     /// Create a new `AyaGetter`.
     pub fn new() -> Self {
-        let mut aya_texts = Vec::with_capacity(AYA_COUNT);
-        let mut aya_sums = Vec::with_capacity(SURA_COUNT);
-        for (i, (_, a, q)) in iter_quran(UTHMANI_MIN).enumerate() {
-            aya_texts.push(q);
-            if a == 1 {
-                aya_sums.push(i);
-            }
-        }
-        Self {
-            aya_texts,
-            aya_sums,
-        }
+        let aya_texts = iter().map(|(_, _, q)| q).collect();
+        Self { aya_texts }
     }
 
     /// Get an ayah text given a surah number and an ayah number.
-    pub fn get(&self, sura_number: u8, aya_number: u16) -> Option<&'a str> {
-        let aya_sum = *self.aya_sums.get(sura_number as usize - 1)?;
-        Some(*self.aya_texts.get(aya_sum + aya_number as usize - 1)?)
+    pub fn get(&self, sura: u8, aya: u16) -> Option<&'a str> {
+        let offset = AYA_STARTS.get(sura as usize - 1)?;
+        self.aya_texts.get((offset + aya) as usize - 1).copied()
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_properties() {
-        assert_eq!(iter().count(), AYA_COUNT);
+        assert!(iter().count() == AYA_COUNT.into());
         let unique_unicodes: Vec<_> = {
             let mut set = std::collections::BTreeSet::new();
             for (_, _, t) in iter() {
@@ -102,7 +90,6 @@ mod tests {
             set.into_iter().collect()
         };
         assert_eq!(
-            unique_unicodes,
             [
                 '\u{0020}', '\u{0621}', '\u{0623}', '\u{0624}', '\u{0625}', '\u{0626}', '\u{0627}',
                 '\u{0628}', '\u{0629}', '\u{062A}', '\u{062B}', '\u{062C}', '\u{062D}', '\u{062E}',
@@ -110,17 +97,19 @@ mod tests {
                 '\u{0636}', '\u{0637}', '\u{0638}', '\u{0639}', '\u{063A}', '\u{0640}', '\u{0641}',
                 '\u{0642}', '\u{0643}', '\u{0644}', '\u{0645}', '\u{0646}', '\u{0647}', '\u{0648}',
                 '\u{0649}', '\u{064A}', '\u{064B}', '\u{064C}', '\u{064D}', '\u{064E}', '\u{064F}',
-                '\u{0650}', '\u{0651}', '\u{0654}', '\u{0670}', '\u{06DC}', '\u{06DF}', '\u{06E0}',
-                '\u{06E3}', '\u{06E5}', '\u{06E6}', '\u{06E7}', '\u{06E8}', '\u{06EA}', '\u{06EB}'
-            ]
+                '\u{0650}', '\u{0651}', '\u{0654}', '\u{0670}', '\u{06D6}', '\u{06D7}', '\u{06D8}',
+                '\u{06D9}', '\u{06DA}', '\u{06DB}', '\u{06DC}', '\u{06DF}', '\u{06E0}', '\u{06E3}',
+                '\u{06E5}', '\u{06E6}', '\u{06E7}', '\u{06E8}', '\u{06EA}', '\u{06EB}'
+            ],
+            *unique_unicodes
         );
     }
 
     #[test]
     fn test_map() {
         let aya_getter = AyaGetter::new();
-        assert_eq!(aya_getter.get(1, 1), Some("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"));
-        assert_eq!(aya_getter.get(114, 6), Some("مِنَ الجِنَّةِ وَالنّاسِ"));
-        assert_eq!(aya_getter.get(114, 7), None);
+        assert_eq!(Some("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"), aya_getter.get(1, 1));
+        assert_eq!(Some("مِنَ الجِنَّةِ وَالنّاسِ"), aya_getter.get(114, 6));
+        assert_eq!(None, aya_getter.get(114, 7));
     }
 }

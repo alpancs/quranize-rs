@@ -1,9 +1,5 @@
 use crate::quran::harf::*;
 
-pub(super) fn mappable(c: char) -> bool {
-    c == SHADDA || !map(c).is_empty()
-}
-
 pub(super) fn map(c: char) -> &'static [&'static str] {
     match c {
         SPACE => &[""],
@@ -54,11 +50,12 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
         FATHA => &["a", "o", ""],
         DAMMA => &["u", ""],
         KASRA => &["i", ""],
+        SHADDA => &[],
 
         HAMZA_ABOVE => &["'", "a"],
         LETTER_SUPERSCRIPT_ALEF => &["a", "aa", "o", "oo"],
 
-        _ => &[],
+        _ => &[""],
     }
 }
 
