@@ -235,6 +235,7 @@ mod tests {
         q.assert_encode("takwili", &["تَأويلِ"]);
         q.assert_encode("yu'minun", &["يُؤمِنونَ"]);
         q.assert_encode("hudan lil muttaqin", &["هُدًى لِلمُتَّقينَ"]);
+        q.assert_encode("khusnul ma'ab", &["حُسنُ المَـٔابِ"]);
     }
 
     #[test]

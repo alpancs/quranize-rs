@@ -16,7 +16,7 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
         LETTER_TEH => &["t"],
         LETTER_THEH => &["ts", "s"],
         LETTER_JEEM => &["j"],
-        LETTER_HAH => &["h", "ch"],
+        LETTER_HAH => &["h", "kh", "ch"],
         LETTER_KHAH => &["kh"],
         LETTER_DAL => &["d"],
         LETTER_THAL => &["d", "dh", "dz"],
