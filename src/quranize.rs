@@ -32,7 +32,7 @@ impl Default for Quranize {
     ///
     /// ```
     /// let q = quranize::Quranize::default(); // the same with `Quranize::new(u16::MAX)`
-    /// assert_eq!(q.encode("masyaallah").first().unwrap().0, "ما شاءَ اللَّهُ");
+    /// assert_eq!("ما شاءَ اللَّهُ", q.encode("masyaallah").first().unwrap().0);
     /// ```
     fn default() -> Self {
         Self::new(u16::MAX)
@@ -49,8 +49,8 @@ impl Quranize {
     ///
     /// ```
     /// let q = quranize::Quranize::new(1);
-    /// assert_eq!(q.encode("nun").first().unwrap().0, "ن");
-    /// assert_eq!(q.encode("masyaallah").first(), None);
+    /// assert_eq!("ن", q.encode("nun").first().unwrap().0);
+    /// assert_eq!(None, q.encode("masyaallah").first());
     /// ```
     pub fn new(min_harfs: u16) -> Self {
         let mut quranize = Quranize {
@@ -187,6 +187,7 @@ impl Quranize {
 mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
+    use std::collections::HashSet;
 
     impl Quranize {
         fn assert_encode(&self, text: &str, expected: &[&str]) {
@@ -275,21 +276,20 @@ mod tests {
         let q = Quranize::new(70);
         assert!(matches!(q.encode("bismillah").first(), Some((_, _, 3))));
         assert_eq!(
+            vec!["a", "l", "h", "a", "m", "d", "u"],
             q.encode("alhamdu").into_iter().next().unwrap().1,
-            vec!["a", "l", "h", "a", "m", "d", "u"]
         );
         assert_eq!(
+            vec!["a", "", "r", "r", "o", "h", "m", "a", "n", ""],
             q.encode("arrohman").into_iter().next().unwrap().1,
-            vec!["a", "", "r", "r", "o", "h", "m", "a", "n", ""]
         );
         {
-            let r = q.encode("masyaallah").into_iter().next().unwrap();
-            assert_eq!(r.0.chars().count(), r.1.len());
+            let (q, e, _) = q.encode("masyaallah").into_iter().next().unwrap();
+            assert!(q.chars().count() == e.len());
         }
         {
-            let r = q.encode("birobbinnas").into_iter().next().unwrap();
+            let (q, e, _) = q.encode("birobbinnas").into_iter().next().unwrap();
             assert_eq!(
-                r.1.into_iter().zip(r.0.chars()).collect::<Vec<_>>(),
                 vec![
                     ("b", 'ب',),
                     ("i", '\u{650}',),
@@ -306,7 +306,8 @@ mod tests {
                     ("a", 'ا',),
                     ("s", 'س',),
                     ("", '\u{650}',),
-                ]
+                ],
+                e.into_iter().zip(q.chars()).collect::<Vec<_>>(),
             );
         }
     }
@@ -324,8 +325,8 @@ mod tests {
         let q = Quranize::new(23);
         let results = q.encode("ALLAH");
         let qurans = results.iter().map(|(q, _, _)| q);
-        let unique_count = std::collections::HashSet::<&String>::from_iter(qurans).len();
-        assert_eq!(results.len(), unique_count, "{:#?}", results);
+        let is_unique = results.len() == HashSet::<&String>::from_iter(qurans).len();
+        assert!(is_unique, "results are not unique. results: {:#?}", results);
     }
 
     #[test]
