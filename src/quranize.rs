@@ -15,7 +15,7 @@ use word_utils::WordSuffixIterExt;
 type HarfNode = Node<char>;
 type EncodeResult<'a> = (String, Vec<&'a str>, usize);
 type EncodeResults<'a> = Vec<EncodeResult<'a>>;
-type Location = (u8, u16, u8);
+type Location = (u8, u16, usize);
 type Locations = Vec<Location>;
 
 /// Struct to encode alphabetic text to quran text.
@@ -58,8 +58,8 @@ impl Quranize {
             locations_index: Default::default(),
         };
         for (s, a, q) in crate::quran::iter() {
-            for (q, w) in q.word_suffixes().zip(1..) {
-                quranize.index(q, (s, a, w), min_harfs);
+            for (i, q) in q.word_suffixes() {
+                quranize.index(q, (s, a, i), min_harfs);
             }
         }
         quranize
@@ -68,11 +68,11 @@ impl Quranize {
     fn index(&mut self, quran: &str, location: Location, min_harfs: u16) {
         let mut node = &mut self.root;
         let next_chars = quran.chars().skip(1).chain(once(' '));
-        for ((c, next_c), harfs) in quran.chars().zip(next_chars).zip(1..) {
+        for ((c, next_c), count) in quran.chars().zip(next_chars).zip(1..) {
             node = node.get_mut_or_add(c);
-            if next_c == ' ' {
+            if !matches!(c, '\u{06D6}'..='\u{06DC}') && next_c == ' ' {
                 self.locations_index.entry(node).or_default().push(location);
-                if harfs >= min_harfs {
+                if count >= min_harfs {
                     break;
                 }
             }
@@ -163,8 +163,8 @@ impl Quranize {
     ///
     /// ```
     /// let q = quranize::Quranize::new(10);
-    /// assert_eq!(q.get_locations("بِسمِ").first(), Some(&(1, 1, 1)));
-    /// assert_eq!(q.get_locations("ن").first(), Some(&(68, 1, 1)));
+    /// assert_eq!(Some(&(1, 1, 0)), q.get_locations("بِسمِ").first());
+    /// assert_eq!(Some(&(68, 1, 0)), q.get_locations("ن").first());
     /// ```
     pub fn get_locations(&self, quran: &str) -> &[Location] {
         self.get_locations_from(&self.root, quran.chars())
@@ -331,10 +331,10 @@ mod tests {
     #[test]
     fn test_locate() {
         let q = Quranize::new(70);
-        assert_eq!(q.get_locations("بِسمِ").first(), Some(&(1, 1, 1)));
-        assert_eq!(q.get_locations("وَالنّاسِ").last(), Some(&(114, 6, 3)));
-        assert_eq!(q.get_locations("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ").len(), 2);
-        assert_eq!(q.get_locations("ن").first(), Some(&(68, 1, 1)));
+        assert_eq!(Some(&(1, 1, 0)), q.get_locations("بِسمِ").first());
+        assert_eq!(Some(&(114, 6, 28)), q.get_locations("وَالنّاسِ").last());
+        assert_eq!(Some(&(68, 1, 0)), q.get_locations("ن").first());
+        assert_eq!(2, q.get_locations("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ").len());
         assert!(q.get_locations("").is_empty());
         assert!(q.get_locations("نن").is_empty());
         assert!(q.get_locations("ننن").is_empty());
