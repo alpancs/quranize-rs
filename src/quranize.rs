@@ -209,8 +209,7 @@ mod tests {
         q.assert_encode("wa'tasimu", &["وَاعتَصِموا"]);
         q.assert_encode("wa'tasimu bihablillah", &["وَاعتَصِموا بِحَبلِ اللَّهِ"]);
         q.assert_encode("wabarro", &["وَبَرًّا"]);
-        q.assert_encode("idza qodho", &["إِذا قَضَى"]);
-        q.assert_encode("idza qodhoo", &["إِذا قَضَى", "إِذا قَضىٰ"]);
+        q.assert_encode("idza qodho", &["إِذا قَضَى", "إِذا قَضىٰ"]);
         q.assert_encode("masyaallah", &["ما شاءَ اللَّهُ"]);
         q.assert_encode("illa man taba", &["إِلّا مَن تابَ"]);
         q.assert_encode("qulhuwallahuahad", &["قُل هُوَ اللَّهُ أَحَدٌ"]);
@@ -236,6 +235,7 @@ mod tests {
         q.assert_encode("yu'minun", &["يُؤمِنونَ"]);
         q.assert_encode("hudan lil muttaqin", &["هُدًى لِلمُتَّقينَ"]);
         q.assert_encode("khusnul ma'ab", &["حُسنُ المَـٔابِ"]);
+        q.assert_encode("majreha wamursaha", &["مَجر۪ىٰها وَمُرسىٰها"]);
     }
 
     #[test]

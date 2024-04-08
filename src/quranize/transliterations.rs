@@ -50,6 +50,7 @@ const SHADDA: char = '\u{0651}';
 
 const HAMZA_ABOVE: char = '\u{0654}';
 const LETTER_SUPERSCRIPT_ALEF: char = '\u{0670}';
+const EMPTY_CENTRE_LOW_STOP: char = '\u{06EA}';
 
 pub(super) fn map(c: char) -> &'static [&'static str] {
     match c {
@@ -110,15 +111,17 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
     }
 }
 
-pub(super) fn contextual_map(c0: char, c1: char) -> &'static [&'static str] {
-    match (c0, c1) {
+pub(super) fn contextual_map(prev_c: char, c: char) -> &'static [&'static str] {
+    match (prev_c, c) {
+        ('\0', LETTER_ALEF) => &["u", "i", ""],
+        (LETTER_REH, EMPTY_CENTRE_LOW_STOP) => &["e"],
         (SPACE | LETTER_HAMZA | LETTER_WAW | FATHATAN | KASRA | HAMZA_ABOVE, LETTER_ALEF)
         | (LETTER_ALEF | KASRA, LETTER_LAM)
         | (LETTER_AIN, LETTER_WAW | LETTER_YEH | LETTER_SUPERSCRIPT_ALEF)
-        | (FATHATAN, LETTER_ALEF_MAKSURA)
+        | (LETTER_ALEF_MAKSURA, LETTER_SUPERSCRIPT_ALEF)
+        | (FATHATAN..=SHADDA | EMPTY_CENTRE_LOW_STOP, LETTER_ALEF_MAKSURA)
         | (DAMMA, LETTER_WAW) => &[""],
-        ('\0', LETTER_ALEF) => &["u", "i", ""],
-        (_, SHADDA) => map(c0),
+        (_, SHADDA) => map(prev_c),
         _ => &[],
     }
 }
