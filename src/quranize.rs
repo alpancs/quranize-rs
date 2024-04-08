@@ -9,8 +9,8 @@ use normalization::{normalize, normalize_first_aya};
 mod transliterations;
 use transliterations::*;
 
-mod word_utils;
-use word_utils::WordSuffixIterExt;
+mod word_suffixes;
+use word_suffixes::WordSuffixIterExt;
 
 type HarfNode = Node<char>;
 type EncodeResult<'a> = (String, Vec<&'a str>, usize);
