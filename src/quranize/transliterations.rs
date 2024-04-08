@@ -114,7 +114,7 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
 pub(super) fn contextual_map(prev_c: char, c: char) -> &'static [&'static str] {
     match (prev_c, c) {
         ('\0', LETTER_ALEF) => &["u", "i", ""],
-        (LETTER_REH, EMPTY_CENTRE_LOW_STOP) => &["e"],
+        (LETTER_REH, EMPTY_CENTRE_LOW_STOP) => &["e", "ee"],
         (SPACE | LETTER_HAMZA | LETTER_WAW | FATHATAN | KASRA | HAMZA_ABOVE, LETTER_ALEF)
         | (LETTER_ALEF | KASRA, LETTER_LAM)
         | (LETTER_AIN, LETTER_WAW | LETTER_YEH | LETTER_SUPERSCRIPT_ALEF)
