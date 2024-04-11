@@ -1,6 +1,7 @@
 use std::{collections::HashMap, iter::once, str::Chars};
 
 mod collections;
+mod suffix_tree;
 use collections::Node;
 
 mod normalization;
@@ -194,6 +195,12 @@ mod tests {
             let actual: Vec<_> = self.encode(text).into_iter().map(|(q, _, _)| q).collect();
             assert_eq!(expected, actual, "text: {}", text);
         }
+        fn size(&self) -> usize {
+            Self::node_size(&self.root)
+        }
+        fn node_size(node: &HarfNode) -> usize {
+            1 + node.iter().map(Self::node_size).sum::<usize>()
+        }
     }
 
     #[test]
@@ -342,5 +349,16 @@ mod tests {
         assert!(q.get_locations("ننن").is_empty());
         assert!(q.get_locations("نننن").is_empty());
         assert!(q.get_locations("2+3+4=9").is_empty());
+    }
+
+    #[test]
+    fn test_suffix_tree() {
+        let mut t = suffix_tree::Tree::default();
+        for (s, a, q) in crate::quran::iter() {
+            for (i, q) in q.word_suffixes() {
+                t.insert(q, (s, a, i));
+            }
+        }
+        assert_ne!(Quranize::default().size(), t.size());
     }
 }
