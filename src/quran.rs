@@ -39,6 +39,31 @@ fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
         })
 }
 
+pub(crate) fn suffix_iter() -> impl Iterator<Item = (usize, &'static str)> {
+    SuffixIter {
+        offset: Some(0),
+        str: Some(UTHMANI_MIN),
+    }
+}
+
+pub(crate) struct SuffixIter<'a> {
+    offset: Option<(usize)>,
+    str: Option<&'a str>,
+}
+
+impl<'a> Iterator for SuffixIter<'a> {
+    type Item = (usize, &'a str);
+    fn next(&mut self) -> Option<Self::Item> {
+        let str = self.str;
+        let offset = self.offset;
+        let sep = |c| matches!(c, ' ' | '\n' | '\u{06D6}'..='\u{06DC}');
+        self.str = str.and_then(|t| t.split_once(' ').map(|(_, r)| r.trim_start_matches(sep)));
+        self.offset = { offset.zip(str.zip(self.str)) }
+            .map(|(offset, (before, after))| offset + (before.len() - after.len()));
+        offset.zip(str)
+    }
+}
+
 /// Struct to get ayah texts by surah number and ayah number.
 ///
 /// # Examples
