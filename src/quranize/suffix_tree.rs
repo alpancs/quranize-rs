@@ -1,7 +1,6 @@
 use std::collections::BTreeSet;
 
 type Vertex = Option<u16>;
-
 type Edge<'a> = (usize, usize, &'a str);
 
 struct SuffixTree<'a> {
@@ -21,27 +20,36 @@ impl<'a> SuffixTree<'a> {
         s.char_indices().for_each(|(i, _)| self.insert(i, &s[i..]));
     }
 
-    fn insert(&mut self, i: usize, subs: &'a str) {
-        let reusable_edge = { self.edges.range((0, 0, "")..(1, 0, "")) }
-            .find_map(|e| Self::longest_prefix(subs, e.2).map(|p| (*e, p)));
-        match reusable_edge {
-            Some((e, p)) if e.2 != p => {
-                let v = self.add_vertex(None);
-                let w = self.add_vertex(Some(i as u16));
-                self.edges.remove(&e);
-                self.edges.insert((e.0, v, p));
-                self.edges.insert((v, e.1, e.2.strip_prefix(p).unwrap()));
-                self.edges.insert((v, w, subs.strip_prefix(p).unwrap()));
-            }
-            Some((e, p)) => {
-                let v = self.add_vertex(Some(i as u16));
-                self.edges.insert((e.1, v, subs.strip_prefix(p).unwrap()));
-            }
-            None => {
-                let v = self.add_vertex(Some(i as u16));
-                self.edges.insert((0, v, subs));
-            }
-        };
+    fn insert(&mut self, i: usize, mut subs: &'a str) {
+        let mut root = 0;
+        while !subs.is_empty() {
+            let reusable_edge = self
+                .v_edges(root)
+                .find_map(|e| Self::longest_prefix(subs, e.2).map(|p| (*e, p)));
+            match reusable_edge {
+                Some((e, p)) if e.2 != p => {
+                    let v = self.add_vertex(None);
+                    self.edges.remove(&e);
+                    self.edges.insert((e.0, v, p));
+                    self.edges.insert((v, e.1, &e.2[p.len()..]));
+                    root = v;
+                    subs = &subs[p.len()..];
+                }
+                Some((e, p)) => {
+                    root = e.1;
+                    subs = &subs[p.len()..];
+                }
+                None => {
+                    let v = self.add_vertex(Some(i as u16));
+                    self.edges.insert((root, v, subs));
+                    subs = "";
+                }
+            };
+        }
+    }
+
+    fn v_edges(&self, v: usize) -> impl Iterator<Item = &Edge<'a>> {
+        self.edges.range((v, 0, "")..(v + 1, 0, ""))
     }
 
     fn longest_prefix(s: &'a str, t: &str) -> Option<&'a str> {
@@ -69,7 +77,7 @@ mod tests {
                         "  v{}(({})) -- \"{}\" --> v{}(({}))\n",
                         e.0,
                         self.data(e.0),
-                        e.2,
+                        if e.2 == "#" { "&nbsp;#&nbsp;" } else { e.2 },
                         e.1,
                         self.data(e.1)
                     )
@@ -88,6 +96,7 @@ mod tests {
     fn test_suffix_tree() {
         let mut t = SuffixTree::new();
         t.construct("GATAGACA$");
+        t.construct("CATA#");
         println!("{}", t.to_mermaid());
         panic!();
     }
