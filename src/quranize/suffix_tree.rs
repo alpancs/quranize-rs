@@ -17,30 +17,25 @@ impl<'a> SuffixTree<'a> {
     }
 
     fn construct(&mut self, s: &'a str) {
-        s.char_indices().for_each(|(i, _)| self.insert(i, &s[i..]));
+        { s.char_indices() }.for_each(|(i, _)| self.insert(i, 0, &s[i..]));
     }
 
-    fn insert(&mut self, i: usize, mut subs: &'a str) {
-        let mut root = 0;
-        while !subs.is_empty() {
-            let reusable_edge = self
-                .v_edges(root)
-                .find_map(|e| Self::longest_prefix(subs, e.2).map(|p| (*e, p)));
-            (root, subs) = match reusable_edge {
-                Some((e, p)) if e.2 == p => (e.1, &subs[p.len()..]),
-                Some((e, p)) => {
-                    let v = self.add_vertex(None);
-                    self.edges.remove(&e);
-                    self.edges.insert((e.0, v, p));
-                    self.edges.insert((v, e.1, &e.2[p.len()..]));
-                    (v, &subs[p.len()..])
-                }
-                None => {
-                    let v = self.add_vertex(Some(i as u16));
-                    self.edges.insert((root, v, subs));
-                    (v, "")
-                }
-            };
+    fn insert(&mut self, i: usize, root: usize, subs: &'a str) {
+        let mergeable_edge =
+            { self.v_edges(root) }.find_map(|e| Self::longest_prefix(subs, e.2).map(|p| (*e, p)));
+        match mergeable_edge {
+            Some((e, p)) if e.2 == p => self.insert(i, e.1, &subs[p.len()..]),
+            Some((e, p)) => {
+                let v = self.add_vertex(None);
+                self.edges.remove(&e);
+                self.edges.insert((e.0, v, p));
+                self.edges.insert((v, e.1, &e.2[p.len()..]));
+                self.insert(i, v, &subs[p.len()..])
+            }
+            None => {
+                let v = self.add_vertex(Some(i as u16));
+                self.edges.insert((root, v, subs));
+            }
         }
     }
 
