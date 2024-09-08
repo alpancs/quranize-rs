@@ -27,14 +27,14 @@ impl<'a> SuffixTree<'a> {
                 .v_edges(root)
                 .find_map(|e| Self::longest_prefix(subs, e.2).map(|p| (*e, p)));
             (root, subs) = match reusable_edge {
-                Some((e, p)) if e.2 != p => {
+                Some((e, p)) if e.2 == p => (e.1, &subs[p.len()..]),
+                Some((e, p)) => {
                     let v = self.add_vertex(None);
                     self.edges.remove(&e);
                     self.edges.insert((e.0, v, p));
                     self.edges.insert((v, e.1, &e.2[p.len()..]));
                     (v, &subs[p.len()..])
                 }
-                Some((e, p)) => (e.1, &subs[p.len()..]),
                 None => {
                     let v = self.add_vertex(Some(i as u16));
                     self.edges.insert((root, v, subs));
