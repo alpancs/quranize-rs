@@ -1,5 +1,7 @@
 use std::{collections::HashMap, iter::once, str::Chars};
 
+mod suffix_tree;
+
 mod collections;
 use collections::Node;
 
