@@ -1,6 +1,7 @@
 use std::collections::BTreeSet;
 
-type Vertex = Option<u16>;
+type Data = (u16, u16);
+type Vertex = Option<Data>;
 type Edge<'a> = (usize, usize, &'a str);
 
 struct SuffixTree<'a> {
@@ -16,24 +17,24 @@ impl<'a> SuffixTree<'a> {
         }
     }
 
-    fn construct(&mut self, s: &'a str) {
-        { s.char_indices() }.for_each(|(i, _)| self.insert(i, 0, &s[i..]));
+    fn construct(&mut self, id: u16, s: &'a str) {
+        { s.char_indices() }.for_each(|(i, _)| self.subconst((id, i as u16), 0, &s[i..]));
     }
 
-    fn insert(&mut self, i: usize, root: usize, subs: &'a str) {
+    fn subconst(&mut self, d: Data, root: usize, subs: &'a str) {
         let mergeable_edge =
             { self.v_edges(root) }.find_map(|e| Self::longest_prefix(subs, e.2).map(|p| (*e, p)));
         match mergeable_edge {
-            Some((e, p)) if e.2 == p => self.insert(i, e.1, &subs[p.len()..]),
+            Some((e, p)) if e.2 == p => self.subconst(d, e.1, &subs[p.len()..]),
             Some((e, p)) => {
                 let v = self.add_vertex(None);
                 self.edges.remove(&e);
                 self.edges.insert((e.0, v, p));
                 self.edges.insert((v, e.1, &e.2[p.len()..]));
-                self.insert(i, v, &subs[p.len()..])
+                self.subconst(d, v, &subs[p.len()..])
             }
             None => {
-                let v = self.add_vertex(Some(i as u16));
+                let v = self.add_vertex(Some(d));
                 self.edges.insert((root, v, subs));
             }
         }
@@ -68,7 +69,11 @@ mod tests {
                         "  v{}(({})) -- \"{}\" --> v{}(({}))\n",
                         e.0,
                         self.data(e.0),
-                        if e.2 == "#" { "&nbsp;#&nbsp;" } else { e.2 },
+                        match e.2 {
+                            "" => "&nbsp;",
+                            "#" => "&nbsp;#&nbsp;",
+                            c => c,
+                        },
                         e.1,
                         self.data(e.1)
                     )
@@ -78,16 +83,16 @@ mod tests {
 
         fn data(&self, v: usize) -> String {
             self.vertices[v]
-                .map(|i| i.to_string())
-                .unwrap_or("&nbsp;".to_string())
+                .map(|i| format!("{}:{}", i.0, i.1))
+                .unwrap_or("&nbsp;".repeat(3))
         }
     }
 
     #[test]
     fn test_suffix_tree() {
         let mut t = SuffixTree::new();
-        t.construct("GATAGACA$");
-        t.construct("CATA#");
+        t.construct(0, "GATAGACA$");
+        t.construct(1, "CATA#");
         println!("{}", t.to_mermaid());
         panic!();
     }
