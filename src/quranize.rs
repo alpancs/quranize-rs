@@ -1,6 +1,7 @@
 use std::{collections::HashMap, iter::once, str::Chars};
 
 mod suffix_tree;
+use suffix_tree::{Edge, SuffixTree};
 
 mod collections;
 use collections::Node;
@@ -21,12 +22,13 @@ type Location = (u8, u16, usize);
 type Locations = Vec<Location>;
 
 /// Struct to encode alphabetic text to quran text.
-pub struct Quranize {
+pub struct Quranize<'a> {
     root: HarfNode,
     locations_index: HashMap<*const HarfNode, Locations>,
+    st: SuffixTree<'a>,
 }
 
-impl Default for Quranize {
+impl Default for Quranize<'_> {
     /// Build [`Quranize`] with maximum `min_harfs` value.
     /// It is equivalent to building [`Quranize`] without any harf limits.
     ///
@@ -41,7 +43,7 @@ impl Default for Quranize {
     }
 }
 
-impl Quranize {
+impl Quranize<'_> {
     /// Build [`Quranize`] with parameter `min_harfs`.
     /// The indexer will only scan quran harfs at least as many as `min_harfs` and stop at the nearest end of words.
     /// This strategy is implemented to reduce memory usage and indexing time.
@@ -55,35 +57,25 @@ impl Quranize {
     /// assert_eq!(None, q.encode("masyaallah").first());
     /// ```
     pub fn new(min_harfs: u16) -> Self {
-        let mut quranize = Quranize {
+        let mut st = SuffixTree::new();
+        // TODO: change to 0..6236
+        for (line_offset, q) in (0..1).zip(include_str!("quran-uthmani-min.txt").split('\n')) {
+            st.construct(line_offset, q);
+        }
+
+        Self {
             root: Default::default(),
             locations_index: Default::default(),
-        };
-        for (s, a, q) in crate::quran::iter() {
-            for (i, q) in q.word_suffixes() {
-                quranize.index(q, (s, a, i), min_harfs);
-            }
-        }
-        quranize
-    }
-
-    fn index(&mut self, quran: &str, location: Location, min_harfs: u16) {
-        let mut node = &mut self.root;
-        let next_chars = quran.chars().skip(1).chain(once(' '));
-        for ((c, next_c), count) in quran.chars().zip(next_chars).zip(1..) {
-            node = node.get_mut_or_add(c);
-            if !matches!(c, '\u{06D6}'..='\u{06DC}') && next_c == ' ' {
-                self.locations_index.entry(node).or_default().push(location);
-                if count >= min_harfs {
-                    break;
-                }
-            }
+            st,
         }
     }
 
     /// Encode `text` back into Quran form.
     pub fn encode(&self, text: &str) -> EncodeResults {
-        let mut results = self.rev_encode(&self.root, &normalize(text));
+        let s = &normalize(text);
+        let mut results: Vec<_> = { self.st.v_edges(0).filter(|e| !e.2.is_empty()) }
+            .flat_map(|e| self.rev_encode('\0', e, e.2, s))
+            .collect();
         results.append(&mut self.rev_encode_first_aya(&self.root, &normalize_first_aya(text)));
         results.sort_unstable_by(|(q1, _, _), (q2, _, _)| q1.cmp(q2));
         results.dedup_by(|(q1, _, _), (q2, _, _)| q1 == q2);
@@ -94,33 +86,33 @@ impl Quranize {
         results
     }
 
-    fn rev_encode(&self, node: &HarfNode, text: &str) -> EncodeResults {
-        let mut results = EncodeResults::new();
-        if text.is_empty() {
-            if let Some(locations) = self.locations_index.get(&(node as *const HarfNode)) {
-                results.push((String::new(), Vec::new(), locations.len()));
-            }
+    fn rev_encode(&self, pc: char, e: &Edge, l: &str, s: &str) -> EncodeResults {
+        // println!("e={}-{}, l={}, s={}", e.0, e.1, l, s); // TODO: remove this
+
+        let mut res = Vec::new();
+        if s.is_empty() && pc != ' ' {
+            res.push((String::new(), Vec::new(), 0));
         }
-        for n in node.iter() {
-            let prefixes = map(n.element)
-                .iter()
-                .chain(contextual_map(node.element, n.element));
-            for prefix in prefixes {
-                if let Some(subtext) = text.strip_prefix(prefix) {
-                    results.append(&mut self.rev_encode_sub(n, subtext, prefix));
+
+        let mut it = l.chars();
+        if let Some(c) = it.next() {
+            let subl = it.as_str();
+            for p in map(c).iter().chain(contextual_map(pc, c)) {
+                if let Some(suf) = s.strip_prefix(p) {
+                    let subres = match subl.is_empty() {
+                        false => self.rev_encode(c, e, subl, suf),
+                        true => { self.st.v_edges(e.1).filter(|sube| !sube.2.is_empty()) }
+                            .flat_map(|sube| self.rev_encode(c, sube, sube.2, suf))
+                            .collect(),
+                    };
+                    for mut sr in subres.into_iter() {
+                        sr.0.push(c);
+                        res.push(sr);
+                    }
                 }
             }
         }
-        results
-    }
-
-    fn rev_encode_sub<'a>(&'a self, n: &HarfNode, text: &str, expl: &'a str) -> EncodeResults {
-        let mut results = self.rev_encode(n, text);
-        for (q, e, _) in results.iter_mut() {
-            q.push(n.element);
-            e.push(expl);
-        }
-        results
+        res
     }
 
     fn rev_encode_first_aya(&self, node: &HarfNode, text: &str) -> EncodeResults {
@@ -191,7 +183,7 @@ mod tests {
     use pretty_assertions::assert_eq;
     use std::collections::HashSet;
 
-    impl Quranize {
+    impl Quranize<'_> {
         fn assert_encode(&self, text: &str, expected: &[&str]) {
             let actual: Vec<_> = self.encode(text).into_iter().map(|(q, _, _)| q).collect();
             assert_eq!(expected, actual, "text: {}", text);
@@ -210,6 +202,8 @@ mod tests {
     #[test]
     fn test_quranize_default() {
         let q = Quranize::default();
+        println!("{}", q.st.to_mermaid());
+        // q.assert_encode("bismi", &["بِسمِ"]);
         q.assert_encode("allah", &["اللَّهَ", "اللَّهُ", "ءاللَّهُ", "اللَّهِ"]);
         q.assert_encode("illa billah", &["إِلّا بِاللَّهِ"]);
         q.assert_encode("alquran", &["القُرءانَ", "القُرءانُ", "القُرءانِ"]);

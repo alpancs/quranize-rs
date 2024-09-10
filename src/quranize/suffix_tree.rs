@@ -4,23 +4,24 @@ use super::word_suffixes::WordSuffixIterExt;
 
 type Data = (u16, u16);
 type Vertex = Option<Data>;
-type Edge<'a> = (usize, usize, &'a str);
+pub(super) type Edge<'a> = (usize, usize, &'a str);
 
-struct SuffixTree<'a> {
+pub(super) struct SuffixTree<'a> {
     vertices: Vec<Vertex>,
     edges: BTreeSet<Edge<'a>>,
 }
 
 impl<'a> SuffixTree<'a> {
-    fn new() -> Self {
+    pub(super) fn new() -> Self {
         Self {
             vertices: vec![None],
             edges: Default::default(),
         }
     }
 
-    fn construct(&mut self, id: u16, s: &'a str) {
-        { s.word_suffixes() }.for_each(|(i, suf)| self.construct_suffix((id, i as u16), 0, suf));
+    pub(super) fn construct(&mut self, line_offset: u16, s: &'a str) {
+        s.word_suffixes()
+            .for_each(|(i, suf)| self.construct_suffix((line_offset, i as u16), 0, suf));
     }
 
     fn construct_suffix(&mut self, d: Data, root: usize, subs: &'a str) {
@@ -42,7 +43,7 @@ impl<'a> SuffixTree<'a> {
         }
     }
 
-    fn v_edges(&self, v: usize) -> impl Iterator<Item = &Edge<'a>> {
+    pub(super) fn v_edges(&self, v: usize) -> impl Iterator<Item = &Edge<'a>> {
         self.edges.range((v, 0, "")..(v + 1, 0, ""))
     }
 
@@ -59,37 +60,39 @@ impl<'a> SuffixTree<'a> {
 }
 
 #[cfg(test)]
+impl SuffixTree<'_> {
+    pub(super) fn to_mermaid(&self) -> String {
+        std::iter::once("graph TB\n".to_string())
+            .chain(self.edges.iter().enumerate().map(|(i, e)| {
+                format!(
+                    "  v{}(({})) -- \"{}\" --> v{}(({}))\n",
+                    e.0,
+                    self.data(e.0),
+                    format!("E<sub>{}</sub>: ", i)
+                        + match e.2 {
+                            "" => "&nbsp;",
+                            "#" => "&nbsp;#&nbsp;",
+                            _ => e.2,
+                        },
+                    e.1,
+                    self.data(e.1)
+                )
+            }))
+            .collect()
+    }
+
+    fn data(&self, v: usize) -> String {
+        let content = self.vertices[v]
+            .map(|d| format!("({}, {})", d.0, d.1))
+            .unwrap_or("&nbsp;".repeat(3));
+        format!("\"[{}]<br>{}\"", v, content)
+    }
+}
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
-
-    impl SuffixTree<'_> {
-        fn to_mermaid(&self) -> String {
-            std::iter::once("graph TB\n".to_string())
-                .chain(self.edges.iter().enumerate().map(|(i, e)| {
-                    format!(
-                        "  v{}(({})) -- \"{}\" --> v{}(({}))\n",
-                        e.0,
-                        self.data(e.0),
-                        format!("E<sub>{}</sub>: ", i)
-                            + match e.2 {
-                                "" => "&nbsp;",
-                                "#" => "&nbsp;#&nbsp;",
-                                _ => e.2,
-                            },
-                        e.1,
-                        self.data(e.1)
-                    )
-                }))
-                .collect()
-        }
-
-        fn data(&self, v: usize) -> String {
-            self.vertices[v]
-                .map(|i| format!("{}:{}", i.0, i.1))
-                .unwrap_or("&nbsp;".repeat(3))
-        }
-    }
 
     #[test]
     fn test_suffix_tree_for_quran() {
