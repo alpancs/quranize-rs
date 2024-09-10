@@ -21,6 +21,8 @@ type EncodeResults<'a> = Vec<EncodeResult<'a>>;
 type Location = (u8, u16, usize);
 type Locations = Vec<Location>;
 
+const QURAN_UTHMANI_MIN: &str = include_str!("quran-uthmani-min.txt");
+
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize<'a> {
     root: HarfNode,
@@ -58,8 +60,7 @@ impl Quranize<'_> {
     /// ```
     pub fn new(min_harfs: u16) -> Self {
         let mut st = SuffixTree::new();
-        // TODO: change to 0..6236
-        for (line_offset, q) in (0..1).zip(include_str!("quran-uthmani-min.txt").split('\n')) {
+        for (line_offset, q) in (0..6236).zip(QURAN_UTHMANI_MIN.split('\n')) {
             st.construct(line_offset, q);
         }
 
@@ -92,6 +93,7 @@ impl Quranize<'_> {
         let mut res = Vec::new();
         if s.is_empty() && pc != ' ' {
             res.push((String::new(), Vec::new(), 0));
+            return res;
         }
 
         let mut it = l.chars();
@@ -107,6 +109,7 @@ impl Quranize<'_> {
                     };
                     for mut sr in subres.into_iter() {
                         sr.0.push(c);
+                        sr.1.push(p);
                         res.push(sr);
                     }
                 }
@@ -202,8 +205,6 @@ mod tests {
     #[test]
     fn test_quranize_default() {
         let q = Quranize::default();
-        println!("{}", q.st.to_mermaid());
-        // q.assert_encode("bismi", &["بِسمِ"]);
         q.assert_encode("allah", &["اللَّهَ", "اللَّهُ", "ءاللَّهُ", "اللَّهِ"]);
         q.assert_encode("illa billah", &["إِلّا بِاللَّهِ"]);
         q.assert_encode("alquran", &["القُرءانَ", "القُرءانُ", "القُرءانِ"]);
