@@ -1,5 +1,7 @@
 use std::collections::BTreeSet;
 
+use super::word_suffixes::WordSuffixIterExt;
+
 type Data = (u16, u16);
 type Vertex = Option<Data>;
 type Edge<'a> = (usize, usize, &'a str);
@@ -18,20 +20,20 @@ impl<'a> SuffixTree<'a> {
     }
 
     fn construct(&mut self, id: u16, s: &'a str) {
-        { s.char_indices() }.for_each(|(i, _)| self.subconst((id, i as u16), 0, &s[i..]));
+        { s.word_suffixes() }.for_each(|(i, suf)| self.construct_suffix((id, i as u16), 0, suf));
     }
 
-    fn subconst(&mut self, d: Data, root: usize, subs: &'a str) {
+    fn construct_suffix(&mut self, d: Data, root: usize, subs: &'a str) {
         let mergeable_edge =
             { self.v_edges(root) }.find_map(|e| Self::longest_prefix(subs, e.2).map(|p| (*e, p)));
         match mergeable_edge {
-            Some((e, p)) if e.2 == p => self.subconst(d, e.1, &subs[p.len()..]),
+            Some((e, p)) if e.2 == p => self.construct_suffix(d, e.1, &subs[p.len()..]),
             Some((e, p)) => {
                 let v = self.add_vertex(None);
                 self.edges.remove(&e);
                 self.edges.insert((e.0, v, p));
                 self.edges.insert((v, e.1, &e.2[p.len()..]));
-                self.subconst(d, v, &subs[p.len()..])
+                self.construct_suffix(d, v, &subs[p.len()..])
             }
             None => {
                 let v = self.add_vertex(Some(d));
@@ -63,17 +65,18 @@ mod tests {
 
     impl SuffixTree<'_> {
         fn to_mermaid(&self) -> String {
-            std::iter::once(String::from("graph TB\n"))
-                .chain(self.edges.iter().map(|e| {
+            std::iter::once("graph TB\n".to_string())
+                .chain(self.edges.iter().enumerate().map(|(i, e)| {
                     format!(
                         "  v{}(({})) -- \"{}\" --> v{}(({}))\n",
                         e.0,
                         self.data(e.0),
-                        match e.2 {
-                            "" => "&nbsp;",
-                            "#" => "&nbsp;#&nbsp;",
-                            c => c,
-                        },
+                        format!("E<sub>{}</sub>: ", i)
+                            + match e.2 {
+                                "" => "&nbsp;",
+                                "#" => "&nbsp;#&nbsp;",
+                                _ => e.2,
+                            },
                         e.1,
                         self.data(e.1)
                     )
@@ -89,12 +92,14 @@ mod tests {
     }
 
     #[test]
-    fn test_suffix_tree() {
+    fn test_suffix_tree_for_quran() {
         let mut t = SuffixTree::new();
-        t.construct(0, "GATAGACA$");
-        t.construct(1, "CATA#");
+        for (id, s) in (0..3).zip(include_str!("../quran-uthmani-min.txt").split('\n')) {
+            t.construct(id, s);
+        }
         println!("{}", t.to_mermaid());
-        panic!();
+        assert_eq!(t.edges.len(), 116_426);
+        assert_eq!(t.vertices.len() - t.edges.len(), 1);
     }
 
     #[test]
