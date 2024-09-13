@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+use std::collections::{btree_set::Range, BTreeSet};
 
 use super::word_suffixes::WordSuffixIterExt;
 
@@ -43,7 +43,7 @@ impl<'a> SuffixTree<'a> {
         }
     }
 
-    pub(super) fn v_edges(&self, v: usize) -> impl Iterator<Item = &Edge<'a>> {
+    pub(super) fn v_edges(&self, v: usize) -> Range<Edge<'a>> {
         self.edges.range((v, 0, "")..(v + 1, 0, ""))
     }
 
