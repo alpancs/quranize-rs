@@ -2,8 +2,8 @@ use std::collections::{btree_set::Range, BTreeSet};
 
 use super::word_suffixes::WordSuffixIterExt;
 
-type Data = (u16, u16);
-type Vertex = Option<Data>;
+pub(super) type Data = (u16, u16);
+pub(super) type Vertex = Option<Data>;
 pub(super) type Edge<'a> = (usize, usize, &'a str);
 
 pub(super) struct SuffixTree<'a> {
@@ -57,6 +57,27 @@ impl<'a> SuffixTree<'a> {
         self.vertices.push(v);
         self.vertices.len() - 1
     }
+
+    pub(super) fn find_str(&self, s: &str, v: usize) -> Vec<&Data> {
+        match s {
+            "" => vec![],
+            _ => self
+                .v_edges(v)
+                .filter(|&(_, _, l)| !l.is_empty())
+                .flat_map(|&(_, w, l)| match (s.strip_prefix(l), l.strip_prefix(s)) {
+                    (_, Some(_)) => self.collect_data(w),
+                    (Some(s), _) => self.find_str(s, w),
+                    _ => vec![],
+                })
+                .collect(),
+        }
+    }
+
+    fn collect_data(&self, v: usize) -> Vec<&Data> {
+        let head = std::iter::once(&self.vertices[v]).flatten();
+        let tail = self.v_edges(v).flat_map(|&(_, w, _)| self.collect_data(w));
+        head.chain(tail).collect()
+    }
 }
 
 #[cfg(test)]
@@ -94,10 +115,12 @@ mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
 
+    const QURAN_UTHMANI_MIN: &str = include_str!("../quran-uthmani-min.txt");
+
     #[test]
     fn test_suffix_tree_for_quran() {
         let mut t = SuffixTree::new();
-        for (id, s) in (0..3).zip(include_str!("../quran-uthmani-min.txt").split('\n')) {
+        for (id, s) in (0..3).zip(QURAN_UTHMANI_MIN.split('\n')) {
             t.construct(id, s);
         }
         println!("{}", t.to_mermaid());
@@ -115,5 +138,17 @@ mod tests {
         assert_eq!(SuffixTree::longest_prefix("ax", "a"), Some("a"));
         assert_eq!(SuffixTree::longest_prefix("a", "ay"), Some("a"));
         assert_eq!(SuffixTree::longest_prefix("ax", "ay"), Some("a"));
+    }
+
+    #[test]
+    fn test_find_str() {
+        let mut t = SuffixTree::new();
+        for (id, s) in (0..7).zip(QURAN_UTHMANI_MIN.split('\n')) {
+            t.construct(id, s);
+        }
+        assert_eq!(t.find_str("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيم", 0), [&(0, 0)]);
+        assert_eq!(t.find_str("الرَّحمٰنِ الرَّحيم", 0), [&(0, 26), &(2, 0)]);
+        assert_eq!(t.find_str("", 0), [&(0, 0); 0]);
+        assert_eq!(t.find_str("abc", 0), [&(0, 0); 0]);
     }
 }

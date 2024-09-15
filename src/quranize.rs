@@ -1,7 +1,7 @@
 use std::{collections::HashMap, str::Chars};
 
 mod suffix_tree;
-use suffix_tree::{Edge, SuffixTree};
+use suffix_tree::{Data as Loc, Edge, SuffixTree};
 
 mod collections;
 use collections::Node;
@@ -182,6 +182,10 @@ impl Quranize {
                 .and_then(|n| self.get_locations_from(n, harfs)),
             None => self.locations_index.get(&(node as *const HarfNode)),
         }
+    }
+
+    pub fn find_str(&self, s: &str) -> impl Iterator<Item = &Loc> {
+        self.st.find_str(s, 0).into_iter()
     }
 }
 
