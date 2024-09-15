@@ -27,8 +27,7 @@ pub struct Quranize {
     root: HarfNode,
     locations_index: HashMap<*const HarfNode, Locations>,
     st: SuffixTree<'static>,
-    ayas: Vec<&'static str>,
-    sa_pairs: Vec<(u8, u16)>,
+    pub saq_pairs: Vec<(u8, u16, &'static str)>,
 }
 
 impl Default for Quranize {
@@ -61,19 +60,16 @@ impl Quranize {
     /// ```
     pub fn new(_min_harfs: u16) -> Self {
         let mut st = SuffixTree::new();
-        let mut ayas = Vec::with_capacity(quran::AYA_COUNT as usize);
-        let mut sa_pairs = Vec::with_capacity(quran::AYA_COUNT as usize);
+        let mut saq_pairs = Vec::with_capacity(quran::AYA_COUNT as usize);
         for (i, (s, a, q)) in quran::iter().enumerate() {
             st.construct(i, q);
-            ayas.push(q);
-            sa_pairs.push((s, a));
+            saq_pairs.push((s, a, q));
         }
         Self {
             root: Default::default(),
             locations_index: Default::default(),
             st,
-            ayas,
-            sa_pairs,
+            saq_pairs,
         }
     }
 
