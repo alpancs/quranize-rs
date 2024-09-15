@@ -12,6 +12,8 @@ use normalization::{normalize, normalize_first_aya};
 mod transliterations;
 use transliterations::*;
 
+use crate::quran;
+
 mod word_suffixes;
 
 type HarfNode = Node<char>;
@@ -20,13 +22,13 @@ type EncodeResults<'a> = Vec<EncodeResult<'a>>;
 type Location = (u8, u16, usize);
 type Locations = Vec<Location>;
 
-const QURAN_UTHMANI_MIN: &str = include_str!("quran-uthmani-min.txt");
-
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
     root: HarfNode,
     locations_index: HashMap<*const HarfNode, Locations>,
     st: SuffixTree<'static>,
+    ayas: Vec<&'static str>,
+    sa_pairs: Vec<(u8, u16)>,
 }
 
 impl Default for Quranize {
@@ -59,14 +61,19 @@ impl Quranize {
     /// ```
     pub fn new(_min_harfs: u16) -> Self {
         let mut st = SuffixTree::new();
-        for (line_offset, q) in (0..6236).zip(QURAN_UTHMANI_MIN.split('\n')) {
-            st.construct(line_offset, q);
+        let mut ayas = Vec::with_capacity(quran::AYA_COUNT as usize);
+        let mut sa_pairs = Vec::with_capacity(quran::AYA_COUNT as usize);
+        for (i, (s, a, q)) in quran::iter().enumerate() {
+            st.construct(i, q);
+            ayas.push(q);
+            sa_pairs.push((s, a));
         }
-
         Self {
             root: Default::default(),
             locations_index: Default::default(),
             st,
+            ayas,
+            sa_pairs,
         }
     }
 

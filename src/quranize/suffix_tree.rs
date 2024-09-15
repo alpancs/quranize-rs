@@ -19,9 +19,9 @@ impl<'a> SuffixTree<'a> {
         }
     }
 
-    pub(super) fn construct(&mut self, line_offset: u16, s: &'a str) {
+    pub(super) fn construct(&mut self, i: usize, s: &'a str) {
         s.word_suffixes()
-            .for_each(|(i, suf)| self.construct_suffix((line_offset, i as u16), 0, suf));
+            .for_each(|(j, s)| self.construct_suffix((i as u16, j as u16), 0, s));
     }
 
     fn construct_suffix(&mut self, d: Data, root: usize, subs: &'a str) {
