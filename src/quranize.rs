@@ -82,7 +82,7 @@ impl Quranize {
         let s = &normalize(text);
         let mut results: Vec<_> = self
             .labeled_edged(0)
-            .flat_map(|e| self.rev_encode('\0', e, e.2, s))
+            .flat_map(|&e| self.rev_encode(s, e, None))
             .collect();
         results.append(&mut self.rev_encode_first_aya(&self.root, &normalize_first_aya(text)));
         results.sort_unstable_by(|(q1, _, _), (q2, _, _)| q1.cmp(q2));
@@ -94,18 +94,19 @@ impl Quranize {
         results
     }
 
-    fn rev_encode(&self, pc: char, e: &Edge, l: &str, s: &str) -> EncodeResults {
-        match (s, l.chars().next()) {
+    fn rev_encode(&self, s: &str, e: Edge, prev_map: Option<(char, &str)>) -> EncodeResults {
+        let pc = prev_map.unzip().0.unwrap_or_default();
+        match (s, e.2.chars().next()) {
             ("", _) => vec![(String::new(), Vec::new(), self.st.count_data(e.1))],
             (_, Some(c)) => { map(c).iter().chain(contextual_map(pc, c)) }
-                .filter_map(|p| Some(p).zip(s.strip_prefix(p)))
+                .filter_map(|&p| Some(p).zip(s.strip_prefix(p)))
                 .flat_map(|(p, s)| {
-                    match &l[c.len_utf8()..] {
+                    match &e.2[c.len_utf8()..] {
                         "" => self
                             .labeled_edged(e.1)
-                            .flat_map(|e| self.rev_encode(c, e, e.2, s))
+                            .flat_map(|&e| self.rev_encode(s, e, Some((c, p))))
                             .collect(),
-                        l => self.rev_encode(c, e, l, s),
+                        l => self.rev_encode(s, (e.0, e.1, l), Some((c, p))),
                     }
                     .into_iter()
                     .map(|mut subresult| {
@@ -286,7 +287,7 @@ mod tests {
             q.encode("alhamdu").into_iter().next().unwrap().1,
         );
         assert_eq!(
-            vec!["a", "", "r", "r", "o", "h", "m", "a", "n", ""],
+            vec!["a", "", "r", "r", "o", "h", "m", "a", "n"],
             q.encode("arrohman").into_iter().next().unwrap().1,
         );
         {
@@ -311,7 +312,6 @@ mod tests {
                     ("n", '\u{651}',),
                     ("a", 'ا',),
                     ("s", 'س',),
-                    ("", '\u{650}',),
                 ],
                 e.into_iter().zip(q.chars()).collect::<Vec<_>>(),
             );
@@ -321,7 +321,7 @@ mod tests {
     #[test]
     fn test_quranize_empty_result() {
         let q = Quranize::new(23);
-        assert!(q.encode("").is_empty());
+        assert!(q.encode("").is_empty(), "result={:?}", q.encode(""));
         assert!(q.encode("abcd").is_empty());
         assert!(q.encode("1+2=3").is_empty());
     }
