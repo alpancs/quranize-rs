@@ -122,8 +122,6 @@ mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
 
-    const QURAN_UTHMANI_MIN: &str = include_str!("../quran-uthmani-min.txt");
-
     #[test]
     fn test_suffix_tree_for_quran() {
         let mut t = SuffixTree::new();
@@ -145,18 +143,5 @@ mod tests {
         assert_eq!(SuffixTree::longest_prefix("ax", "a"), Some("a"));
         assert_eq!(SuffixTree::longest_prefix("a", "ay"), Some("a"));
         assert_eq!(SuffixTree::longest_prefix("ax", "ay"), Some("a"));
-    }
-
-    #[test]
-    fn test_find_str() {
-        let mut t = SuffixTree::new();
-        for (id, s) in (0..7).zip(QURAN_UTHMANI_MIN.split('\n')) {
-            t.construct(id, s);
-        }
-        let root = SuffixTree::ROOT;
-        assert_eq!(t.find_str("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيم", root), [(0, 0)]);
-        assert_eq!(t.find_str("الرَّحمٰنِ الرَّحيم", root), [(0, 26), (2, 0)]);
-        assert_eq!(t.find_str("", root), [(0, 0); 0]);
-        assert_eq!(t.find_str("abc", root), [(0, 0); 0]);
     }
 }

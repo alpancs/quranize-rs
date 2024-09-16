@@ -336,16 +336,22 @@ mod tests {
     }
 
     #[test]
-    fn test_locate() {
-        let q = Quranize::new(70);
-        assert_eq!(Some(&(1, 1, 0)), q.get_locations("بِسمِ").first());
-        assert_eq!(Some(&(114, 6, 28)), q.get_locations("وَالنّاسِ").last());
-        assert_eq!(Some(&(68, 1, 0)), q.get_locations("ن").first());
-        assert_eq!(2, q.get_locations("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ").len());
-        assert!(q.get_locations("").is_empty());
-        assert!(q.get_locations("نن").is_empty());
-        assert!(q.get_locations("ننن").is_empty());
-        assert!(q.get_locations("نننن").is_empty());
-        assert!(q.get_locations("2+3+4=9").is_empty());
+    fn test_find_str() {
+        let q = Quranize::default();
+
+        assert_eq!(q.find_str("بِسمِ").first(), Some(&(0, 0)));
+        assert_eq!(q.find_str("وَالنّاسِ").last(), Some(&(6235, 28)));
+        assert_eq!(q.find_str("الم").first(), Some(&(7, 0)));
+        assert_eq!(q.find_str("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ").len(), 2);
+        assert!(q.find_str("").is_empty());
+        assert!(q.find_str("نن").is_empty());
+        assert!(q.find_str("ننن").is_empty());
+        assert!(q.find_str("نننن").is_empty());
+        assert!(q.find_str("2+3+4=9").is_empty());
+
+        assert_eq!(q.find_str("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيم").first(), Some(&(0, 0)));
+        assert_eq!(q.find_str("الرَّحمٰنِ الرَّحيم").first(), Some(&(0, 26)));
+        assert_eq!(q.find_str("").first(), None);
+        assert_eq!(q.find_str("abc").first(), None);
     }
 }
