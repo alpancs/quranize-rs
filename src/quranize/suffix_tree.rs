@@ -58,7 +58,7 @@ impl<'a> SuffixTree<'a> {
         self.vertices.len() - 1
     }
 
-    pub(super) fn find_str(&self, s: &str, v: usize) -> Vec<&Data> {
+    pub(super) fn find_str(&self, s: &str, v: usize) -> Vec<Data> {
         match s {
             "" => vec![],
             _ => self
@@ -73,8 +73,8 @@ impl<'a> SuffixTree<'a> {
         }
     }
 
-    fn collect_data(&self, v: usize) -> Vec<&Data> {
-        let head = std::iter::once(&self.vertices[v]).flatten();
+    fn collect_data(&self, v: usize) -> Vec<Data> {
+        let head = std::iter::once(self.vertices[v]).flatten();
         let tail = self.v_edges(v).flat_map(|&(_, w, _)| self.collect_data(w));
         head.chain(tail).collect()
     }
@@ -152,9 +152,9 @@ mod tests {
         for (id, s) in (0..7).zip(QURAN_UTHMANI_MIN.split('\n')) {
             t.construct(id, s);
         }
-        assert_eq!(t.find_str("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيم", 0), [&(0, 0)]);
-        assert_eq!(t.find_str("الرَّحمٰنِ الرَّحيم", 0), [&(0, 26), &(2, 0)]);
-        assert_eq!(t.find_str("", 0), [&(0, 0); 0]);
-        assert_eq!(t.find_str("abc", 0), [&(0, 0); 0]);
+        assert_eq!(t.find_str("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيم", 0), [(0, 0)]);
+        assert_eq!(t.find_str("الرَّحمٰنِ الرَّحيم", 0), [(0, 26), (2, 0)]);
+        assert_eq!(t.find_str("", 0), [(0, 0); 0]);
+        assert_eq!(t.find_str("abc", 0), [(0, 0); 0]);
     }
 }

@@ -180,8 +180,8 @@ impl Quranize {
         }
     }
 
-    pub fn find_str(&self, s: &str) -> impl Iterator<Item = &Loc> {
-        self.st.find_str(s, 0).into_iter()
+    pub fn find_str(&self, s: &str) -> Vec<Loc> {
+        self.st.find_str(s, 0)
     }
 }
 
