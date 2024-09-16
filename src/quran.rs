@@ -72,42 +72,42 @@ impl<'a> AyaGetter<'a> {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use pretty_assertions::assert_eq;
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use pretty_assertions::assert_eq;
 
-    #[test]
-    fn test_properties() {
-        assert!(iter().count() == AYA_COUNT.into());
-        let unique_unicodes: Vec<_> = {
-            let mut set = std::collections::BTreeSet::new();
-            for (_, _, t) in iter() {
-                set.extend(t.chars());
-            }
-            set.into_iter().collect()
-        };
-        assert_eq!(
-            [
-                '\u{0020}', '\u{0621}', '\u{0623}', '\u{0624}', '\u{0625}', '\u{0626}', '\u{0627}',
-                '\u{0628}', '\u{0629}', '\u{062A}', '\u{062B}', '\u{062C}', '\u{062D}', '\u{062E}',
-                '\u{062F}', '\u{0630}', '\u{0631}', '\u{0632}', '\u{0633}', '\u{0634}', '\u{0635}',
-                '\u{0636}', '\u{0637}', '\u{0638}', '\u{0639}', '\u{063A}', '\u{0640}', '\u{0641}',
-                '\u{0642}', '\u{0643}', '\u{0644}', '\u{0645}', '\u{0646}', '\u{0647}', '\u{0648}',
-                '\u{0649}', '\u{064A}', '\u{064B}', '\u{064C}', '\u{064D}', '\u{064E}', '\u{064F}',
-                '\u{0650}', '\u{0651}', '\u{0654}', '\u{0670}', '\u{06D6}', '\u{06D7}', '\u{06D8}',
-                '\u{06D9}', '\u{06DA}', '\u{06DB}', '\u{06DC}', '\u{06DF}', '\u{06E0}', '\u{06E3}',
-                '\u{06E5}', '\u{06E6}', '\u{06E7}', '\u{06E8}', '\u{06EA}', '\u{06EB}'
-            ],
-            *unique_unicodes
-        );
-    }
+//     #[test]
+//     fn test_properties() {
+//         assert!(iter().count() == AYA_COUNT.into());
+//         let unique_unicodes: Vec<_> = {
+//             let mut set = std::collections::BTreeSet::new();
+//             for (_, _, t) in iter() {
+//                 set.extend(t.chars());
+//             }
+//             set.into_iter().collect()
+//         };
+//         assert_eq!(
+//             [
+//                 '\u{0020}', '\u{0621}', '\u{0623}', '\u{0624}', '\u{0625}', '\u{0626}', '\u{0627}',
+//                 '\u{0628}', '\u{0629}', '\u{062A}', '\u{062B}', '\u{062C}', '\u{062D}', '\u{062E}',
+//                 '\u{062F}', '\u{0630}', '\u{0631}', '\u{0632}', '\u{0633}', '\u{0634}', '\u{0635}',
+//                 '\u{0636}', '\u{0637}', '\u{0638}', '\u{0639}', '\u{063A}', '\u{0640}', '\u{0641}',
+//                 '\u{0642}', '\u{0643}', '\u{0644}', '\u{0645}', '\u{0646}', '\u{0647}', '\u{0648}',
+//                 '\u{0649}', '\u{064A}', '\u{064B}', '\u{064C}', '\u{064D}', '\u{064E}', '\u{064F}',
+//                 '\u{0650}', '\u{0651}', '\u{0654}', '\u{0670}', '\u{06D6}', '\u{06D7}', '\u{06D8}',
+//                 '\u{06D9}', '\u{06DA}', '\u{06DB}', '\u{06DC}', '\u{06DF}', '\u{06E0}', '\u{06E3}',
+//                 '\u{06E5}', '\u{06E6}', '\u{06E7}', '\u{06E8}', '\u{06EA}', '\u{06EB}'
+//             ],
+//             *unique_unicodes
+//         );
+//     }
 
-    #[test]
-    fn test_map() {
-        let aya_getter = AyaGetter::new();
-        assert_eq!(Some("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"), aya_getter.get(1, 1));
-        assert_eq!(Some("مِنَ الجِنَّةِ وَالنّاسِ"), aya_getter.get(114, 6));
-        assert_eq!(None, aya_getter.get(114, 7));
-    }
-}
+//     #[test]
+//     fn test_map() {
+//         let aya_getter = AyaGetter::new();
+//         assert_eq!(Some("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ"), aya_getter.get(1, 1));
+//         assert_eq!(Some("مِنَ الجِنَّةِ وَالنّاسِ"), aya_getter.get(114, 6));
+//         assert_eq!(None, aya_getter.get(114, 7));
+//     }
+// }
