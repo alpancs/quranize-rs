@@ -63,7 +63,7 @@ impl Quranize {
         let mut saq_pairs = Vec::with_capacity(quran::AYA_COUNT as usize);
         for (i, (s, a, q)) in quran::iter().enumerate() {
             st.construct(i, q);
-            saq_pairs.push((s, a, q));
+            saq_pairs.push((s, a, q.trim()));
         }
         Self {
             root: Default::default(),
@@ -237,7 +237,8 @@ mod tests {
         q.assert_encode("yukhodiun", &["يُخٰدِعون"]);
         q.assert_encode("indallah", &["عِندَ اللَّه"]);
         q.assert_encode("alimul ghoibi", &["عٰلِمُ الغَيبِ"]);
-        // q.assert_encode("kaana dhoifa", &["كانَ ضَعيفًا"]);
+        q.assert_encode("kaana dhoifa", &["كانَ ضَعيفًا"]);
+        q.assert_encode("waantum muslimuna", &["وَأَنتُم مُسلِمونَ"]);
         q.assert_encode("kitabi la roiba", &["الكِتٰبِ لا رَيبَ"]);
         q.assert_encode("takwili", &["تَأويلِ"]);
         q.assert_encode("yu'minun", &["يُؤمِنون"]);

@@ -22,7 +22,7 @@ fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     let mut sura_number = 0u8;
     let mut aya_number = 0u16;
     (0..AYA_COUNT)
-        .zip(raw.split('\n'))
+        .zip(raw.split_inclusive('\n'))
         .map(move |(i, aya_text)| {
             if i == AYA_STARTS[sura_number as usize] {
                 aya_number = 1;

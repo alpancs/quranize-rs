@@ -27,16 +27,15 @@ impl<'a> SuffixTree<'a> {
     }
 
     fn construct_suffix(&mut self, d: Data, root: usize, subs: &'a str) {
-        let mergeable_edge =
-            { self.v_edges(root) }.find_map(|e| Self::longest_prefix(subs, e.2).map(|p| (*e, p)));
-        match mergeable_edge {
+        match { self.v_edges(root) }.find_map(|&e| Some(e).zip(Self::longest_prefix(subs, e.2))) {
             Some((e, p)) if e.2 == p => self.construct_suffix(d, e.1, &subs[p.len()..]),
             Some((e, p)) => {
-                let v = self.add_vertex(None);
                 self.edges.remove(&e);
+                let v = self.add_vertex(None);
                 self.edges.insert((e.0, v, p));
                 self.edges.insert((v, e.1, &e.2[p.len()..]));
-                self.construct_suffix(d, v, &subs[p.len()..])
+                let w = self.add_vertex(Some(d));
+                self.edges.insert((v, w, &subs[p.len()..]));
             }
             None => {
                 let v = self.add_vertex(Some(d));
@@ -125,7 +124,6 @@ mod tests {
     fn test_suffix_tree_for_quran() {
         let mut t = SuffixTree::new();
         for (i, (_, _, q)) in crate::quran::iter().enumerate().skip(394).take(1) {
-            println!("{} {}", i, q);
             t.construct(i, q);
         }
         println!("{}", t.to_mermaid());
