@@ -1,8 +1,8 @@
 //! Helper module related to Quran stuffs.
 
 const UTHMANI_MIN: &str = include_str!("quran-uthmani-min.txt");
-pub(crate) const AYA_COUNT: u16 = 6236;
-const AYA_STARTS: [u16; 115] = [
+pub(crate) const AYA_COUNT: usize = 6236;
+pub(crate) const AYA_STARTS: [usize; 114] = [
     0, 7, 293, 493, 669, 789, 954, 1160, 1235, 1364, 1473, 1596, 1707, 1750, 1802, 1901, 2029,
     2140, 2250, 2348, 2483, 2595, 2673, 2791, 2855, 2932, 3159, 3252, 3340, 3409, 3469, 3503, 3533,
     3606, 3660, 3705, 3788, 3970, 4058, 4133, 4218, 4272, 4325, 4414, 4473, 4510, 4545, 4583, 4612,
@@ -10,7 +10,7 @@ const AYA_STARTS: [u16; 115] = [
     5229, 5241, 5271, 5323, 5375, 5419, 5447, 5475, 5495, 5551, 5591, 5622, 5672, 5712, 5758, 5800,
     5829, 5848, 5884, 5909, 5931, 5948, 5967, 5993, 6023, 6043, 6058, 6079, 6090, 6098, 6106, 6125,
     6130, 6138, 6146, 6157, 6168, 6176, 6179, 6188, 6193, 6197, 6204, 6207, 6213, 6216, 6221, 6225,
-    6230, 6236,
+    6230,
 ];
 
 /// Returns an iterator of `(sura_number, aya_number, aya_text)` that iterates each ayah in the Quran.
@@ -24,7 +24,7 @@ fn iter_quran(raw: &str) -> impl Iterator<Item = (u8, u16, &str)> {
     (0..AYA_COUNT)
         .zip(raw.split_inclusive('\n'))
         .map(move |(i, aya_text)| {
-            if i == AYA_STARTS[sura_number as usize] {
+            if (sura_number as usize) < AYA_STARTS.len() && i == AYA_STARTS[sura_number as usize] {
                 aya_number = 1;
                 sura_number += 1;
             } else {
@@ -68,7 +68,9 @@ impl<'a> AyaGetter<'a> {
     /// Get an ayah text given a surah number and an ayah number.
     pub fn get(&self, sura: u8, aya: u16) -> Option<&'a str> {
         let offset = AYA_STARTS.get(sura as usize - 1)?;
-        self.aya_texts.get((offset + aya) as usize - 1).copied()
+        self.aya_texts
+            .get(offset + aya as usize - 1)
+            .map(|&q| q.trim())
     }
 }
 

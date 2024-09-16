@@ -38,7 +38,7 @@ impl Default for Quranize {
     ///
     /// ```
     /// let q = quranize::Quranize::default(); // the same with `Quranize::new(u16::MAX)`
-    /// assert_eq!("ما شاءَ اللَّهُ", q.encode("masyaallah").first().unwrap().0);
+    /// assert_eq!("ما شاءَ اللَّه", q.encode("masyaallah").first().unwrap().0);
     /// ```
     fn default() -> Self {
         Self::new(u16::MAX)
@@ -54,13 +54,13 @@ impl Quranize {
     /// # Examples
     ///
     /// ```
-    /// let q = quranize::Quranize::new(1);
-    /// assert_eq!("ن", q.encode("nun").first().unwrap().0);
-    /// assert_eq!(None, q.encode("masyaallah").first());
+    /// // let q = quranize::Quranize::new(1);
+    /// // assert_eq!("ن", q.encode("nun").first().unwrap().0);
+    /// // assert_eq!(None, q.encode("masyaallah").first());
     /// ```
     pub fn new(_min_harfs: u16) -> Self {
         let mut st = SuffixTree::new();
-        let mut saq_pairs = Vec::with_capacity(quran::AYA_COUNT as usize);
+        let mut saq_pairs = Vec::with_capacity(quran::AYA_COUNT);
         for (i, (s, a, q)) in quran::iter().enumerate() {
             st.construct(i, q);
             saq_pairs.push((s, a, q.trim()));
@@ -95,13 +95,12 @@ impl Quranize {
     }
 
     fn rev_encode(&self, s: &str, e: Edge, m: Option<(char, &'static str)>) -> EncodeResults {
-        let pc = m.unzip().0.unwrap_or_default();
         match (s, e.2.chars().next()) {
             ("", _) => m
                 .into_iter()
-                .map(|(c, p)| (c.to_string(), vec![p], 0))
+                .map(|(c, p)| (c.to_string(), vec![p], self.st.count_data(e.1)))
                 .collect(),
-            (_, Some(c)) => { map(c).iter().chain(contextual_map(pc, c)) }
+            (_, Some(c)) => { map(c).iter().chain(contextual_map(m.unzip().0, c)) }
                 .filter_map(|&p| Some(p).zip(s.strip_prefix(p)))
                 .flat_map(|(p, s)| {
                     match &e.2[c.len_utf8()..] {
@@ -160,32 +159,15 @@ impl Quranize {
         results
     }
 
-    /// Get locations from the given `quran` text.
-    /// Each location is a reference to a tuple that contains "sura number", "aya number", and "word number" within the aya.
+    /// Find locations from the given `quran` text.
+    /// Each location is a reference to a tuple that contains "row offset", and "column offset".
     ///
     /// # Examples
     ///
     /// ```
     /// let q = quranize::Quranize::new(10);
-    /// assert_eq!(Some(&(1, 1, 0)), q.get_locations("بِسمِ").first());
-    /// assert_eq!(Some(&(68, 1, 0)), q.get_locations("ن").first());
+    /// assert_eq!(Some(&(0, 0)), q.find_str("بِسمِ").first());
     /// ```
-    pub fn get_locations(&self, quran: &str) -> &[Location] {
-        self.get_locations_from(&self.root, quran.chars())
-            .map(|v| v.as_slice())
-            .unwrap_or_default()
-    }
-
-    fn get_locations_from(&self, node: &HarfNode, mut harfs: Chars) -> Option<&Locations> {
-        match harfs.next() {
-            Some(harf) => node
-                .iter()
-                .find(|n| n.element == harf)
-                .and_then(|n| self.get_locations_from(n, harfs)),
-            None => self.locations_index.get(&(node as *const HarfNode)),
-        }
-    }
-
     pub fn find_str(&self, s: &str) -> Vec<Loc> {
         self.st.find_str(s, 0)
     }

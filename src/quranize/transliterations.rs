@@ -60,19 +60,19 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
     }
 }
 
-pub(super) fn contextual_map(prev_c: char, c: char) -> &'static [&'static str] {
-    match (prev_c, c) {
-        (LETTER_ALEF, LETTER_LAM) => &[""],
-        ('\0', LETTER_ALEF) => &["u"],
-        (DAMMA, LETTER_WAW) => &[""],
-        (KASRA, LETTER_LAM) => &[""],
-        (FATHATAN, LETTER_ALEF_MAKSURA) => &[""],
+pub(super) fn contextual_map(context: Option<char>, c: char) -> &'static [&'static str] {
+    match (context, c) {
+        (Some(LETTER_ALEF), LETTER_LAM) => &[""],
+        (None, LETTER_ALEF) => &["u", "i"],
+        (Some(DAMMA), LETTER_WAW) => &[""],
+        (Some(KASRA), LETTER_LAM) => &[""],
+        (Some(FATHATAN), LETTER_ALEF_MAKSURA) => &[""],
 
-        (LETTER_REH, EMPTY_CENTRE_LOW_STOP) => &["e", "ee"],
-        (EMPTY_CENTRE_LOW_STOP, LETTER_ALEF_MAKSURA) => &[""],
-        (LETTER_ALEF_MAKSURA, LETTER_SUPERSCRIPT_ALEF) => &[""],
+        (Some(LETTER_REH), EMPTY_CENTRE_LOW_STOP) => &["e", "ee"],
+        (Some(EMPTY_CENTRE_LOW_STOP), LETTER_ALEF_MAKSURA) => &[""],
+        (Some(LETTER_ALEF_MAKSURA), LETTER_SUPERSCRIPT_ALEF) => &[""],
 
-        (_, SHADDA) => map(prev_c),
+        (Some(p), SHADDA) => map(p),
 
         _ => &[],
     }

@@ -125,11 +125,11 @@ mod tests {
     #[test]
     fn test_suffix_tree_for_quran() {
         let mut t = SuffixTree::new();
-        for (i, (_, _, q)) in crate::quran::iter().enumerate().skip(394).take(1) {
+        for (i, (_, _, q)) in crate::quran::iter().enumerate() {
             t.construct(i, q);
         }
-        println!("{}", t.to_mermaid());
-        assert_eq!(t.edges.len(), 116_426);
+        // println!("{}", t.to_mermaid());
+        assert_eq!(t.edges.len(), 116_076);
         assert_eq!(t.vertices.len() - t.edges.len(), 1);
     }
 
