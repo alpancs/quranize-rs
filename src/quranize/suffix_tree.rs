@@ -12,6 +12,8 @@ pub(super) struct SuffixTree<'a> {
 }
 
 impl<'a> SuffixTree<'a> {
+    pub(super) const ROOT: usize = 0;
+
     pub(super) fn new() -> Self {
         Self {
             vertices: vec![None],
@@ -21,7 +23,7 @@ impl<'a> SuffixTree<'a> {
 
     pub(super) fn construct(&mut self, i: usize, s: &'a str) {
         s.word_suffixes()
-            .for_each(|(j, s)| self.construct_suffix((i as u16, j as u16), 0, s));
+            .for_each(|(j, s)| self.construct_suffix((i as u16, j as u16), Self::ROOT, s));
     }
 
     fn construct_suffix(&mut self, d: Data, root: usize, subs: &'a str) {
@@ -59,18 +61,14 @@ impl<'a> SuffixTree<'a> {
     }
 
     pub(super) fn find_str(&self, s: &str, v: usize) -> Vec<Data> {
-        match s {
-            "" => vec![],
-            _ => self
-                .v_edges(v)
-                .filter(|&(_, _, l)| !l.is_empty())
-                .flat_map(|&(_, w, l)| match (s.strip_prefix(l), l.strip_prefix(s)) {
-                    (_, Some(_)) => self.collect_data(w),
-                    (Some(s), _) => self.find_str(s, w),
-                    _ => vec![],
-                })
-                .collect(),
-        }
+        self.v_edges(v)
+            .filter(|&(_, _, l)| !s.is_empty() && !l.is_empty())
+            .find_map(|&(_, w, l)| match (s.strip_prefix(l), l.strip_prefix(s)) {
+                (_, Some(_)) => Some(self.collect_data(w)),
+                (Some(s), _) => Some(self.find_str(s, w)),
+                _ => None,
+            })
+            .unwrap_or_default()
     }
 
     fn collect_data(&self, v: usize) -> Vec<Data> {
@@ -152,9 +150,10 @@ mod tests {
         for (id, s) in (0..7).zip(QURAN_UTHMANI_MIN.split('\n')) {
             t.construct(id, s);
         }
-        assert_eq!(t.find_str("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيم", 0), [(0, 0)]);
-        assert_eq!(t.find_str("الرَّحمٰنِ الرَّحيم", 0), [(0, 26), (2, 0)]);
-        assert_eq!(t.find_str("", 0), [(0, 0); 0]);
-        assert_eq!(t.find_str("abc", 0), [(0, 0); 0]);
+        let root = SuffixTree::ROOT;
+        assert_eq!(t.find_str("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيم", root), [(0, 0)]);
+        assert_eq!(t.find_str("الرَّحمٰنِ الرَّحيم", root), [(0, 26), (2, 0)]);
+        assert_eq!(t.find_str("", root), [(0, 0); 0]);
+        assert_eq!(t.find_str("abc", root), [(0, 0); 0]);
     }
 }
