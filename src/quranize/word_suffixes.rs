@@ -80,5 +80,7 @@ mod tests {
         );
         let (_, suffixes): (Vec<_>, Vec<_>) = "رَبِّهِم ۖ وَأُولٰئِكَ".word_suffixes().unzip();
         assert_eq!(suffixes, ["رَبِّهِم ۖ وَأُولٰئِكَ", "وَأُولٰئِكَ",]);
+        let (_, suffixes): (Vec<_>, Vec<_>) = "الرَّحيمِ\n".word_suffixes().unzip();
+        assert_eq!(suffixes, ["الرَّحيمِ\n"]);
     }
 }
