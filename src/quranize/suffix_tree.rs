@@ -93,7 +93,7 @@ impl SuffixTree<'_> {
                     "  v{}(({})) -- \"{}\" --> v{}(({}))\n",
                     e.0,
                     self.data_string(e.0),
-                    format!("E<sub>{}</sub>: ", i)
+                    format!("e<sub>{}</sub>: ", i)
                         + match e.2 {
                             "" => "&nbsp;",
                             "#" => "&nbsp;#&nbsp;",
@@ -110,7 +110,7 @@ impl SuffixTree<'_> {
         let content = self.vertices[v]
             .map(|d| format!("({}, {})", d.0, d.1))
             .unwrap_or("&nbsp;".repeat(3));
-        format!("\"[{}]<br>{}\"", v, content)
+        format!("\"v<sub>{}</sub><br>{}\"", v, content)
     }
 }
 
@@ -124,8 +124,9 @@ mod tests {
     #[test]
     fn test_suffix_tree_for_quran() {
         let mut t = SuffixTree::new();
-        for (id, s) in (0..3).zip(QURAN_UTHMANI_MIN.split('\n')) {
-            t.construct(id, s);
+        for (i, (_, _, q)) in crate::quran::iter().enumerate().skip(7).take(3) {
+            println!("{} {}", i, q);
+            t.construct(i, q);
         }
         println!("{}", t.to_mermaid());
         assert_eq!(t.edges.len(), 116_426);
