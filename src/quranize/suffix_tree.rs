@@ -111,6 +111,10 @@ impl SuffixTree<'_> {
             .unwrap_or("&nbsp;".repeat(8));
         format!("\"v<sub>{}</sub><br>{}\"", v, content)
     }
+
+    pub(super) fn vertex_count(&self) -> usize {
+        self.edges.len() + 1
+    }
 }
 
 #[cfg(test)]

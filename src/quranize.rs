@@ -201,10 +201,7 @@ mod tests {
     #[test]
     fn test_node_count() {
         let q = Quranize::default();
-        fn node_count(node: &HarfNode) -> usize {
-            1 + node.iter().map(node_count).sum::<usize>()
-        }
-        assert_eq!(node_count(&q.root), 5_297_761);
+        assert_eq!(q.st.vertex_count(), 116_077);
     }
 
     #[test]
