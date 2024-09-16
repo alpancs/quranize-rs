@@ -96,7 +96,7 @@ impl Quranize {
 
     fn rev_encode(&self, pc: char, e: &Edge, l: &str, s: &str) -> EncodeResults {
         match (s, l.chars().next()) {
-            ("", _) => vec![(String::new(), Vec::new(), 0)],
+            ("", _) => vec![(String::new(), Vec::new(), self.st.count_data(e.1))],
             (_, Some(c)) => { map(c).iter().chain(contextual_map(pc, c)) }
                 .filter_map(|p| Some(p).zip(s.strip_prefix(p)))
                 .flat_map(|(p, s)| {

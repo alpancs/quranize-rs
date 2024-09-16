@@ -78,6 +78,12 @@ impl<'a> SuffixTree<'a> {
         let tail = self.v_edges(v).flat_map(|&(_, w, _)| self.collect_data(w));
         head.chain(tail).collect()
     }
+
+    pub(super) fn count_data(&self, v: usize) -> usize {
+        let parent_count: usize = self.vertices[v].is_some().into();
+        let childs_count: usize = self.v_edges(v).map(|&(_, w, _)| self.count_data(w)).sum();
+        parent_count + childs_count
+    }
 }
 
 #[cfg(test)]
@@ -88,7 +94,7 @@ impl SuffixTree<'_> {
                 format!(
                     "  v{}(({})) -- \"{}\" --> v{}(({}))\n",
                     e.0,
-                    self.data(e.0),
+                    self.data_string(e.0),
                     format!("E<sub>{}</sub>: ", i)
                         + match e.2 {
                             "" => "&nbsp;",
@@ -96,13 +102,13 @@ impl SuffixTree<'_> {
                             _ => e.2,
                         },
                     e.1,
-                    self.data(e.1)
+                    self.data_string(e.1)
                 )
             }))
             .collect()
     }
 
-    fn data(&self, v: usize) -> String {
+    fn data_string(&self, v: usize) -> String {
         let content = self.vertices[v]
             .map(|d| format!("({}, {})", d.0, d.1))
             .unwrap_or("&nbsp;".repeat(3));
