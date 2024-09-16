@@ -36,11 +36,33 @@ mod tests {
 
     #[test]
     fn test_word_suffix_iter() {
-        let mut word_suffix_iter = "ab cde  fg   h".word_suffixes();
-        assert_eq!(Some((0, "ab cde  fg   h")), word_suffix_iter.next());
-        assert_eq!(Some((3, "cde  fg   h")), word_suffix_iter.next());
-        assert_eq!(Some((8, "fg   h")), word_suffix_iter.next());
-        assert_eq!(Some((13, "h")), word_suffix_iter.next());
-        assert_eq!(None, word_suffix_iter.next());
+        let mut it = "ab cde  fg   h".word_suffixes();
+        assert_eq!(Some((0, "ab cde  fg   h")), it.next());
+        assert_eq!(Some((3, "cde  fg   h")), it.next());
+        assert_eq!(Some((8, "fg   h")), it.next());
+        assert_eq!(Some((13, "h")), it.next());
+        assert_eq!(None, it.next());
+
+        let (_, suffixes): (Vec<_>, Vec<_>) =
+            "يٰأَيُّهَا الَّذينَ ءامَنُوا اتَّقُوا اللَّهَ حَقَّ تُقاتِهِ وَلا تَموتُنَّ إِلّا وَأَنتُم مُسلِمونَ"
+                .word_suffixes()
+                .unzip();
+        assert_eq!(
+            suffixes,
+            [
+                "يٰأَيُّهَا الَّذينَ ءامَنُوا اتَّقُوا اللَّهَ حَقَّ تُقاتِهِ وَلا تَموتُنَّ إِلّا وَأَنتُم مُسلِمونَ",
+                "الَّذينَ ءامَنُوا اتَّقُوا اللَّهَ حَقَّ تُقاتِهِ وَلا تَموتُنَّ إِلّا وَأَنتُم مُسلِمونَ",
+                "ءامَنُوا اتَّقُوا اللَّهَ حَقَّ تُقاتِهِ وَلا تَموتُنَّ إِلّا وَأَنتُم مُسلِمونَ",
+                "اتَّقُوا اللَّهَ حَقَّ تُقاتِهِ وَلا تَموتُنَّ إِلّا وَأَنتُم مُسلِمونَ",
+                "اللَّهَ حَقَّ تُقاتِهِ وَلا تَموتُنَّ إِلّا وَأَنتُم مُسلِمونَ",
+                "حَقَّ تُقاتِهِ وَلا تَموتُنَّ إِلّا وَأَنتُم مُسلِمونَ",
+                "تُقاتِهِ وَلا تَموتُنَّ إِلّا وَأَنتُم مُسلِمونَ",
+                "وَلا تَموتُنَّ إِلّا وَأَنتُم مُسلِمونَ",
+                "تَموتُنَّ إِلّا وَأَنتُم مُسلِمونَ",
+                "إِلّا وَأَنتُم مُسلِمونَ",
+                "وَأَنتُم مُسلِمونَ",
+                "مُسلِمونَ",
+            ]
+        );
     }
 }

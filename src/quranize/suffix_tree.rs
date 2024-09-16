@@ -90,7 +90,7 @@ impl SuffixTree<'_> {
         std::iter::once("graph TB\n".to_string())
             .chain(self.edges.iter().enumerate().map(|(i, e)| {
                 format!(
-                    "  v{}(({})) -- \"{}\" --> v{}(({}))\n",
+                    "  v{}[{}] -- \"{}\" --> v{}[{}]\n",
                     e.0,
                     self.data_string(e.0),
                     format!("e<sub>{}</sub>: ", i)
@@ -109,7 +109,7 @@ impl SuffixTree<'_> {
     fn data_string(&self, v: usize) -> String {
         let content = self.vertices[v]
             .map(|d| format!("({}, {})", d.0, d.1))
-            .unwrap_or("&nbsp;".repeat(3));
+            .unwrap_or("&nbsp;".repeat(8));
         format!("\"v<sub>{}</sub><br>{}\"", v, content)
     }
 }
@@ -124,7 +124,7 @@ mod tests {
     #[test]
     fn test_suffix_tree_for_quran() {
         let mut t = SuffixTree::new();
-        for (i, (_, _, q)) in crate::quran::iter().enumerate().skip(7).take(3) {
+        for (i, (_, _, q)) in crate::quran::iter().enumerate().skip(394).take(1) {
             println!("{} {}", i, q);
             t.construct(i, q);
         }
