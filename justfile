@@ -11,6 +11,6 @@ wasm:
 server:
 	static-web-server \
 		--root=web-app/public \
-		--port=8080 \
+		--port=5000 \
 		--log-level=info \
 		--cache-control-headers=false
