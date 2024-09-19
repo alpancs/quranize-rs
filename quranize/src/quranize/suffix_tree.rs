@@ -75,12 +75,6 @@ impl<'a> SuffixTree<'a> {
         let tail = self.v_edges(v).flat_map(|&(_, w, _)| self.collect_data(w));
         head.chain(tail).collect()
     }
-
-    pub(super) fn count_data(&self, v: usize) -> usize {
-        let parent_count: usize = self.vertices[v].is_some().into();
-        let childs_count: usize = self.v_edges(v).map(|&(_, w, _)| self.count_data(w)).sum();
-        parent_count + childs_count
-    }
 }
 
 #[cfg(test)]

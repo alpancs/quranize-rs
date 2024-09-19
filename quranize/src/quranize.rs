@@ -20,34 +20,21 @@ pub struct Quranize {
 }
 
 impl Default for Quranize {
-    /// Build [`Quranize`] with maximum `min_harfs` value.
-    /// It is equivalent to building [`Quranize`] without any harf limits.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let q = quranize::Quranize::default(); // the same with `Quranize::new(u16::MAX)`
-    /// assert_eq!("ما شاءَ اللَّه", q.encode("masyaallah").first().unwrap().0);
-    /// ```
     fn default() -> Self {
-        Self::new(u16::MAX)
+        Self::new()
     }
 }
 
 impl Quranize {
-    /// Build [`Quranize`] with parameter `min_harfs`.
-    /// The indexer will only scan quran harfs at least as many as `min_harfs` and stop at the nearest end of words.
-    /// This strategy is implemented to reduce memory usage and indexing time.
-    /// Use [`Quranize::default`] to build [`Quranize`] with maximum `min_harfs` value (without limits).
+    /// Create a new [`Quranize`] instance, including building the suffix tree internally.
     ///
     /// # Examples
     ///
     /// ```
-    /// // let q = quranize::Quranize::new(1);
-    /// // assert_eq!("ن", q.encode("nun").first().unwrap().0);
-    /// // assert_eq!(None, q.encode("masyaallah").first());
+    /// let q = quranize::Quranize::new();
+    /// assert_eq!("ما شاءَ اللَّه", q.encode("masyaallah").first().unwrap().0);
     /// ```
-    pub fn new(_min_harfs: u16) -> Self {
+    pub fn new() -> Self {
         let mut st = SuffixTree::new();
         let mut saq_pairs = Vec::with_capacity(quran::AYA_COUNT);
         for (i, (s, a, q)) in quran::iter().enumerate() {
@@ -61,7 +48,7 @@ impl Quranize {
         self.st.v_edges(v).filter(|(_, _, l)| !l.is_empty())
     }
 
-    /// Encode `text` back into Quran form.
+    /// Encode `text` into Quran form.
     pub fn encode(&self, text: &str) -> EncodeResults {
         let s = &normalize(text);
         let mut results: Vec<_> = self
@@ -108,48 +95,13 @@ impl Quranize {
         }
     }
 
-    // fn rev_encode_first_aya(&self, node: &HarfNode, text: &str) -> EncodeResults {
-    //     let mut results = Vec::new();
-    //     if text.is_empty() && self.containing_first_aya(node) {
-    //         results.push((
-    //             String::new(),
-    //             Vec::new(),
-    //             self.locations_index[&(node as *const HarfNode)].len(),
-    //         ));
-    //     }
-    //     for n in node.iter() {
-    //         for prefix in single_harf_map(n.element) {
-    //             if let Some(subtext) = text.strip_prefix(prefix) {
-    //                 results.append(&mut self.rev_encode_sub_fa(n, subtext, prefix));
-    //             }
-    //         }
-    //     }
-    //     results
-    // }
-
-    // fn containing_first_aya(&self, node: &HarfNode) -> bool {
-    //     self.locations_index
-    //         .get(&(node as *const HarfNode))
-    //         .map(|l| l.iter().any(|&(_, a, _)| a == 1))
-    //         .unwrap_or_default()
-    // }
-
-    // fn rev_encode_sub_fa<'a>(&'a self, n: &HarfNode, text: &str, expl: &'a str) -> EncodeResults {
-    //     let mut results = self.rev_encode_first_aya(n, text);
-    //     for (q, e, _) in results.iter_mut() {
-    //         q.push(n.element);
-    //         e.push(expl);
-    //     }
-    //     results
-    // }
-
     /// Find locations from the given `quran` text.
     /// Each location is a reference to a tuple that contains "row offset", and "column offset".
     ///
     /// # Examples
     ///
     /// ```
-    /// let q = quranize::Quranize::new(10);
+    /// let q = quranize::Quranize::new();
     /// assert_eq!(Some(&(0, 0)), q.find_str("بِسمِ").first());
     /// ```
     pub fn find_str(&self, s: &str) -> Vec<Loc> {
@@ -172,13 +124,13 @@ mod tests {
 
     #[test]
     fn test_node_count() {
-        let q = Quranize::default();
+        let q = Quranize::new();
         assert_eq!(q.st.vertex_count(), 116_077);
     }
 
     #[test]
     fn test_quranize_default() {
-        let q = Quranize::default();
+        let q = Quranize::new();
         q.assert_encode("illa billah", &["إِلّا بِاللَّه"]);
         q.assert_encode("alqur'an", &["القُرءان"]);
         q.assert_encode("bismillah", &["بِسمِ اللَّه"]);
@@ -227,7 +179,7 @@ mod tests {
 
     #[test]
     fn test_alfatihah() {
-        let q = Quranize::new(100);
+        let q = Quranize::new();
         q.assert_encode("bismillahirrohmanirrohiim", &["بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيم"]);
         q.assert_encode("alhamdulilla hirobbil 'alamiin", &["الحَمدُ لِلَّهِ رَبِّ العٰلَمين"]);
         q.assert_encode("arrohma nirrohim", &["الرَّحمٰنِ الرَّحيم"]);
@@ -242,7 +194,7 @@ mod tests {
 
     #[test]
     fn test_al_ikhlas() {
-        let q = Quranize::new(50);
+        let q = Quranize::new();
         q.assert_encode("qulhuwallahuahad", &["قُل هُوَ اللَّهُ أَحَد"]);
         q.assert_encode("allahussomad", &["اللَّهُ الصَّمَد"]);
         q.assert_encode("lam yalid walam yulad", &["لَم يَلِد وَلَم يولَد"]);
@@ -251,7 +203,7 @@ mod tests {
 
     #[test]
     fn test_quranize_misc() {
-        let q = Quranize::new(70);
+        let q = Quranize::new();
         assert_eq!(
             vec!["a", "l", "h", "a", "m", "d", "u"],
             q.encode("alhamdu").first().unwrap().1,
@@ -290,7 +242,7 @@ mod tests {
 
     #[test]
     fn test_quranize_empty_result() {
-        let q = Quranize::new(23);
+        let q = Quranize::new();
         assert!(q.encode("").is_empty(), "result={:?}", q.encode(""));
         assert!(q.encode("abcd").is_empty());
         assert!(q.encode("1+2=3").is_empty());
@@ -298,7 +250,7 @@ mod tests {
 
     #[test]
     fn test_unique() {
-        let q = Quranize::new(23);
+        let q = Quranize::new();
         let results = q.encode("ALLAH");
         let qurans = results.iter().map(|(q, _)| q);
         let is_unique = results.len() == HashSet::<&String>::from_iter(qurans).len();
@@ -307,7 +259,7 @@ mod tests {
 
     #[test]
     fn test_find_str() {
-        let q = Quranize::default();
+        let q = Quranize::new();
 
         assert_eq!(q.find_str("بِسمِ").first(), Some(&(0, 0)));
         assert_eq!(q.find_str("وَالنّاسِ").last(), Some(&(6235, 28)));
