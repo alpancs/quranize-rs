@@ -7,7 +7,7 @@ pub(super) fn normalize(text: &str) -> String {
         .collect()
 }
 
-pub(super) fn normalize_first_aya(text: &str) -> String {
+pub(super) fn _normalize_first_aya(text: &str) -> String {
     let mut chars = Vec::from_iter(text.chars().filter_map(|c| match c.to_ascii_lowercase() {
         c @ ('a'..='z' | '\'' | ' ') => Some(c),
         _ => None,
@@ -35,19 +35,19 @@ mod tests {
 
     #[test]
     fn test_normalize_first_aya() {
-        assert_eq!("", normalize_first_aya(""));
-        assert_eq!("alif", normalize_first_aya("alif"));
-        assert_eq!("lam", normalize_first_aya("laam"));
-        assert_eq!("lam", normalize_first_aya("laaam"));
-        assert_eq!("lam", normalize_first_aya("laaaam"));
-        assert_eq!("lam", normalize_first_aya("laaaam"));
+        assert_eq!("", _normalize_first_aya(""));
+        assert_eq!("alif", _normalize_first_aya("alif"));
+        assert_eq!("lam", _normalize_first_aya("laam"));
+        assert_eq!("lam", _normalize_first_aya("laaam"));
+        assert_eq!("lam", _normalize_first_aya("laaaam"));
+        assert_eq!("lam", _normalize_first_aya("laaaam"));
         assert_eq!(
             "kafhayaainshod",
-            normalize_first_aya("kaaaf haa yaa aiiin shoood"),
+            _normalize_first_aya("kaaaf haa yaa aiiin shoood"),
         );
         assert_eq!(
             "kafhaya'ainshod",
-            normalize_first_aya("kaaaf haa yaa 'aiiin shoood"),
+            _normalize_first_aya("kaaaf haa yaa 'aiiin shoood"),
         );
     }
 }

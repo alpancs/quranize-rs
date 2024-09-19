@@ -1,13 +1,8 @@
-use std::{collections::HashMap, str::Chars};
-
 mod suffix_tree;
 use suffix_tree::{Data as Loc, Edge, SuffixTree};
 
-mod collections;
-use collections::Node;
-
 mod normalization;
-use normalization::{normalize, normalize_first_aya};
+use normalization::normalize;
 
 mod transliterations;
 use transliterations::*;
@@ -16,16 +11,11 @@ use crate::quran;
 
 mod word_suffixes;
 
-type HarfNode = Node<char>;
 type EncodeResult<'a> = (String, Vec<&'a str>, usize);
 type EncodeResults<'a> = Vec<EncodeResult<'a>>;
-type Location = (u8, u16, usize);
-type Locations = Vec<Location>;
 
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
-    root: HarfNode,
-    locations_index: HashMap<*const HarfNode, Locations>,
     st: SuffixTree<'static>,
     pub saq_pairs: Vec<(u8, u16, &'static str)>,
 }
@@ -65,12 +55,7 @@ impl Quranize {
             st.construct(i, q);
             saq_pairs.push((s, a, q.trim()));
         }
-        Self {
-            root: Default::default(),
-            locations_index: Default::default(),
-            st,
-            saq_pairs,
-        }
+        Self { st, saq_pairs }
     }
 
     fn labeled_edged(&self, v: usize) -> impl Iterator<Item = &Edge> {
@@ -84,7 +69,7 @@ impl Quranize {
             .labeled_edged(0)
             .flat_map(|&e| self.rev_encode(s, e, None))
             .collect();
-        results.append(&mut self.rev_encode_first_aya(&self.root, &normalize_first_aya(text)));
+        // results.append(&mut self.rev_encode_first_aya(&self.root, &normalize_first_aya(text)));
         results.sort_unstable_by(|(q1, _, _), (q2, _, _)| q1.cmp(q2));
         results.dedup_by(|(q1, _, _), (q2, _, _)| q1 == q2);
         for (q, e, _) in results.iter_mut() {
@@ -124,40 +109,40 @@ impl Quranize {
         }
     }
 
-    fn rev_encode_first_aya(&self, node: &HarfNode, text: &str) -> EncodeResults {
-        let mut results = EncodeResults::new();
-        if text.is_empty() && self.containing_first_aya(node) {
-            results.push((
-                String::new(),
-                Vec::new(),
-                self.locations_index[&(node as *const HarfNode)].len(),
-            ));
-        }
-        for n in node.iter() {
-            for prefix in single_harf_map(n.element) {
-                if let Some(subtext) = text.strip_prefix(prefix) {
-                    results.append(&mut self.rev_encode_sub_fa(n, subtext, prefix));
-                }
-            }
-        }
-        results
-    }
+    // fn rev_encode_first_aya(&self, node: &HarfNode, text: &str) -> EncodeResults {
+    //     let mut results = EncodeResults::new();
+    //     if text.is_empty() && self.containing_first_aya(node) {
+    //         results.push((
+    //             String::new(),
+    //             Vec::new(),
+    //             self.locations_index[&(node as *const HarfNode)].len(),
+    //         ));
+    //     }
+    //     for n in node.iter() {
+    //         for prefix in single_harf_map(n.element) {
+    //             if let Some(subtext) = text.strip_prefix(prefix) {
+    //                 results.append(&mut self.rev_encode_sub_fa(n, subtext, prefix));
+    //             }
+    //         }
+    //     }
+    //     results
+    // }
 
-    fn containing_first_aya(&self, node: &HarfNode) -> bool {
-        self.locations_index
-            .get(&(node as *const HarfNode))
-            .map(|l| l.iter().any(|&(_, a, _)| a == 1))
-            .unwrap_or_default()
-    }
+    // fn containing_first_aya(&self, node: &HarfNode) -> bool {
+    //     self.locations_index
+    //         .get(&(node as *const HarfNode))
+    //         .map(|l| l.iter().any(|&(_, a, _)| a == 1))
+    //         .unwrap_or_default()
+    // }
 
-    fn rev_encode_sub_fa<'a>(&'a self, n: &HarfNode, text: &str, expl: &'a str) -> EncodeResults {
-        let mut results = self.rev_encode_first_aya(n, text);
-        for (q, e, _) in results.iter_mut() {
-            q.push(n.element);
-            e.push(expl);
-        }
-        results
-    }
+    // fn rev_encode_sub_fa<'a>(&'a self, n: &HarfNode, text: &str, expl: &'a str) -> EncodeResults {
+    //     let mut results = self.rev_encode_first_aya(n, text);
+    //     for (q, e, _) in results.iter_mut() {
+    //         q.push(n.element);
+    //         e.push(expl);
+    //     }
+    //     results
+    // }
 
     /// Find locations from the given `quran` text.
     /// Each location is a reference to a tuple that contains "row offset", and "column offset".

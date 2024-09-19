@@ -1,11 +1,10 @@
-use quranize::{AyaGetter, Quranize};
+use quranize::Quranize;
 use serde_wasm_bindgen::{to_value, Error};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(js_name = Quranize)]
 pub struct JsQuranize {
     quranize: Quranize,
-    aya_getter: AyaGetter<'static>,
 }
 
 #[derive(serde::Serialize)]
@@ -39,7 +38,6 @@ impl JsQuranize {
                 0 => Default::default(),
                 _ => Quranize::new(min_harfs),
             },
-            aya_getter: Default::default(),
         }
     }
 

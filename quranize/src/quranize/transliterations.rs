@@ -78,7 +78,7 @@ pub(super) fn contextual_map(context: Option<char>, c: char) -> &'static [&'stat
     }
 }
 
-pub(super) fn single_harf_map(c: char) -> &'static [&'static str] {
+pub(super) fn _single_harf_map(c: char) -> &'static [&'static str] {
     match c {
         LETTER_ALEF => &["alif"],
         LETTER_BEH => &["ba"],

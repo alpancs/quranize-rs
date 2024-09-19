@@ -85,32 +85,32 @@ impl<'a> SuffixTree<'a> {
 
 #[cfg(test)]
 impl SuffixTree<'_> {
-    pub(super) fn to_mermaid(&self) -> String {
-        std::iter::once("graph TB\n".to_string())
-            .chain(self.edges.iter().enumerate().map(|(i, e)| {
-                format!(
-                    "  v{}[{}] -- \"{}\" --> v{}[{}]\n",
-                    e.0,
-                    self.data_string(e.0),
-                    format!("e<sub>{}</sub>: ", i)
-                        + match e.2 {
-                            "" => "&nbsp;",
-                            "#" => "&nbsp;#&nbsp;",
-                            _ => e.2,
-                        },
-                    e.1,
-                    self.data_string(e.1)
-                )
-            }))
-            .collect()
-    }
+    // pub(super) fn to_mermaid(&self) -> String {
+    //     std::iter::once("graph TB\n".to_string())
+    //         .chain(self.edges.iter().enumerate().map(|(i, e)| {
+    //             format!(
+    //                 "  v{}[{}] -- \"{}\" --> v{}[{}]\n",
+    //                 e.0,
+    //                 self.data_string(e.0),
+    //                 format!("e<sub>{}</sub>: ", i)
+    //                     + match e.2 {
+    //                         "" => "&nbsp;",
+    //                         "#" => "&nbsp;#&nbsp;",
+    //                         _ => e.2,
+    //                     },
+    //                 e.1,
+    //                 self.data_string(e.1)
+    //             )
+    //         }))
+    //         .collect()
+    // }
 
-    fn data_string(&self, v: usize) -> String {
-        let content = self.vertices[v]
-            .map(|d| format!("({}, {})", d.0, d.1))
-            .unwrap_or("&nbsp;".repeat(8));
-        format!("\"v<sub>{}</sub><br>{}\"", v, content)
-    }
+    // fn data_string(&self, v: usize) -> String {
+    //     let content = self.vertices[v]
+    //         .map(|d| format!("({}, {})", d.0, d.1))
+    //         .unwrap_or("&nbsp;".repeat(8));
+    //     format!("\"v<sub>{}</sub><br>{}\"", v, content)
+    // }
 
     pub(super) fn vertex_count(&self) -> usize {
         self.edges.len() + 1
