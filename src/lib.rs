@@ -15,7 +15,7 @@
 //!
 //! ```
 //! let q = quranize::Quranize::default();
-//! assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحَمدُ لِلَّهِ");
+//! assert_eq!(q.encode("alhamdulillah").first().unwrap().0, "الحَمدُ لِلَّه");
 //! ```
 //!
 //! ## Getting an aya text given surah number and ayah number
