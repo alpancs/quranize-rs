@@ -11,8 +11,7 @@ use crate::quran;
 
 mod word_suffixes;
 
-type EncodeResult<'a> = (String, Vec<&'a str>, usize);
-type EncodeResults<'a> = Vec<EncodeResult<'a>>;
+type EncodeResults = Vec<(String, Vec<&'static str>)>;
 
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
@@ -70,9 +69,9 @@ impl Quranize {
             .flat_map(|&e| self.rev_encode(s, e, None))
             .collect();
         // results.append(&mut self.rev_encode_first_aya(&self.root, &normalize_first_aya(text)));
-        results.sort_unstable_by(|(q1, _, _), (q2, _, _)| q1.cmp(q2));
-        results.dedup_by(|(q1, _, _), (q2, _, _)| q1 == q2);
-        for (q, e, _) in results.iter_mut() {
+        results.sort_unstable_by(|(q1, _), (q2, _)| q1.cmp(q2));
+        results.dedup_by(|(q1, _), (q2, _)| q1 == q2);
+        for (q, e) in results.iter_mut() {
             *q = q.chars().rev().collect();
             e.reverse();
         }
@@ -83,7 +82,7 @@ impl Quranize {
         match (s, e.2.chars().next()) {
             ("", _) => m
                 .into_iter()
-                .map(|(c, p)| (c.to_string(), vec![p], self.st.count_data(e.1)))
+                .map(|(c, p)| (c.to_string(), vec![p]))
                 .collect(),
             (_, Some(c)) => { map(c).iter().chain(contextual_map(m.unzip().0, c)) }
                 .filter_map(|&p| Some(p).zip(s.strip_prefix(p)))
@@ -110,7 +109,7 @@ impl Quranize {
     }
 
     // fn rev_encode_first_aya(&self, node: &HarfNode, text: &str) -> EncodeResults {
-    //     let mut results = EncodeResults::new();
+    //     let mut results = Vec::new();
     //     if text.is_empty() && self.containing_first_aya(node) {
     //         results.push((
     //             String::new(),
@@ -166,7 +165,7 @@ mod tests {
 
     impl Quranize {
         fn assert_encode(&self, text: &str, expected: &[&str]) {
-            let actual: Vec<_> = self.encode(text).into_iter().map(|(q, _, _)| q).collect();
+            let (actual, _): (Vec<_>, Vec<_>) = self.encode(text).into_iter().unzip();
             assert_eq!(expected, actual, "text: {}", text);
         }
     }
@@ -253,21 +252,20 @@ mod tests {
     #[test]
     fn test_quranize_misc() {
         let q = Quranize::new(70);
-        assert!(matches!(q.encode("bismillah").first(), Some((_, _, 3))));
         assert_eq!(
             vec!["a", "l", "h", "a", "m", "d", "u"],
-            q.encode("alhamdu").into_iter().next().unwrap().1,
+            q.encode("alhamdu").first().unwrap().1,
         );
         assert_eq!(
             vec!["a", "", "r", "r", "o", "h", "m", "a", "n"],
-            q.encode("arrohman").into_iter().next().unwrap().1,
+            q.encode("arrohman").first().unwrap().1,
         );
         {
-            let (q, e, _) = q.encode("masyaallah").into_iter().next().unwrap();
+            let (q, e) = q.encode("masyaallah").into_iter().next().unwrap();
             assert!(q.chars().count() == e.len());
         }
         {
-            let (q, e, _) = q.encode("birobbinnas").into_iter().next().unwrap();
+            let (q, e) = q.encode("birobbinnas").into_iter().next().unwrap();
             assert_eq!(
                 vec![
                     ("b", 'ب',),
@@ -302,7 +300,7 @@ mod tests {
     fn test_unique() {
         let q = Quranize::new(23);
         let results = q.encode("ALLAH");
-        let qurans = results.iter().map(|(q, _, _)| q);
+        let qurans = results.iter().map(|(q, _)| q);
         let is_unique = results.len() == HashSet::<&String>::from_iter(qurans).len();
         assert!(is_unique, "results are not unique. results: {:#?}", results);
     }
