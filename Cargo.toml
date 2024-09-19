@@ -1,4 +1,4 @@
 [workspace]
 
-members = ["quranize"]
+members = ["quranize", "web-app"]
 resolver = "2"
