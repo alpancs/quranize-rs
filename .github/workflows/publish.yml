@@ -16,5 +16,6 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: publish
+          args: --package=quranize
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
