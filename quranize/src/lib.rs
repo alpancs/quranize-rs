@@ -17,3 +17,31 @@
 //! let q = quranize::Quranize::new();
 //! assert_eq!(q.encode("bismillah").first().unwrap().0, "بِسمِ اللَّه");
 //! ```
+
+mod suffix_tree;
+
+/// Struct to encode alphabetic text to quran text.
+pub struct Quranize {
+    tree: suffix_tree::SuffixTree<'static>,
+}
+
+impl Quranize {
+    /// Create a new [`Quranize`] instance.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let q = quranize::Quranize::new();
+    /// assert_eq!(q.encode("bismillah").first().unwrap().0, "بِسمِ اللَّه");
+    /// ```
+    pub fn new() -> Self {
+        let tree = suffix_tree::SuffixTree::new("");
+        Self { tree }
+    }
+}
+
+impl Default for Quranize {
+    fn default() -> Self {
+        Self::new()
+    }
+}
