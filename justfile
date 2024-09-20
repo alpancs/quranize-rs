@@ -2,7 +2,7 @@ vue_version					:= "3.4.21"
 bulma_version				:= "0.9.4"
 fontawesome_version	:= "6.5.1"
 
-default: build-quranize-wasm get-vue get-bulma get-fontawesome
+build-web-app: build-quranize-wasm get-vue get-bulma get-fontawesome
 
 build-quranize-wasm:
 	cd web-app && wasm-pack build \
@@ -23,3 +23,10 @@ get-fontawesome:
 	unzip fontawesome-free-{{fontawesome_version}}-web.zip
 	rm -rf fontawesome-free-{{fontawesome_version}}-web.zip web-app/web-app/styles/fontawesome
 	mv fontawesome-free-{{fontawesome_version}}-web web-app/web-app/styles/fontawesome
+
+run-server:
+	static-web-server \
+		--root=web-app/web-app \
+		--port=5000 \
+		--cache-control-headers=false \
+		--log-level=info
