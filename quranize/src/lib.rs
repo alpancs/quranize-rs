@@ -20,6 +20,8 @@
 
 mod suffix_tree;
 
+type EncodeResults = Vec<(String, Vec<&'static str>)>;
+
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
     tree: suffix_tree::SuffixTree<'static>,
@@ -35,13 +37,36 @@ impl Quranize {
     /// assert_eq!(q.encode("bismillah").first().unwrap().0, "بِسمِ اللَّه");
     /// ```
     pub fn new() -> Self {
-        let tree = suffix_tree::SuffixTree::new("");
+        let s = include_str!("quran-uthmani-min.txt");
+        let tree = suffix_tree::SuffixTree::new(&s[..(s.find("\n\n").unwrap() + 2)]);
         Self { tree }
+    }
+
+    pub fn encode(&self, _text: &str) -> EncodeResults {
+        vec![]
     }
 }
 
 impl Default for Quranize {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    impl Quranize {
+        fn e(&self, text: &str) -> Vec<String> {
+            self.encode(text).into_iter().map(|(q, _)| q).collect()
+        }
+    }
+
+    #[test]
+    fn test_alfatihah() {
+        let q = Quranize::new();
+        assert_eq!(q.e("bismillahirrohmanirrohiim"), ["بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيم"]);
     }
 }
