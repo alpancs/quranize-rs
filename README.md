@@ -1,31 +1,22 @@
-# quranize-rs
+![Crates.io Version](https://img.shields.io/crates/v/quranize)
+![docs.rs](https://img.shields.io/docsrs/quranize)
+
+# Quranize
+
+<https://quranize.github.io>
 
 Encoding transliterations into Quran forms.
 
-- Crate: <https://crates.io/crates/quranize>
-- Documentation: <https://docs.rs/quranize>
-- Application: <https://github.com/quranize/quranize.github.io>
+### Related Projects
 
-## Related Project
-
-### Former version of this project
+#### Former version of this project
 
 - Go: <https://github.com/alpancs/quranize>
 - Application: <https://github.com/alpancs/quranize-service>
 
-## License
+### License
 
-Licensed under either of
+Licensed under
 
 - Apache License, Version 2.0
-   ([LICENSE-APACHE](LICENSE-APACHE) or <http://www.apache.org/licenses/LICENSE-2.0>)
-- MIT license
-   ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
-
-at your option.
-
-## Contribution
-
-Unless you explicitly state otherwise, any contribution intentionally submitted
-for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
-dual licensed as above, without any additional terms or conditions.
+   ([LICENSE](LICENSE) or <http://www.apache.org/licenses/LICENSE-2.0>)
