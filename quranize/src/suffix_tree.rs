@@ -2,7 +2,8 @@ use std::collections::{btree_set::Range, BTreeSet};
 
 mod suffix_iter;
 
-type Vertex = Option<usize>;
+type Vertex = Option<Index>;
+type Index = (usize, usize);
 type Edge<'a> = (usize, usize, &'a str);
 
 pub(super) struct SuffixTree<'a> {
@@ -20,11 +21,11 @@ impl<'a> SuffixTree<'a> {
         Self { vertices, edges }
     }
 
-    pub(super) fn construct(&mut self, s: &'a str) {
-        suffix_iter::suffix_iter(s).for_each(|(i, s)| self.construct_suffix(i, 0, s));
+    pub(super) fn construct(&mut self, i: usize, s: &'a str) {
+        suffix_iter::suffix_iter(s).for_each(|(j, s)| self.construct_suffix((i, j), 0, s));
     }
 
-    fn construct_suffix(&mut self, i: usize, v: usize, s: &'a str) {
+    fn construct_suffix(&mut self, i: Index, v: usize, s: &'a str) {
         match { self.edges_from(v) }.find_map(|&e| Some(e).zip(Self::longest_prefix(s, e.2))) {
             Some((e, p)) if p == e.2 => self.construct_suffix(i, e.1, &s[p.len()..]),
             Some((e, p)) => {
@@ -57,7 +58,7 @@ impl<'a> SuffixTree<'a> {
         self.vertices.len() - 1
     }
 
-    pub(super) fn find(&self, v: usize, s: &str) -> Vec<usize> {
+    pub(super) fn find(&self, v: usize, s: &str) -> Vec<Index> {
         self.edges_from(v)
             .flat_map(|&(_, w, l)| match (s.strip_prefix(l), l.strip_prefix(s)) {
                 (_, Some(_)) if !s.is_empty() => self.collect_data(w),
@@ -67,13 +68,13 @@ impl<'a> SuffixTree<'a> {
             .collect()
     }
 
-    fn collect_data(&self, v: usize) -> Vec<usize> {
+    fn collect_data(&self, v: usize) -> Vec<Index> {
         let mut buffer = Vec::new();
         self.collect_data_to_buffer(v, &mut buffer);
         buffer
     }
 
-    fn collect_data_to_buffer(&self, v: usize, buffer: &mut Vec<usize>) {
+    fn collect_data_to_buffer(&self, v: usize, buffer: &mut Vec<Index>) {
         self.vertices[v].into_iter().for_each(|x| buffer.push(x));
         self.edges_from(v)
             .for_each(|&(_, w, _)| self.collect_data_to_buffer(w, buffer));
@@ -89,7 +90,8 @@ mod tests {
     #[test]
     fn test_suffix_tree() {
         let mut t = SuffixTree::new();
-        t.construct(&QURAN_UTHMANI_MIN[..(QURAN_UTHMANI_MIN.find("\n\n").unwrap() + 2)]);
+        let s = &QURAN_UTHMANI_MIN[..(QURAN_UTHMANI_MIN.find("\n\n").unwrap() + 2)];
+        t.construct(0, s);
         assert_eq!(t.vertices.len(), SuffixTree::EXPECTED_VERTEX_COUNT);
         assert_eq!(t.vertices.len(), t.edges.len() + 1);
         assert_eq!(t.collect_data(0).len(), 77_883);
