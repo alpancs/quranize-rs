@@ -1,5 +1,7 @@
 use std::collections::{btree_set::Range, BTreeSet};
 
+mod suffix_iter;
+
 type Vertex = Option<usize>;
 type Edge<'a> = (usize, usize, &'a str);
 
