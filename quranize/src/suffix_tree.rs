@@ -12,7 +12,7 @@ pub(super) struct SuffixTree<'a> {
 }
 
 impl<'a> SuffixTree<'a> {
-    const EXPECTED_VERTEX_COUNT: usize = 123_014;
+    const EXPECTED_VERTEX_COUNT: usize = 116_427;
 
     pub(super) fn new() -> Self {
         let mut vertices = Vec::with_capacity(Self::EXPECTED_VERTEX_COUNT);
@@ -84,14 +84,13 @@ impl<'a> SuffixTree<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::QURAN_UTHMANI_MIN;
+    use crate::{quran_iter::quran_iter, QURAN_UTHMANI_MIN};
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_suffix_tree() {
         let mut t = SuffixTree::new();
-        let s = &QURAN_UTHMANI_MIN[..(QURAN_UTHMANI_MIN.find("\n\n").unwrap() + 2)];
-        t.construct(0, s);
+        quran_iter(QURAN_UTHMANI_MIN).for_each(|(i, s)| t.construct(i, s));
         assert_eq!(t.vertices.len(), SuffixTree::EXPECTED_VERTEX_COUNT);
         assert_eq!(t.vertices.len(), t.edges.len() + 1);
         assert_eq!(t.collect_data(0).len(), 77_883);
