@@ -22,6 +22,8 @@ mod suffix_tree;
 
 type EncodeResults = Vec<(String, Vec<&'static str>)>;
 
+pub(crate) const QURAN_UTHMANI_MIN: &str = include_str!("quran-uthmani-min.txt");
+
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
     tree: suffix_tree::SuffixTree<'static>,
@@ -37,8 +39,8 @@ impl Quranize {
     /// assert_eq!(q.encode("bismillah").first().unwrap().0, "بِسمِ اللَّه");
     /// ```
     pub fn new() -> Self {
-        let s = include_str!("quran-uthmani-min.txt");
-        let tree = suffix_tree::SuffixTree::new(&s[..(s.find("\n\n").unwrap() + 2)]);
+        let s = &QURAN_UTHMANI_MIN[..(QURAN_UTHMANI_MIN.find("\n\n").unwrap() + 2)];
+        let tree = suffix_tree::SuffixTree::new(s);
         Self { tree }
     }
 
