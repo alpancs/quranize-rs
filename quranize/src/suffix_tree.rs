@@ -68,11 +68,15 @@ impl<'a> SuffixTree<'a> {
     }
 
     fn collect_data(&self, v: usize) -> Vec<usize> {
-        let head = self.vertices[v].into_iter();
-        let tail = self
-            .edges_from(v)
-            .flat_map(|&(_, w, _)| self.collect_data(w));
-        head.chain(tail).collect()
+        let mut buffer = Vec::new();
+        self.collect_data_to_buffer(v, &mut buffer);
+        buffer
+    }
+
+    fn collect_data_to_buffer(&self, v: usize, buffer: &mut Vec<usize>) {
+        self.vertices[v].into_iter().for_each(|x| buffer.push(x));
+        self.edges_from(v)
+            .for_each(|&(_, w, _)| self.collect_data_to_buffer(w, buffer));
     }
 }
 
