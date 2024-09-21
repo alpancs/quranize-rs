@@ -39,8 +39,8 @@ impl Quranize {
     /// assert_eq!(q.encode("bismillah").first().unwrap().0, "بِسمِ اللَّه");
     /// ```
     pub fn new() -> Self {
-        let s = &QURAN_UTHMANI_MIN[..(QURAN_UTHMANI_MIN.find("\n\n").unwrap() + 2)];
-        let tree = suffix_tree::SuffixTree::new(s);
+        let mut tree = suffix_tree::SuffixTree::new();
+        tree.construct(&QURAN_UTHMANI_MIN[..(QURAN_UTHMANI_MIN.find("\n\n").unwrap() + 2)]);
         Self { tree }
     }
 

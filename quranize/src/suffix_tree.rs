@@ -13,13 +13,15 @@ pub(super) struct SuffixTree<'a> {
 impl<'a> SuffixTree<'a> {
     const EXPECTED_VERTEX_COUNT: usize = 123_014;
 
-    pub(super) fn new(s: &'a str) -> Self {
+    pub(super) fn new() -> Self {
         let mut vertices = Vec::with_capacity(Self::EXPECTED_VERTEX_COUNT);
         vertices.push(None);
         let edges = Default::default();
-        let mut tree = Self { vertices, edges };
-        suffix_iter::suffix_iter(s).for_each(|(i, s)| tree.construct_suffix(i, 0, s));
-        tree
+        Self { vertices, edges }
+    }
+
+    pub(super) fn construct(&mut self, s: &'a str) {
+        suffix_iter::suffix_iter(s).for_each(|(i, s)| self.construct_suffix(i, 0, s));
     }
 
     fn construct_suffix(&mut self, i: usize, v: usize, s: &'a str) {
@@ -82,8 +84,8 @@ mod tests {
 
     #[test]
     fn test_suffix_tree() {
-        let s = &QURAN_UTHMANI_MIN[..(QURAN_UTHMANI_MIN.find("\n\n").unwrap() + 2)];
-        let t = SuffixTree::new(s);
+        let mut t = SuffixTree::new();
+        t.construct(&QURAN_UTHMANI_MIN[..(QURAN_UTHMANI_MIN.find("\n\n").unwrap() + 2)]);
         assert_eq!(t.vertices.len(), SuffixTree::EXPECTED_VERTEX_COUNT);
         assert_eq!(t.vertices.len(), t.edges.len() + 1);
         assert_eq!(t.collect_data(0).len(), 77_883);
