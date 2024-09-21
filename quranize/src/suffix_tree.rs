@@ -15,7 +15,7 @@ impl<'a> SuffixTree<'a> {
         let vertices = vec![None];
         let edges = Default::default();
         let mut tree = Self { vertices, edges };
-        { s.char_indices() }.for_each(|(i, _)| tree.construct_suffix(i, 0, &s[i..]));
+        suffix_iter::suffix_iter(s).for_each(|(i, s)| tree.construct_suffix(i, 0, s));
         tree
     }
 
