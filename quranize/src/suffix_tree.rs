@@ -77,6 +77,15 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
+    fn test_suffix_tree() {
+        let s = include_str!("quran-uthmani-min.txt");
+        let t = SuffixTree::new(&s[..(s.find("\n\n").unwrap() + 2)]);
+        assert_eq!(t.vertices.len() - t.edges.len(), 1);
+        assert_eq!(t.vertices.len(), 123_014);
+        assert_eq!(t.collect_data(0).len(), 77_883);
+    }
+
+    #[test]
     fn test_longest_prefix() {
         assert_eq!(SuffixTree::longest_prefix("", ""), None);
         assert_eq!(SuffixTree::longest_prefix("x", ""), None);
