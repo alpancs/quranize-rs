@@ -28,7 +28,9 @@ impl<'a> SuffixTree<'a> {
 
     fn construct_suffix(&mut self, d: Data, root: usize, subs: &'a str) {
         match { self.v_edges(root) }.find_map(|&e| Some(e).zip(Self::longest_prefix(subs, e.2))) {
-            Some((e, p)) if e.2 == p => self.construct_suffix(d, e.1, &subs[p.len()..]),
+            Some((e, p)) if p.len() == e.2.len() && p.len() < subs.len() => {
+                self.construct_suffix(d, e.1, &subs[p.len()..]);
+            }
             Some((e, p)) => {
                 self.edges.remove(&e);
                 let v = self.add_vertex(None);
