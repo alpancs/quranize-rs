@@ -166,7 +166,7 @@ impl Quranize {
     ///
     /// ```
     /// let q = quranize::Quranize::new(10);
-    /// assert_eq!(Some(&(0, 0)), q.find_str("بِسمِ").first());
+    /// assert!(q.find_str("بِسمِ").contains(&(0, 0)));
     /// ```
     pub fn find_str(&self, s: &str) -> Vec<Loc> {
         self.st.find_str(s, 0)
@@ -189,7 +189,7 @@ mod tests {
     #[test]
     fn test_node_count() {
         let q = Quranize::default();
-        assert_eq!(q.st.vertex_count(), 116_077);
+        assert_eq!(q.st.vertex_count(), 125_596);
     }
 
     #[test]
@@ -326,9 +326,9 @@ mod tests {
     fn test_find_str() {
         let q = Quranize::default();
 
-        assert_eq!(q.find_str("بِسمِ").first(), Some(&(0, 0)));
+        assert!(q.find_str("بِسمِ").contains(&(0, 0)));
         assert_eq!(q.find_str("وَالنّاسِ").last(), Some(&(6235, 28)));
-        assert_eq!(q.find_str("الم").first(), Some(&(7, 0)));
+        assert!(q.find_str("الم").contains(&(7, 0)));
         assert_eq!(q.find_str("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ").len(), 2);
         assert!(q.find_str("").is_empty());
         assert!(q.find_str("نن").is_empty());

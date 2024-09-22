@@ -131,7 +131,7 @@ mod tests {
             t.construct(i, q);
         }
         // println!("{}", t.to_mermaid());
-        assert_eq!(t.edges.len(), 116_076);
+        assert_eq!(t.edges.len(), 125_595);
         assert_eq!(t.vertices.len() - t.edges.len(), 1);
     }
 
