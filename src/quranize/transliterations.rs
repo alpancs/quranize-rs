@@ -42,7 +42,7 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
         LETTER_NOON => &["n"],
         LETTER_HEH => &["h"],
         LETTER_WAW => &["w", "u", "uu"],
-        LETTER_ALEF_MAKSURA => &["a", "i"],
+        LETTER_ALEF_MAKSURA => &["a", "aa", "y", "i", "ii"],
         LETTER_YEH => &["y", "i", "ii"],
 
         FATHATAN => &["an", "on", ""],
