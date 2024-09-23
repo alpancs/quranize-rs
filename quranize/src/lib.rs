@@ -26,6 +26,7 @@ use suffix_tree::Edge;
 use transliteration::{contextual_map, map};
 
 type EncodeResults = Vec<(String, usize, Vec<&'static str>)>;
+type PrevMap = (char, &'static str);
 
 const AYA_COUNT: usize = 6236;
 const QURAN_TXT: &str = include_str!("quran-uthmani-min.txt");
@@ -68,34 +69,37 @@ impl Quranize {
             .collect()
     }
 
-    fn rev_encode(&self, s: &str, e: Edge, m: Option<(char, &'static str)>) -> EncodeResults {
-        match (s, e.2.chars().next()) {
-            ("", _) => m
-                .into_iter()
-                .map(|(c, p)| (c.to_string(), self.tree.count_data(e.1), vec![p]))
-                .collect(),
-            (_, Some(c)) => { map(c).iter().chain(contextual_map(m.unzip().0, c)) }
-                .filter_map(|&p| Some(p).zip(s.strip_prefix(p)))
-                .flat_map(|(p, s)| {
-                    match &e.2[c.len_utf8()..] {
-                        "" => self
-                            .tree
-                            .edges_from(e.1)
-                            .flat_map(|&e| self.rev_encode(s, e, Some((c, p))))
-                            .collect(),
-                        l => self.rev_encode(s, (e.0, e.1, l), Some((c, p))),
-                    }
-                    .into_iter()
-                    .map(|mut subresult| {
-                        if let Some((c, p)) = m {
-                            subresult.0.push(c);
-                            subresult.2.push(p);
+    fn rev_encode(&self, s: &str, (v, w, l): Edge, m: Option<PrevMap>) -> EncodeResults {
+        let label_head = l.chars().next();
+        match label_head {
+            Some(c) => {
+                let maps = map(c).iter().chain(contextual_map(m.unzip().0, c));
+                let input_head_tails = maps.filter_map(|&p| Some(p).zip(s.strip_prefix(p)));
+                input_head_tails
+                    .flat_map(|(input_head, input_tail)| match input_tail.is_empty() {
+                        true => vec![(c.to_string(), self.tree.count_data(w), vec![input_head])],
+                        _ => {
+                            let l = &l[c.len_utf8()..];
+                            let mut rs = match l.is_empty() {
+                                true => self
+                                    .tree
+                                    .edges_from(w)
+                                    .flat_map(|&e| {
+                                        self.rev_encode(input_tail, e, Some((c, input_head)))
+                                    })
+                                    .collect(),
+                                _ => self.rev_encode(input_tail, (v, w, l), Some((c, input_head))),
+                            };
+                            rs.iter_mut().for_each(|r| {
+                                r.0.push(c);
+                                r.2.push(input_head);
+                            });
+                            rs
                         }
-                        subresult
                     })
-                })
-                .collect(),
-            _ => vec![],
+                    .collect()
+            }
+            None => Vec::new(),
         }
     }
 }
