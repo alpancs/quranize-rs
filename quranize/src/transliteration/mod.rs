@@ -77,35 +77,21 @@ pub(super) fn contextual_map(context: Option<char>, c: char) -> &'static [&'stat
     }
 }
 
-pub(super) fn single_harf_map(c: char) -> &'static [&'static str] {
+pub(super) fn harf_muqottoah_map(c: char) -> &'static [&'static str] {
     match c {
         LETTER_ALEF => &["alif"],
-        LETTER_BEH => &["ba"],
-        LETTER_TEH => &["ta"],
-        LETTER_THEH => &["tsa", "sa"],
-        LETTER_JEEM => &["jim"],
         LETTER_HAH => &["ha", "cha"],
-        LETTER_KHAH => &["kho"],
-        LETTER_DAL => &["dal"],
-        LETTER_THAL => &["dzal", "dhal"],
         LETTER_REH => &["ro"],
-        LETTER_ZAIN => &["za"],
         LETTER_SEEN => &["sin"],
-        LETTER_SHEEN => &["syin", "shin"],
         LETTER_SAD => &["shod", "shot", "sod", "sot"],
-        LETTER_DAD => &["dhod", "dhot", "dzod", "dzot", "dod", "dot"],
         LETTER_TAH => &["tho", "to"],
-        LETTER_ZAH => &["dho", "dzo", "do"],
         LETTER_AIN => &["'ain", "ain"],
-        LETTER_GHAIN => &["ghoin", "goin", "ghin", "gin"],
-        LETTER_FEH => &["fa"],
         LETTER_QAF => &["qof", "kof"],
         LETTER_KAF => &["kaf"],
         LETTER_LAM => &["lam"],
         LETTER_MEEM => &["mim"],
         LETTER_NOON => &["nun"],
         LETTER_HEH => &["ha"],
-        LETTER_WAW => &["wawu", "wau"],
         LETTER_YEH => &["ya"],
         _ => &[],
     }
