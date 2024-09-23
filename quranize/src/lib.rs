@@ -66,20 +66,18 @@ impl Quranize {
     }
 
     pub fn encode(&self, s: &str) -> EncodeResults {
-        {
-            let s = normalization::normalize(s);
-            self.tree
-                .edges_from(0)
-                .flat_map(|&e| self.rev_encode(&s, e, None))
-                .collect::<Vec<_>>()
+        match normalization::normalize(s).as_str() {
+            "" => vec![],
+            s => { self.tree.edges_from(0) }
+                .flat_map(|&e| self.rev_encode(s, e, None))
+                .collect(),
         }
         .into_iter()
-        .chain({
-            let s = normalization::normalize_muqottoah(s);
-            self.tree
-                .edges_from(0)
-                .flat_map(|&e| self.rev_encode_muqottoah(&s, e))
-                .collect::<Vec<_>>()
+        .chain(match normalization::normalize_muqottoah(s).as_str() {
+            "" => vec![],
+            s => { self.tree.edges_from(0) }
+                .flat_map(|&e| self.rev_encode_muqottoah(s, e))
+                .collect(),
         })
         .map(|(q, n, e)| (q.chars().rev().collect(), n, e.into_iter().rev().collect()))
         .collect()
@@ -199,6 +197,17 @@ mod tests {
         assert_eq!(q.e("nuun"), &["ن"]);
         assert_eq!(q.e("kaaaf haa yaa aiiin shoood"), &["كهيعص"]);
         assert_eq!(q.e("kaf ha ya 'ain shod"), &["كهيعص"]);
+    }
+
+    #[test]
+    fn test_quranize_empty_result() {
+        let q = Quranize::new();
+        let empty: [String; 0] = [];
+        assert_eq!(q.e(""), empty);
+        assert_eq!(q.e(" "), empty);
+        assert_eq!(q.e(" -"), empty);
+        assert_eq!(q.e("abcd"), empty);
+        assert_eq!(q.e("1+2=3"), empty);
     }
 
     #[test]
