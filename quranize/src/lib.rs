@@ -20,7 +20,7 @@
 
 mod suffix_tree;
 
-type EncodeResults = Vec<(String, Vec<&'static str>, usize)>;
+type EncodeResults = Vec<(String, usize, Vec<&'static str>)>;
 
 const AYA_COUNT: usize = 6236;
 const QURAN_TXT: &str = include_str!("quran-uthmani-min.txt");
