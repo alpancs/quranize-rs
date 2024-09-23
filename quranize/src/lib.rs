@@ -79,10 +79,7 @@ mod tests {
 
     #[test]
     fn test_suffix_tree_props() {
-        let mut t = suffix_tree::SuffixTree::with_capacity(Quranize::EXPECTED_VERTEX_COUNT);
-        (0..AYA_COUNT)
-            .zip(QURAN_TXT.split_inclusive('\n'))
-            .for_each(|(i, s)| t.construct(i, s));
+        let t = Quranize::new().tree;
         assert_eq!(t.vertices.len(), Quranize::EXPECTED_VERTEX_COUNT);
         assert_eq!(t.vertices.len(), t.edges.len() + 1);
         assert_eq!(t.count_data(0), 77_883);
