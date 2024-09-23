@@ -2,7 +2,7 @@ use std::collections::{btree_set::Range, BTreeSet};
 
 mod suffix_iter;
 
-type Vertex = (Option<Index>, usize);
+type Vertex = (Option<Index>, usize, bool);
 type Index = (usize, usize);
 pub(super) type Edge<'a> = (usize, usize, &'a str);
 
@@ -14,7 +14,7 @@ pub(super) struct SuffixTree<'a> {
 impl<'a> SuffixTree<'a> {
     pub(super) fn with_capacity(capacity: usize) -> Self {
         let mut vertices = Vec::with_capacity(capacity);
-        vertices.push((None, 0));
+        vertices.push((None, 0, false));
         let edges = Default::default();
         Self { vertices, edges }
     }
@@ -24,24 +24,35 @@ impl<'a> SuffixTree<'a> {
     }
 
     fn construct_suffix(&mut self, i: Index, v: usize, s: &'a str) {
-        match { self.edges_from(v) }.find_map(|&e| Some(e).zip(Self::longest_prefix(s, e.2))) {
+        let edge_prefix_pair = self
+            .edges_from(v)
+            .find_map(|&(v, w, l)| Some((v, w, l)).zip(Self::longest_prefix(s, l)));
+        match edge_prefix_pair {
             Some(((_, w, l), p)) if l.len() == p.len() && s.len() > p.len() => {
                 self.construct_suffix(i, w, &s[p.len()..]);
+                self.vertices[v].2 |= self.vertices[w].2;
             }
             Some(((v, w, l), p)) => {
                 self.edges.remove(&(v, w, l));
-                let x = self.add_vertex((None, self.vertices[w].1 + 1));
-                let y = self.add_vertex((Some(i), 1));
+                let x = self.add_vertex((None, self.vertices[w].1 + 1, false));
+                let y = self.add_vertex((Some(i), 1, Self::starting_sura(i.0)));
                 self.edges.insert((v, x, p));
                 self.edges.insert((x, w, &l[p.len()..]));
                 self.edges.insert((x, y, &s[p.len()..]));
+                self.vertices[x].2 = self.vertices[w].2 || self.vertices[y].2;
+                self.vertices[v].2 |= self.vertices[x].2;
             }
             None => {
-                let w = self.add_vertex((Some(i), 1));
+                let w = self.add_vertex((Some(i), 1, Self::starting_sura(i.0)));
                 self.edges.insert((v, w, s));
+                self.vertices[v].2 |= self.vertices[w].2;
             }
         }
         self.vertices[v].1 += 1;
+    }
+
+    fn starting_sura(i: usize) -> bool {
+        crate::SURA_STARTS.binary_search(&i).is_ok()
     }
 
     pub(super) fn edges_from(&self, v: usize) -> Range<Edge<'a>> {
