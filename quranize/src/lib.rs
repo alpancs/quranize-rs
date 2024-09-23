@@ -18,12 +18,12 @@
 //! assert_eq!(q.encode("bismillah").first().unwrap().0, "بِسمِ اللَّه");
 //! ```
 
-mod quran_iter;
 mod suffix_tree;
 
 type EncodeResults = Vec<(String, Vec<&'static str>)>;
 
-const QURAN_UTHMANI_MIN: &str = include_str!("quran-uthmani-min.txt");
+const AYA_COUNT: usize = 6236;
+const QURAN_TXT: &str = include_str!("quran-uthmani-min.txt");
 
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
@@ -41,7 +41,9 @@ impl Quranize {
     /// ```
     pub fn new() -> Self {
         let mut tree = suffix_tree::SuffixTree::new();
-        quran_iter::quran_iter(QURAN_UTHMANI_MIN).for_each(|(i, s)| tree.construct(i, s));
+        (0..AYA_COUNT)
+            .zip(QURAN_TXT.split_inclusive('\n'))
+            .for_each(|(i, s)| tree.construct(i, s));
         Self { tree }
     }
 
