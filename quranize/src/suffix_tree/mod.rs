@@ -28,9 +28,8 @@ impl<'a> SuffixTree<'a> {
             Some(((_, w, l), p)) if l.len() == p.len() && s.len() > p.len() => {
                 self.construct_suffix(i, w, &s[p.len()..]);
             }
-            Some((e, p)) => {
-                self.edges.remove(&e);
-                let (_, w, l) = e;
+            Some(((v, w, l), p)) => {
+                self.edges.remove(&(v, w, l));
                 let x = self.add_vertex((None, self.vertices[w].1 + 1));
                 let y = self.add_vertex((Some(i), 1));
                 self.edges.insert((v, x, p));
