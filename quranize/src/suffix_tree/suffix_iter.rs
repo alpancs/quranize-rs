@@ -31,7 +31,7 @@ impl<'a> Iterator for SuffixIter<'a> {
 }
 
 fn non_separator((_, c): &(usize, char)) -> bool {
-    !matches!(c, ' ' | '\u{06D6}'..='\u{06DC}')
+    !matches!(c, ' ' | '\u{06D6}'..='\u{06DC}' | '\n')
 }
 
 #[cfg(test)]

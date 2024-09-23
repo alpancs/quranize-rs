@@ -36,7 +36,7 @@ pub struct Quranize {
 }
 
 impl Quranize {
-    const EXPECTED_VERTEX_COUNT: usize = 126_330;
+    const EXPECTED_VERTEX_COUNT: usize = 126_327;
 
     /// Create a new [`Quranize`] instance.
     ///
@@ -128,7 +128,7 @@ mod tests {
         let t = Quranize::new().tree;
         assert_eq!(t.vertices.len(), Quranize::EXPECTED_VERTEX_COUNT);
         assert_eq!(t.vertices.len(), t.edges.len() + 1);
-        assert_eq!(t.count_data(0), 77_885);
-        assert_eq!(t.collect_data(0).len(), 77_885);
+        assert_eq!(t.count_data(0), 77_883);
+        assert_eq!(t.collect_data(0).len(), 77_883);
     }
 }
