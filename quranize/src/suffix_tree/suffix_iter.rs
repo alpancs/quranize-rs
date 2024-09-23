@@ -12,8 +12,8 @@ impl<'a> Iterator for SuffixIter<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let suffix = &self.s[self.i..];
-        match suffix {
-            "" => None,
+        match suffix.is_empty() {
+            true => None,
             _ => {
                 let item = (self.i, suffix);
                 let next = suffix
