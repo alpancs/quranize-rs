@@ -1,5 +1,4 @@
 pub(super) fn suffix_iter(s: &str) -> SuffixIter {
-    let it = s.char_indices();
     SuffixIter { s, i: 0 }
 }
 
