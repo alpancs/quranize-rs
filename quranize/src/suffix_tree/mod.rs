@@ -4,7 +4,7 @@ mod suffix_iter;
 
 type Vertex = (Option<Index>, usize);
 type Index = (usize, usize);
-type Edge<'a> = (usize, usize, &'a str);
+pub(super) type Edge<'a> = (usize, usize, &'a str);
 
 pub(super) struct SuffixTree<'a> {
     pub(super) vertices: Vec<Vertex>,

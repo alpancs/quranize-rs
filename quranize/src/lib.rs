@@ -18,7 +18,12 @@
 //! assert_eq!(q.encode("bismillah").first().unwrap().0, "بِسمِ اللَّه");
 //! ```
 
+mod normalization;
 mod suffix_tree;
+mod transliteration;
+
+use suffix_tree::Edge;
+use transliteration::{contextual_map, map};
 
 type EncodeResults = Vec<(String, usize, Vec<&'static str>)>;
 
@@ -49,8 +54,49 @@ impl Quranize {
         Self { tree }
     }
 
-    pub fn encode(&self, _text: &str) -> EncodeResults {
-        vec![]
+    pub fn encode(&self, s: &str) -> EncodeResults {
+        let results: Vec<_> = {
+            let s = normalization::normalize(s);
+            self.tree
+                .edges_from(0)
+                .flat_map(|&e| self.rev_encode(&s, e, None))
+                .collect()
+        };
+        results
+            .into_iter()
+            .map(|(q, n, e)| (q.chars().rev().collect(), n, e.into_iter().rev().collect()))
+            .collect()
+    }
+
+    fn rev_encode(&self, s: &str, e: Edge, m: Option<(char, &'static str)>) -> EncodeResults {
+        match (s, e.2.chars().next()) {
+            ("", _) => m
+                .into_iter()
+                .map(|(c, p)| (c.to_string(), self.tree.count_data(e.1), vec![p]))
+                .collect(),
+            (_, Some(c)) => { map(c).iter().chain(contextual_map(m.unzip().0, c)) }
+                .filter_map(|&p| Some(p).zip(s.strip_prefix(p)))
+                .flat_map(|(p, s)| {
+                    match &e.2[c.len_utf8()..] {
+                        "" => self
+                            .tree
+                            .edges_from(e.1)
+                            .flat_map(|&e| self.rev_encode(s, e, Some((c, p))))
+                            .collect(),
+                        l => self.rev_encode(s, (e.0, e.1, l), Some((c, p))),
+                    }
+                    .into_iter()
+                    .map(|mut subresult| {
+                        if let Some((c, p)) = m {
+                            subresult.0.push(c);
+                            subresult.2.push(p);
+                        }
+                        subresult
+                    })
+                })
+                .collect(),
+            _ => vec![],
+        }
     }
 }
 
