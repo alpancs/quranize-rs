@@ -56,51 +56,41 @@ impl Quranize {
     }
 
     pub fn encode(&self, s: &str) -> EncodeResults {
-        let results: Vec<_> = {
+        {
             let s = normalization::normalize(s);
-            self.tree
-                .edges_from(0)
+            { self.tree.edges_from(0) }
                 .flat_map(|&e| self.rev_encode(&s, e, None))
-                .collect()
-        };
-        results
-            .into_iter()
-            .map(|(q, n, e)| (q.chars().rev().collect(), n, e.into_iter().rev().collect()))
-            .collect()
+                .collect::<Vec<_>>()
+        }
+        .into_iter()
+        .map(|(q, n, e)| (q.chars().rev().collect(), n, e.into_iter().rev().collect()))
+        .collect()
     }
 
-    fn rev_encode(&self, s: &str, (v, w, l): Edge, m: Option<PrevMap>) -> EncodeResults {
-        let label_head = l.chars().next();
-        match label_head {
-            Some(c) => {
-                let maps = map(c).iter().chain(contextual_map(m.unzip().0, c));
-                let input_head_tails = maps.filter_map(|&p| Some(p).zip(s.strip_prefix(p)));
-                input_head_tails
-                    .flat_map(|(input_head, input_tail)| match input_tail.is_empty() {
-                        true => vec![(c.to_string(), self.tree.count_data(w), vec![input_head])],
-                        _ => {
-                            let l = &l[c.len_utf8()..];
-                            let mut rs = match l.is_empty() {
-                                true => self
-                                    .tree
-                                    .edges_from(w)
-                                    .flat_map(|&e| {
-                                        self.rev_encode(input_tail, e, Some((c, input_head)))
-                                    })
-                                    .collect(),
-                                _ => self.rev_encode(input_tail, (v, w, l), Some((c, input_head))),
-                            };
-                            rs.iter_mut().for_each(|r| {
-                                r.0.push(c);
-                                r.2.push(input_head);
-                            });
-                            rs
-                        }
+    fn rev_encode(&self, s: &str, (v, w, l): Edge, pm: Option<PrevMap>) -> EncodeResults {
+        let results_iter = l.chars().next().into_iter().flat_map(|c| -> EncodeResults {
+            let tsls = map(c).iter().chain(contextual_map(pm.unzip().0, c));
+            let tsl_results_iter = tsls.filter_map(|&tsl| -> Option<EncodeResults> {
+                s.strip_prefix(tsl).map(|s| match s {
+                    "" => vec![(c.to_string(), self.tree.count_data(w), vec![tsl])],
+                    s => match &l[c.len_utf8()..] {
+                        "" => { self.tree.edges_from(w) }
+                            .flat_map(|&e| self.rev_encode(s, e, Some((c, tsl))))
+                            .collect(),
+                        l => self.rev_encode(s, (v, w, l), Some((c, tsl))),
+                    }
+                    .into_iter()
+                    .map(|(mut q, n, mut e)| {
+                        q.push(c);
+                        e.push(tsl);
+                        (q, n, e)
                     })
-                    .collect()
-            }
-            None => Vec::new(),
-        }
+                    .collect(),
+                })
+            });
+            tsl_results_iter.flatten().collect()
+        });
+        results_iter.collect()
     }
 }
 
