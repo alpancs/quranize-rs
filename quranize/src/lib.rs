@@ -72,7 +72,7 @@ impl Quranize {
             .map(|((i, s, a), q)| ((i, s, a), Self::trim_basmalah(s, a, q)))
             .for_each(|((i, s, a), q)| {
                 tree.construct(i, q);
-                saqs.push((s, a, q));
+                saqs.push((s, a, q.trim()));
             });
         Self { tree, saqs }
     }
