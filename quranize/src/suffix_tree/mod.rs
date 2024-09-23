@@ -3,7 +3,7 @@ use std::collections::{btree_set::Range, BTreeSet};
 mod suffix_iter;
 
 type Vertex = (Option<Index>, usize, bool);
-type Index = (usize, usize);
+pub(super) type Index = (usize, usize);
 pub(super) type Edge<'a> = (usize, usize, &'a str);
 
 pub(super) struct SuffixTree<'a> {

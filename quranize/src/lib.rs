@@ -22,7 +22,7 @@ mod normalization;
 mod suffix_tree;
 mod transliteration;
 
-use suffix_tree::Edge;
+use suffix_tree::{Edge, Index};
 use transliteration::{contextual_map, harf_muqottoah_map, map};
 
 type EncodeResults = Vec<(String, usize, Vec<&'static str>)>;
@@ -47,7 +47,7 @@ pub struct Quranize {
 }
 
 impl Quranize {
-    const EXPECTED_VERTEX_COUNT: usize = 126_327;
+    const EXPECTED_VERTEX_COUNT: usize = 125_595;
 
     /// Create a new [`Quranize`] instance.
     ///
@@ -61,8 +61,19 @@ impl Quranize {
         let mut tree = suffix_tree::SuffixTree::with_capacity(Self::EXPECTED_VERTEX_COUNT);
         (0..AYA_COUNT)
             .zip(QURAN_TXT.split_inclusive('\n'))
+            .map(|(i, s)| (i, Self::trim_basmalah(i, s)))
             .for_each(|(i, s)| tree.construct(i, s));
         Self { tree }
+    }
+
+    fn trim_basmalah(i: usize, s: &str) -> &str {
+        const START_ALFATIHAH: usize = SURA_STARTS[0];
+        const START_ATTAUBAH: usize = SURA_STARTS[8];
+        match (i, SURA_STARTS.binary_search(&i).is_ok()) {
+            (START_ALFATIHAH | START_ATTAUBAH, _) => s,
+            (_, true) => s.splitn(5, ' ').last().unwrap(),
+            _ => s,
+        }
     }
 
     pub fn encode(&self, s: &str) -> EncodeResults {
@@ -138,6 +149,10 @@ impl Quranize {
             tsl_results_iter.flatten().collect()
         });
         results_iter.collect()
+    }
+
+    pub fn find(&self, s: &str) -> Vec<Index> {
+        self.tree.find(0, s)
     }
 }
 
@@ -262,7 +277,25 @@ mod tests {
     }
 
     #[test]
-    fn test_suffix_tree_props() {
+    fn test_tree_find() {
+        let q = Quranize::new();
+        assert!(q.find("بِسمِ").contains(&(0, 0)));
+        assert_eq!(q.find("وَالنّاسِ").last(), Some(&(6235, 28)));
+        assert!(q.find("الم").contains(&(7, 0)));
+        assert_eq!(q.find("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيمِ").len(), 2);
+        assert!(q.find("").is_empty());
+        assert!(q.find("نن").is_empty());
+        assert!(q.find("ننن").is_empty());
+        assert!(q.find("نننن").is_empty());
+        assert!(q.find("2+3+4=9").is_empty());
+        assert_eq!(q.find("بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيم").first(), Some(&(0, 0)));
+        assert_eq!(q.find("الرَّحمٰنِ الرَّحيم").first(), Some(&(0, 26)));
+        assert_eq!(q.find("").first(), None);
+        assert_eq!(q.find("abc").first(), None);
+    }
+
+    #[test]
+    fn test_tree_props() {
         let t = Quranize::new().tree;
         assert_eq!(t.vertices.len(), t.edges.len() + 1);
         assert_eq!(t.count_data(0), t.collect_data(0).len());
