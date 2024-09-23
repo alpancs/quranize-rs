@@ -32,7 +32,7 @@ impl<'a> Iterator for SuffixIter<'a> {
 }
 
 fn non_separator((_, c): &(usize, char)) -> bool {
-    !matches!(c, ' ' | '\u{06D6}'..='\u{06DC}' | '\n')
+    !matches!(c, ' ' | '\u{06D6}'..='\u{06DC}')
 }
 
 #[cfg(test)]
@@ -42,10 +42,10 @@ mod tests {
 
     #[test]
     fn test_suffix_iter() {
-        let mut it = suffix_iter("ab cde  fg \n h\n\n");
-        assert_eq!(it.next(), Some((0, "ab cde  fg \n h\n\n")));
-        assert_eq!(it.next(), Some((3, "cde  fg \n h\n\n")));
-        assert_eq!(it.next(), Some((8, "fg \n h\n\n")));
+        let mut it = suffix_iter("ab cde  fg   h\n\n");
+        assert_eq!(it.next(), Some((0, "ab cde  fg   h\n\n")));
+        assert_eq!(it.next(), Some((3, "cde  fg   h\n\n")));
+        assert_eq!(it.next(), Some((8, "fg   h\n\n")));
         assert_eq!(it.next(), Some((13, "h\n\n")));
         assert_eq!(it.next(), None);
 
