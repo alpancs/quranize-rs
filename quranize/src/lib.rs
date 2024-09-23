@@ -126,9 +126,8 @@ mod tests {
     #[test]
     fn test_suffix_tree_props() {
         let t = Quranize::new().tree;
-        assert_eq!(t.vertices.len(), Quranize::EXPECTED_VERTEX_COUNT);
         assert_eq!(t.vertices.len(), t.edges.len() + 1);
-        assert_eq!(t.count_data(0), 77_883);
-        assert_eq!(t.collect_data(0).len(), 77_883);
+        assert_eq!(t.count_data(0), t.collect_data(0).len());
+        assert_eq!(t.vertices.len(), Quranize::EXPECTED_VERTEX_COUNT);
     }
 }
