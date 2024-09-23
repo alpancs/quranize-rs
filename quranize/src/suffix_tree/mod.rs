@@ -74,11 +74,11 @@ impl<'a> SuffixTree<'a> {
         self.vertices[v].1
     }
 
-    pub(super) fn find(&self, v: usize, s: &str) -> Vec<Index> {
+    pub(super) fn find(&self, s: &str, v: usize) -> Vec<Index> {
         self.edges_from(v)
             .flat_map(|&(_, w, l)| match (s.strip_prefix(l), l.strip_prefix(s)) {
                 (_, Some(_)) if !s.is_empty() => self.collect_data(w),
-                (Some(s), _) => self.find(w, s),
+                (Some(s), _) => self.find(s, w),
                 _ => vec![],
             })
             .collect()

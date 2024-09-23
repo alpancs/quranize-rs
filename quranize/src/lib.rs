@@ -152,7 +152,7 @@ impl Quranize {
     }
 
     pub fn find(&self, s: &str) -> Vec<Index> {
-        self.tree.find(0, s)
+        self.tree.find(s, 0)
     }
 }
 
