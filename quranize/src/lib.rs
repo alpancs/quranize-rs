@@ -44,6 +44,7 @@ const QURAN_TXT: &str = include_str!("quran-uthmani-min.txt");
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
     tree: suffix_tree::SuffixTree<'static>,
+    saqs: Vec<(u8, u16, &'static str)>,
 }
 
 impl Quranize {
@@ -59,20 +60,28 @@ impl Quranize {
     /// ```
     pub fn new() -> Self {
         let mut tree = suffix_tree::SuffixTree::with_capacity(Self::EXPECTED_VERTEX_COUNT);
+        let mut saqs = Vec::with_capacity(AYA_COUNT);
+        let mut sura_num = 1;
         (0..AYA_COUNT)
             .zip(QURAN_TXT.split_inclusive('\n'))
-            .map(|(i, s)| (i, Self::trim_basmalah(i, s)))
-            .for_each(|(i, s)| tree.construct(i, s));
-        Self { tree }
+            .map(|(i, q)| {
+                sura_num += (i == SURA_STARTS.get(sura_num).copied().unwrap_or(AYA_COUNT)) as usize;
+                let aya_num = i - SURA_STARTS[sura_num - 1] + 1;
+                ((i, sura_num as u8, aya_num as u16), q)
+            })
+            .map(|((i, s, a), q)| ((i, s, a), Self::trim_basmalah(s, a, q)))
+            .for_each(|((i, s, a), q)| {
+                tree.construct(i, q);
+                saqs.push((s, a, q));
+            });
+        Self { tree, saqs }
     }
 
-    fn trim_basmalah(i: usize, s: &str) -> &str {
-        const START_ALFATIHAH: usize = SURA_STARTS[0];
-        const START_ATTAUBAH: usize = SURA_STARTS[8];
-        match (i, SURA_STARTS.binary_search(&i).is_ok()) {
-            (START_ALFATIHAH | START_ATTAUBAH, _) => s,
-            (_, true) => s.splitn(5, ' ').last().unwrap(),
-            _ => s,
+    fn trim_basmalah(s: u8, a: u16, q: &str) -> &str {
+        match (s, a) {
+            (1, _) | (9, _) => q,
+            (_, 1) => q.splitn(5, ' ').last().unwrap(),
+            _ => q,
         }
     }
 
