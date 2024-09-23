@@ -66,7 +66,7 @@ impl Quranize {
     }
 
     pub fn encode(&self, s: &str) -> EncodeResults {
-        match normalization::normalize(s).as_str() {
+        let mut results: EncodeResults = match normalization::normalize(s).as_str() {
             "" => vec![],
             s => { self.tree.edges_from(0) }
                 .flat_map(|&e| self.rev_encode(s, e, None))
@@ -80,7 +80,9 @@ impl Quranize {
                 .collect(),
         })
         .map(|(q, n, e)| (q.chars().rev().collect(), n, e.into_iter().rev().collect()))
-        .collect()
+        .collect();
+        results.dedup_by(|x, y| x.0 == y.0);
+        results
     }
 
     fn rev_encode(&self, s: &str, (v, w, l): Edge, pm: Option<PrevMap>) -> EncodeResults {
@@ -157,6 +159,46 @@ mod tests {
     }
 
     #[test]
+    fn test_quranize_default() {
+        let q: Quranize = Default::default();
+        assert_eq!(q.e("illa billah"), ["إِلّا بِاللَّه"]);
+        assert_eq!(q.e("alqur'an"), ["القُرءان"]);
+        assert_eq!(q.e("bismillah"), ["بِسمِ اللَّه"]);
+        assert_eq!(q.e("birobbinnas"), ["بِرَبِّ النّاس"]);
+        assert_eq!(q.e("inna anzalnahu"), ["إِنّا أَنزَلنٰهُ"]);
+        assert_eq!(q.e("wa'tasimu"), ["وَاعتَصِمو"]);
+        assert_eq!(q.e("wa'tasimu bihablillah"), ["وَاعتَصِموا بِحَبلِ اللَّه"]);
+        assert_eq!(q.e("idza qodho"), ["إِذا قَضَ"]);
+        assert_eq!(q.e("masyaallah"), ["ما شاءَ اللَّه"]);
+        assert_eq!(q.e("illa man taba"), ["إِلّا مَن تابَ"]);
+        assert_eq!(q.e("alla tahzani"), ["أَلّا تَحزَنى"]);
+        assert_eq!(q.e("innasya niaka"), ["إِنَّ شانِئَكَ"]);
+        assert_eq!(q.e("innasya ni'aka"), ["إِنَّ شانِئَكَ"]);
+        assert_eq!(q.e("wasalamun alaihi"), ["وَسَلٰمٌ عَلَيهِ"]);
+        assert_eq!(q.e("ulaika hum"), ["أُولٰئِكَ هُم"]);
+        assert_eq!(q.e("waladdoollin"), ["وَلَا الضّالّين"]);
+        assert_eq!(q.e("undur kaifa"), ["انظُر كَيفَ"]);
+        assert_eq!(q.e("lirrohman"), ["لِلرَّحمٰن"]);
+        assert_eq!(q.e("waantum muslimun"), ["وَأَنتُم مُسلِمون"]);
+        assert_eq!(q.e("laa yukallifullah"), ["لا يُكَلِّفُ اللَّه"]);
+        assert_eq!(q.e("robbil alamin"), ["رَبِّ العٰلَمين"]);
+        assert_eq!(q.e("husnul maab"), ["حُسنُ المَـٔاب"]);
+        assert_eq!(q.e("khusnul ma'ab"), ["حُسنُ المَـٔاب"]);
+        assert_eq!(q.e("kufuwan"), ["كُفُوً"]);
+        assert_eq!(q.e("yukhodiun"), ["يُخٰدِعون"]);
+        assert_eq!(q.e("indallah"), ["عِندَ اللَّه"]);
+        assert_eq!(q.e("alimul ghoibi"), ["عٰلِمُ الغَيبِ"]);
+        assert_eq!(q.e("kaana dhoifa"), ["كانَ ضَعيفًا"]);
+        assert_eq!(q.e("waantum muslimuna"), ["وَأَنتُم مُسلِمونَ"]);
+        assert_eq!(q.e("kitabi la roiba"), ["الكِتٰبِ لا رَيبَ"]);
+        assert_eq!(q.e("takwili"), ["تَأويلِ"]);
+        assert_eq!(q.e("yu'minun"), ["يُؤمِنون"]);
+        assert_eq!(q.e("hudan lil muttaqin"), ["هُدًى لِلمُتَّقين"]);
+        assert_eq!(q.e("majreeha wamursaha"), ["مَجر۪ىٰها وَمُرسىٰها"]);
+        assert_eq!(q.e("fabiayyi alai"), ["فَبِأَىِّ ءالاءِ"]);
+    }
+
+    #[test]
     fn test_alfatihah() {
         let q = Quranize::new();
         assert_eq!(q.e("bismillahirrohmanirrohiim"), ["بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيم"]);
@@ -213,7 +255,7 @@ mod tests {
     #[test]
     fn test_unique() {
         let q = Quranize::new();
-        let results = q.e("ALLAH");
+        let results = q.e("masyaallah");
         let uresults = std::collections::HashSet::<&String>::from_iter(results.iter());
         let is_unique = results.len() == uresults.len();
         assert!(is_unique, "results are not unique. results: {:#?}", results);
