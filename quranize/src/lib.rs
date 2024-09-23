@@ -20,7 +20,7 @@
 
 mod suffix_tree;
 
-type EncodeResults = Vec<(String, Vec<&'static str>)>;
+type EncodeResults = Vec<(String, Vec<&'static str>, usize)>;
 
 const AYA_COUNT: usize = 6236;
 const QURAN_TXT: &str = include_str!("quran-uthmani-min.txt");
@@ -67,7 +67,7 @@ mod tests {
 
     impl Quranize {
         fn e(&self, text: &str) -> Vec<String> {
-            self.encode(text).into_iter().map(|(q, _)| q).collect()
+            self.encode(text).into_iter().map(|r| r.0).collect()
         }
     }
 
