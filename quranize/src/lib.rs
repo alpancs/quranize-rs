@@ -211,6 +211,15 @@ mod tests {
     }
 
     #[test]
+    fn test_unique() {
+        let q = Quranize::new();
+        let results = q.e("ALLAH");
+        let uresults = std::collections::HashSet::<&String>::from_iter(results.iter());
+        let is_unique = results.len() == uresults.len();
+        assert!(is_unique, "results are not unique. results: {:#?}", results);
+    }
+
+    #[test]
     fn test_suffix_tree_props() {
         let t = Quranize::new().tree;
         assert_eq!(t.vertices.len(), t.edges.len() + 1);
