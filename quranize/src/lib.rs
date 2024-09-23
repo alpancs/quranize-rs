@@ -162,6 +162,21 @@ mod tests {
     fn test_alfatihah() {
         let q = Quranize::new();
         assert_eq!(q.e("bismillahirrohmanirrohiim"), ["بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيم"]);
+        assert_eq!(
+            q.e("alhamdulilla hirobbil 'alamiin"),
+            ["الحَمدُ لِلَّهِ رَبِّ العٰلَمين"]
+        );
+        assert_eq!(q.e("arrohma nirrohim"), ["الرَّحمٰنِ الرَّحيم"]);
+        assert_eq!(q.e("maliki yau middin"), ["مٰلِكِ يَومِ الدّين"]);
+        assert_eq!(
+            q.e("iyyakanakbudu waiyyakanastain"),
+            ["إِيّاكَ نَعبُدُ وَإِيّاكَ نَستَعين"]
+        );
+        assert_eq!(q.e("ihdinassirotol mustaqim"), ["اهدِنَا الصِّرٰطَ المُستَقيم"]);
+        assert_eq!(
+            q.e("shirotolladzina an'amta 'alaihim ghoiril maghdzubi 'alaihim waladdoolliin"),
+            ["صِرٰطَ الَّذينَ أَنعَمتَ عَلَيهِم غَيرِ المَغضوبِ عَلَيهِم وَلَا الضّالّين"]
+        );
     }
 
     #[test]
