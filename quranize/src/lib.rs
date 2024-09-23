@@ -180,6 +180,18 @@ mod tests {
     }
 
     #[test]
+    fn test_al_ikhlas() {
+        let q = Quranize::new();
+        assert_eq!(q.e("qulhuwallahuahad"), ["قُل هُوَ اللَّهُ أَحَد"]);
+        assert_eq!(q.e("allahussomad"), ["اللَّهُ الصَّمَد"]);
+        assert_eq!(q.e("lam yalid walam yulad"), ["لَم يَلِد وَلَم يولَد"]);
+        assert_eq!(
+            q.e("walam yakun lahu kufuwan ahad"),
+            ["وَلَم يَكُن لَهُ كُفُوًا أَحَد"]
+        );
+    }
+
+    #[test]
     fn test_muqottoah() {
         let q = Quranize::new();
         assert_eq!(q.e("alif lam mim"), ["الم"]);
