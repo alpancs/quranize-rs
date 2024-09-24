@@ -35,7 +35,7 @@ impl<'a> SuffixTree<'a> {
             Some(((v, w, l), p)) => {
                 self.edges.remove(&(v, w, l));
                 let x = self.add_vertex((None, self.vertices[w].1 + 1, false));
-                let y = self.add_vertex((Some(i), 1, Self::starting_sura(i.0)));
+                let y = self.add_vertex((Some(i), 1, contains_harf_muqottoah(i)));
                 self.edges.insert((v, x, p));
                 self.edges.insert((x, w, &l[p.len()..]));
                 self.edges.insert((x, y, &s[p.len()..]));
@@ -43,16 +43,12 @@ impl<'a> SuffixTree<'a> {
                 self.vertices[v].2 |= self.vertices[x].2;
             }
             None => {
-                let w = self.add_vertex((Some(i), 1, Self::starting_sura(i.0)));
+                let w = self.add_vertex((Some(i), 1, contains_harf_muqottoah(i)));
                 self.edges.insert((v, w, s));
                 self.vertices[v].2 |= self.vertices[w].2;
             }
         }
         self.vertices[v].1 += 1;
-    }
-
-    fn starting_sura(i: usize) -> bool {
-        crate::SURA_STARTS.binary_search(&i).is_ok()
     }
 
     pub(super) fn edges_from(&self, v: usize) -> Range<Edge<'a>> {
@@ -95,6 +91,15 @@ impl<'a> SuffixTree<'a> {
         self.edges_from(v)
             .for_each(|&(_, w, _)| self.collect_data_to_buffer(w, buffer));
     }
+}
+
+fn contains_harf_muqottoah(i: Index) -> bool {
+    matches!(i, (7, 0) | (293, 0) | (954, 0) | (1364, 0) | (1473, 0))
+        || matches!(i, (1596, 0) | (1707, 0) | (1750, 0) | (1802, 0) | (2250, 0))
+        || matches!(i, (2348, 0) | (2932, 0) | (3159, 0) | (3252, 0) | (3340, 0))
+        || matches!(i, (3409, 0) | (3469, 0) | (3503, 0) | (3705, 0) | (3970, 0))
+        || matches!(i, (4133, 0) | (4218, 0) | (4272, 0) | (4325, 0) | (4414, 0))
+        || matches!(i, (4473, 0) | (4510, 0) | (4630, 0) | (5271, 0))
 }
 
 #[cfg(test)]

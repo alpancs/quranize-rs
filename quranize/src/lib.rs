@@ -256,7 +256,7 @@ mod tests {
     }
 
     #[test]
-    fn test_muqottoah() {
+    fn test_harf_muqottoah() {
         let q = Quranize::new();
         assert_eq!(q.e("alif lam mim"), ["الم"]);
         assert_eq!(q.e("alif laaam miiim"), &["الم"]);
