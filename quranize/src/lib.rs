@@ -163,6 +163,10 @@ impl Quranize {
     pub fn find(&self, s: &str) -> Vec<Index> {
         self.tree.find(s, 0)
     }
+
+    pub fn get_sura_aya_quran(&self, i: usize) -> Option<(u8, u16, &str)> {
+        self.saqs.get(i).copied()
+    }
 }
 
 impl Default for Quranize {
