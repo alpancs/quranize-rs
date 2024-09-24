@@ -138,7 +138,8 @@ mod tests {
     #[test]
     fn test_encode() {
         let q = JsQuranize::new();
-        let l = &q.get_locations(&q.encode("bismillah")[0].quran)[0];
+        let locs = &q.get_locations(&q.encode("bismillah")[0].quran);
+        let l = locs.iter().find(|l| l.sura_number == 1).unwrap();
         assert_eq!(1, l.sura_number);
         assert_eq!(1, l.aya_number);
         assert_eq!("", l.before_text);
