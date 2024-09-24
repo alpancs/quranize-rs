@@ -1,31 +1,24 @@
 import EventStatus from "./event-status.js";
 import init, { Quranize, compressExplanation } from "./quranize/quranize.js";
 
-let quranizeMinHarfs = 70;
 let quranize;
-let pendingEvent;
+let pendingMessage;
 
-self.onmessage = event => {
-    if (!quranize) {
-        pendingEvent = event;
+self.onmessage = message => {
+    if (quranize === undefined) {
+        pendingMessage = message;
         return;
     }
-    const message = event.data;
-    switch (message.status) {
+    const data = message.data;
+    switch (data.status) {
         case EventStatus.KeywordUpdated:
-            const keyword = message.keyword;
-            if (keyword.length > quranizeMinHarfs * 0.7) {
-                quranizeMinHarfs = keyword.length * 3;
-                self.postMessage({ status: EventStatus.EngineInitiationStarted });
-                quranize = new Quranize(quranizeMinHarfs);
-                self.postMessage({ status: EventStatus.EngineInitiated });
-            }
+            const keyword = data.keyword;
             const encodeResults = quranize.encode(keyword);
             self.postMessage({ status: EventStatus.KeywordEncoded, keyword, encodeResults });
             break;
         case EventStatus.ResultClicked:
-            const quran = message.quran;
-            const compactExpls = compressExplanation(quran, message.expl);
+            const quran = data.quran;
+            const compactExpls = compressExplanation(quran, data.expl);
             const locations = quranize.getLocations(quran);
             self.postMessage({ status: EventStatus.ResultLocated, quran, compactExpls, locations });
             break;
@@ -34,7 +27,7 @@ self.onmessage = event => {
 
 self.postMessage({ status: EventStatus.EngineInitiationStarted });
 await init();
-quranize = new Quranize(quranizeMinHarfs);
+quranize = new Quranize();
 self.postMessage({ status: EventStatus.EngineInitiated });
 
-if (pendingEvent) self.onmessage(pendingEvent);
+if (pendingMessage) self.onmessage(pendingMessage);
