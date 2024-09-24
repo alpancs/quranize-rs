@@ -63,7 +63,7 @@ impl JsQuranize {
         { self.quranize.find(quran).into_iter() }
             .map(|(i, j)| {
                 let (s, a, aya) = self.quranize.get_sura_aya_quran(i).unwrap_or_default();
-                let offset = match aya[j..].chars().next() {
+                let offset = match aya.get(j + quran.len()..).and_then(|s| s.chars().next()) {
                     Some(c @ ('\u{064B}'..'\u{0651}' | '\u{0670}')) => c.len_utf8(),
                     _ => 0,
                 };
