@@ -5,7 +5,7 @@ authors = ["Alfan Nur Fauzan <alpancs@gmail.com>"]
 edition = "2021"
 description = "Encoding transliterations into Quran forms."
 repository = "https://github.com/alpancs/quranize-rs"
-license = "MIT OR Apache-2.0"
+license = "Apache-2.0"
 
 [dev-dependencies]
 pretty_assertions = "1"
