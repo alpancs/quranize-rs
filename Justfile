@@ -1,5 +1,5 @@
 vue_version         := "3.5.8"
-bulma_version       := "0.9.4"
+bulma_version       := "1.0.2"
 fontawesome_version := "6.5.1"
 public_dir          := "web-app/public"
 
