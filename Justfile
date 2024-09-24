@@ -22,11 +22,10 @@ get-vue:
 get-bulma:
     wget https://cdn.jsdelivr.net/npm/bulma@{{bulma_version}}/css/bulma.css -O {{public_dir}}/styles/bulma.css
 
-tmp_file := `mktemp`
 get-fontawesome:
     rm -rf {{public_dir}}/styles/fontawesome
-    wget https://use.fontawesome.com/releases/v{{fontawesome_version}}/fontawesome-free-{{fontawesome_version}}-web.zip -O {{tmp_file}}
-    unzip {{tmp_file}} && rm -rf {{tmp_file}}
+    wget https://use.fontawesome.com/releases/v{{fontawesome_version}}/fontawesome-free-{{fontawesome_version}}-web.zip
+    unzip -q fontawesome-free-{{fontawesome_version}}-web.zip && rm -rf fontawesome-free-{{fontawesome_version}}-web.zip
     mv fontawesome-free-{{fontawesome_version}}-web {{public_dir}}/styles/fontawesome
 
 run-server:
