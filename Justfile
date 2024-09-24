@@ -35,6 +35,7 @@ run-server:
         --cache-control-headers=false \
         --log-level=info
 
-build-prod: build-wasm get-fontawesome
+deploy: build-wasm get-fontawesome
     wget https://cdn.jsdelivr.net/npm/vue@{{vue_version}}/dist/vue.esm-browser.prod.js -O {{public_dir}}/scripts/vue.esm-browser.js
     wget https://cdn.jsdelivr.net/npm/bulma@{{bulma_version}}/css/bulma.min.css -O {{public_dir}}/styles/bulma.css
+    wrangler pages deploy {{public_dir}} --project-name=quranize
