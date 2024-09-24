@@ -1,11 +1,12 @@
 vue_version         := "3.4.21"
 bulma_version       := "0.9.4"
 fontawesome_version := "6.5.1"
-build_dir           := "web-app/public"
+public_dir          := "web-app/public"
 
 build-web-app: build-wasm get-vue get-bulma get-fontawesome
 
 build-wasm:
+    rm -rf {{public_dir}}/scripts/quranize
     wasm-pack build \
         --no-typescript \
         --target=web \
@@ -16,20 +17,21 @@ build-wasm:
         web-app
 
 get-vue:
-    wget https://cdn.jsdelivr.net/npm/vue@{{vue_version}}/dist/vue.esm-browser.js -O {{build_dir}}/scripts/vue.esm-browser.js
+    wget https://cdn.jsdelivr.net/npm/vue@{{vue_version}}/dist/vue.esm-browser.js -O {{public_dir}}/scripts/vue.esm-browser.js
 
 get-bulma:
-    wget https://cdn.jsdelivr.net/npm/bulma@{{bulma_version}}/css/bulma.css -O {{build_dir}}/styles/bulma.css
+    wget https://cdn.jsdelivr.net/npm/bulma@{{bulma_version}}/css/bulma.css -O {{public_dir}}/styles/bulma.css
 
+tmp_file := `mktemp`
 get-fontawesome:
-    wget https://use.fontawesome.com/releases/v{{fontawesome_version}}/fontawesome-free-{{fontawesome_version}}-web.zip
-    unzip fontawesome-free-{{fontawesome_version}}-web.zip
-    rm -rf fontawesome-free-{{fontawesome_version}}-web.zip {{build_dir}}/styles/fontawesome
-    mv fontawesome-free-{{fontawesome_version}}-web {{build_dir}}/styles/fontawesome
+    rm -rf {{public_dir}}/styles/fontawesome
+    wget https://use.fontawesome.com/releases/v{{fontawesome_version}}/fontawesome-free-{{fontawesome_version}}-web.zip -O {{tmp_file}}
+    unzip {{tmp_file}} && rm -rf {{tmp_file}}
+    mv fontawesome-free-{{fontawesome_version}}-web {{public_dir}}/styles/fontawesome
 
 run-server:
     static-web-server \
-        --root={{build_dir}} \
+        --root={{public_dir}} \
         --port=5000 \
         --cache-control-headers=false \
         --log-level=info
