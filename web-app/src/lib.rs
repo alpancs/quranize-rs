@@ -1,11 +1,10 @@
-use quranize::{AyaGetter, Quranize};
+use quranize::Quranize;
 use serde_wasm_bindgen::{to_value, Error};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(js_name = Quranize)]
 pub struct JsQuranize {
     quranize: Quranize,
-    aya_getter: AyaGetter<'static>,
 }
 
 #[derive(serde::Serialize)]
@@ -33,14 +32,9 @@ struct JsExplanation {
 #[wasm_bindgen(js_class = Quranize)]
 impl JsQuranize {
     #[wasm_bindgen(constructor)]
-    pub fn new(min_harfs: u16) -> Self {
-        Self {
-            quranize: match min_harfs {
-                0 => Default::default(),
-                _ => Quranize::new(min_harfs),
-            },
-            aya_getter: Default::default(),
-        }
+    pub fn new() -> Self {
+        let quranize = Quranize::new();
+        Self { quranize }
     }
 
     #[wasm_bindgen(js_name = encode)]
@@ -52,7 +46,7 @@ impl JsQuranize {
         self.quranize
             .encode(text)
             .into_iter()
-            .map(|(quran, explanations, location_count)| JsEncodeResult {
+            .map(|(quran, location_count, explanations)| JsEncodeResult {
                 quran,
                 explanation: explanations.join("-"),
                 location_count,
@@ -66,16 +60,20 @@ impl JsQuranize {
     }
 
     fn get_locations(&self, quran: &str) -> Vec<JsLocation> {
-        { self.quranize.get_locations(quran).iter() }
-            .map(|&(s, a, i)| {
-                let aya = self.aya_getter.get(s, a).unwrap_or_default();
-                let (l, r) = (i, i + quran.len());
+        { self.quranize.find(quran).into_iter() }
+            .map(|(i, j)| {
+                let (s, a, aya) = self.quranize.get_sura_aya_quran(i).unwrap_or_default();
+                let offset = match aya[j..].chars().next() {
+                    Some(c @ ('\u{064B}'..'\u{0651}' | '\u{0670}')) => c.len_utf8(),
+                    _ => 0,
+                };
+                let k = j + quran.len() + offset;
                 JsLocation {
                     sura_number: s,
                     aya_number: a,
-                    before_text: &aya[..l],
-                    text: &aya[l..r],
-                    after_text: &aya[r..],
+                    before_text: &aya[..j],
+                    text: &aya[j..k],
+                    after_text: &aya[k..],
                 }
             })
             .collect()
@@ -133,7 +131,7 @@ mod tests {
 
     #[test]
     fn test_encode() {
-        let q = JsQuranize::new(0);
+        let q = JsQuranize::new();
         let l = &q.get_locations(&q.encode("bismillah")[0].quran)[0];
         assert_eq!(1, l.sura_number);
         assert_eq!(1, l.aya_number);
