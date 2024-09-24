@@ -105,6 +105,8 @@ fn contains_harf_muqottoah(i: Index) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::transliteration::harf_muqottoah_map;
+    use crate::{Quranize, AYA_COUNT};
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -117,5 +119,18 @@ mod tests {
         assert_eq!(SuffixTree::longest_prefix("ax", "a"), Some("a"));
         assert_eq!(SuffixTree::longest_prefix("a", "ay"), Some("a"));
         assert_eq!(SuffixTree::longest_prefix("ax", "ay"), Some("a"));
+    }
+
+    #[test]
+    fn test_contains_harf_muqottoah() {
+        let q = Quranize::new();
+        (0..AYA_COUNT)
+            .filter(|&i| contains_harf_muqottoah((i, 0)))
+            .for_each(|i| {
+                let (s, a, q) = q.saqs[i];
+                let q = q.split_whitespace().next().unwrap();
+                let all_chars_is_muq = q.chars().all(|c| !harf_muqottoah_map(c).is_empty());
+                assert!(all_chars_is_muq, "i={}, {}:{} => {}", i, s, a, q);
+            });
     }
 }
