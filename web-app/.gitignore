@@ -1,3 +1,3 @@
-web-app/scripts/vue.esm-browser.js
-web-app/styles/bulma.css
-web-app/styles/fontawesome
+public/scripts/vue.esm-browser.js
+public/styles/bulma.css
+public/styles/fontawesome
