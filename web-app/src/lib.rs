@@ -80,6 +80,12 @@ impl JsQuranize {
     }
 }
 
+impl Default for JsQuranize {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[wasm_bindgen(js_name = compressExplanation)]
 pub fn js_compress_explanation(quran: &str, expl: &str) -> Result<JsValue, Error> {
     to_value(
