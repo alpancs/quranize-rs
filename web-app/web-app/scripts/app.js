@@ -107,7 +107,7 @@ if ("serviceWorker" in navigator) navigator.serviceWorker.register("service-work
 
 function getExamples() {
     let candidates = [
-        "bismillah", "subhanallah", "alhamdulillah", "allahuakbar", "masyaallah", "insyaallah", "inna lillahi wainna ilaihi roji'un",
+        "bismillah", "subhanallah", "alhamdulillah", "masyaallah", "insyaallah", "inna lillahi wainna ilaihi roji'un",
         "waantum muslimun", "ya ayyuhannas", "walaqod yassarna", "waltandur nafs", "tabaarokalladzi", "wabarron biwalidati",
     ];
     let examples = [];
