@@ -164,8 +164,16 @@ impl Quranize {
         self.tree.find(s, 0)
     }
 
-    pub fn get_sura_aya_quran(&self, i: usize) -> Option<(u8, u16, &str)> {
-        self.saqs.get(i).copied()
+    pub fn get_sura(&self, i: usize) -> Option<u8> {
+        Some(self.saqs.get(i)?.0)
+    }
+
+    pub fn get_aya(&self, i: usize) -> Option<u16> {
+        Some(self.saqs.get(i)?.1)
+    }
+
+    pub fn get_quran(&self, i: usize) -> Option<&str> {
+        Some(self.saqs.get(i)?.2)
     }
 }
 

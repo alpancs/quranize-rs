@@ -62,15 +62,17 @@ impl JsQuranize {
     fn get_locations(&self, quran: &str) -> Vec<JsLocation> {
         { self.quranize.find(quran).into_iter() }
             .map(|(i, j)| {
-                let (s, a, aya) = self.quranize.get_sura_aya_quran(i).unwrap_or_default();
+                let sura_number = self.quranize.get_sura(i).unwrap_or_default();
+                let aya_number = self.quranize.get_aya(i).unwrap_or_default();
+                let aya = self.quranize.get_quran(i).unwrap_or_default();
                 let offset = match aya.get(j + quran.len()..).and_then(|s| s.chars().next()) {
                     Some(c @ ('\u{064B}'..'\u{0651}' | '\u{0670}')) => c.len_utf8(),
                     _ => 0,
                 };
                 let k = j + quran.len() + offset;
                 JsLocation {
-                    sura_number: s,
-                    aya_number: a,
+                    sura_number,
+                    aya_number,
                     before_text: &aya[..j],
                     text: &aya[j..k],
                     after_text: &aya[k..],
