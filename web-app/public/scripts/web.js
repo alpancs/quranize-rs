@@ -2,7 +2,7 @@ import EventStatus from "./event-status.js";
 import { createApp } from "./vue.esm-browser.js";
 import { suraNames } from "./quran/meta.js";
 
-const quranizeWorker = new Worker("scripts/quranize-worker.js", { type: "module" });
+const quranizeWorker = new Worker("scripts/web-worker.js", { type: "module" });
 
 const app = createApp({
     data() {
