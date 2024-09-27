@@ -1,4 +1,4 @@
-vue_version         := "3.5.8"
+vue_version         := "3.5.9"
 bulma_version       := "1.0.2"
 fontawesome_version := "6.6.0"
 public_dir          := "web-app/public"
