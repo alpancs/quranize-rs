@@ -26,13 +26,23 @@
     <link rel="stylesheet" href="styles/fontawesome/css/solid.min.css" media="print" onload="this.media='all'">
 
     <script type="module" src="scripts/web.js"></script>
+    <script type="module" src="scripts/quranize-header.js"></script>
 </head>
 
 <body>
-    <header class="hero is-small is-info">
+    <header class="hero is-small is-info" id="quranize-header">
         <div class="hero-body">
-            <div class="container has-text-centered">
-                <a href="/" class="title">Quranize</a>
+            <div class="level">
+                <div class="level-item"><a href="/" class="title">Quranize</a></div>
+                <div class="level-right">
+                    <div class="level-item">
+                        <button class="button is-rounded is-outlined">
+                            <span class="icon" @click="toggleTheme">
+                                <i class="fa-solid" :class="darkMode ? 'fa-moon' : 'fa-sun'" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
