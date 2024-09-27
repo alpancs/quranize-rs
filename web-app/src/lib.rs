@@ -73,9 +73,9 @@ impl JsQuranize {
                 JsLocation {
                     sura_number,
                     aya_number,
-                    before_text: &aya[..j],
-                    text: &aya[j..k],
-                    after_text: &aya[k..],
+                    before_text: aya.get(..j).unwrap_or_default(),
+                    text: aya.get(j..k).unwrap_or_default(),
+                    after_text: aya.get(k..).unwrap_or_default(),
                 }
             })
             .collect()
