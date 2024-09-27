@@ -79,7 +79,7 @@ const app = createApp({
         }
         this.$refs.keyword.focus();
     },
-}).mount("#quranize-app");
+}).mount("#quranize-main");
 
 quranizeWorker.onmessage = event => {
     const message = event.data;
