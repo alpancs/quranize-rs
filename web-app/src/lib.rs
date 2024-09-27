@@ -65,10 +65,10 @@ impl JsQuranize {
                 let sura_number = self.quranize.get_sura(i).unwrap_or_default();
                 let aya_number = self.quranize.get_aya(i).unwrap_or_default();
                 let aya = self.quranize.get_quran(i).unwrap_or_default();
-                let offset = match aya.get(j + quran.len()..).and_then(|s| s.chars().next()) {
-                    Some(c @ ('\u{064B}'..'\u{0651}' | '\u{0670}')) => c.len_utf8(),
-                    _ => 0,
-                };
+                let offset = aya
+                    .get(j + quran.len()..)
+                    .and_then(|s| Some(s.split(' ').next()?.len()))
+                    .unwrap_or_default();
                 let k = j + quran.len() + offset;
                 JsLocation {
                     sura_number,
