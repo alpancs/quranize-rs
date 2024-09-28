@@ -15,6 +15,15 @@
   --bulma-info-invert-l: 93%;
 }
 
+.panel-tabs a {
+  color: inherit;
+}
+
+.panel-tabs a.is-active {
+  --bulma-panel-tab-active-color: hsl(var(--bulma-info-h), var(--bulma-info-s), var(--bulma-info-l)) !important;
+  border-bottom-color: var(--bulma-panel-tab-active-color);
+}
+
 .quran-text {
   font-family: hafs;
   font-size: 1.15em;

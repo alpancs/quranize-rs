@@ -104,64 +104,31 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-for="location in result.locations" class="panel">
-                            <header class="panel-heading">
-                                <nav class="level is-mobile">
-                                    <div class="level-left">
-                                        <div class="level-item">
-                                            <div class="buttons has-addons">
-                                                <button v-for="translation in Object.keys(translations)"
-                                                    @click="clickTranslationSwitch(location, translation)"
-                                                    class="button is-small is-rounded"
-                                                    :class="{'is-info': location.translations?.[translation]?.selected}">
-                                                    {{ translation }}
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="level-item">
-                                            <a class="button is-small is-link is-outlined is-rounded"
-                                                :href="tanzilURL(location)" target="_blank">
-                                                <span class="icon">
-                                                    <i class="fa-solid fa-book" aria-hidden="true"></i>
-                                                </span>
-                                                <span class="icon">
-                                                    <i class="fa-solid fa-arrow-up-right-from-square"
-                                                        aria-hidden="true"></i>
-                                                </span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="level-right">
-                                        <div class="level-item">
-                                            <span class="quran-text tag is-medium">
-                                                {{ suraNames[location.sura_number - 1] }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </nav>
-                            </header>
-                            <article class="panel-block is-active quran-text">
-                                <span>
+                        <nav class="panel" v-for="location in result.locations">
+                            <p class="panel-tabs is-flex-direction-row-reverse">
+                                <a :class="{'is-active': (!location.activeTab && tab === 'AR') || (location.activeTab === tab)}"
+                                    v-for="tab in ['AR', 'ID', 'EN']" @click="navigateTab(location, tab)">
+                                    {{ tab }}
+                                </a>
+                            </p>
+                            <article class="panel-block" :class="{'is-justify-content-right': isArActive(location)}">
+                                <span class="quran-text" v-if="isArActive(location)">
                                     {{ location.before_text }}
                                     <mark>{{ location.text }}</mark>
                                     {{ location.after_text }}
-                                    ﴿{{ toArabicNumber(location.aya_number) }}﴾
+                                    &#xFD3F;<a :href="tanzilURL(location)" target="_blank">
+                                        {{ ayaSuffix(location) }}
+                                    </a>&#xFD3E;
                                 </span>
-                            </article>
-                            <article v-for="translation in Object.keys(translations)"
-                                v-show="location.translations?.[translation]?.selected" class="panel-block">
-                                <span class="tags">
-                                    <span class="tag is-info">{{ translation }}</span>
-                                    <span v-if="location.translations?.[translation]?.text">
-                                        {{ location.translations?.[translation]?.text }}
-                                    </span>
-                                    <div v-else class="skeleton-lines">
+                                <div v-else>
+                                    <span v-if="location.translation">{{ location.translation }}</span>
+                                    <div class="skeleton-lines" v-else>
                                         <div></div>
                                         <div></div>
                                     </div>
-                                </span>
+                                </div>
                             </article>
-                        </div>
+                        </nav>
                     </div>
                 </div>
             </section>

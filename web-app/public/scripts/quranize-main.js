@@ -12,7 +12,6 @@ const app = createApp({
             encodeResults: [],
             supportSharing: "share" in navigator,
             examples: getExamples(),
-            suraNames: suraNames,
             translations: { EN: { path: "./quran/en.sahih.js" }, ID: { path: "./quran/id.indonesian.js" } },
         };
     },
@@ -38,14 +37,16 @@ const app = createApp({
             });
             result.expanding ^= true;
         },
-        async clickTranslationSwitch(location, translation) {
-            if (location.translations === undefined) location.translations = {};
-            if (location.translations[translation] === undefined)
-                location.translations[translation] = { selected: false };
-            location.translations[translation].selected ^= true;
-            if (!location.translations[translation].text)
-                location.translations[translation].text =
-                    (await this.getTranslation(translation))[`${location.sura_number}:${location.aya_number}`];
+        isArActive: location => location.activeTab === undefined || location.activeTab === 'AR',
+        ayaSuffix: location => `${suraNames[location.sura_number - 1]}:${toArabicNumber(location.aya_number)}`,
+        tanzilURL: location => `https://tanzil.net/#${location.sura_number}:${location.aya_number}`,
+        navigateTab(location, tab) {
+            location.activeTab = tab;
+            if (tab === 'ID' || tab === 'EN') {
+                delete location.translation;
+                const index = `${location.sura_number}:${location.aya_number}`;
+                this.getTranslation(tab).then(map => location.translation = map[index]);
+            }
         },
         async getTranslation(translation) {
             if (!this.translations[translation]) return {};
@@ -58,14 +59,6 @@ const app = createApp({
                 .forEach(x => map[`${x[0]}:${x[1]}`] = x[2]);
             this.translations[translation].map = map;
             return map;
-        },
-        toArabicNumber(n) {
-            if (n < 0) return `-${this.toArabicNumber(-n)}`;
-            if (n < 10) return String.fromCharCode(0x0660 + n);
-            return this.toArabicNumber(Math.floor(n / 10)) + this.toArabicNumber(n % 10);
-        },
-        tanzilURL(location) {
-            return `https://tanzil.net/#${location.sura_number}:${location.aya_number}`;
         },
         share() {
             navigator.share({ url: `${location.href}#${encodeURIComponent(this.keyword.trim())}` });
@@ -115,4 +108,10 @@ function getExamples() {
     for (let i = 0; i < EXAMPLE_COUNT; i++)
         examples.push(...candidates.splice(Math.floor(Math.random() * candidates.length), 1));
     return examples;
+}
+
+function toArabicNumber(n) {
+    if (n < 0) return `-${toArabicNumber(-n)}`;
+    if (n < 10) return String.fromCharCode(0x0660 + n);
+    return toArabicNumber(Math.floor(n / 10)) + toArabicNumber(n % 10);
 }
