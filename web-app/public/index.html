@@ -85,8 +85,9 @@
             </div>
             <section v-for="result in encodeResults" class="block">
                 <div class="card">
-                    <header class="card-header">
-                        <button @click="clickExpand(result)" class="card-header-icon">
+                    <header class="card-header is-flex-direction-row-reverse">
+                        <p class="card-header-title quran-text">{{ result.quran }}</p>
+                        <button class="card-header-icon" aria-label="more options" @click="clickExpand(result)">
                             <span class="icon-text">
                                 <span class="icon">
                                     <i class="fa-solid" :class="result.expanding ? 'fa-angle-up' : 'fa-angle-down'"
@@ -97,9 +98,6 @@
                                 </span>
                             </span>
                         </button>
-                        <p class="card-header-title is-justify-content-right">
-                            <span class="quran-text">{{ result.quran }}</span>
-                        </p>
                     </header>
                     <div v-if="result.expanding" class="card-content">
                         <div class="box is-flex is-justify-content-center">
