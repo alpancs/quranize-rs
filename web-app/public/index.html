@@ -32,15 +32,17 @@
 <body>
     <header class="hero is-small is-info" id="quranize-header">
         <div class="hero-body">
-            <div class="level is-mobile">
-                <div class="level-item"><a href="/" class="title">Quranize</a></div>
-                <div class="level-right">
-                    <div class="level-item">
-                        <button class="button is-rounded">
-                            <span class="icon" @click="toggleTheme">
-                                <i class="fa-solid" :class="darkMode ? 'fa-moon' : 'fa-sun'" aria-hidden="true"></i>
-                            </span>
-                        </button>
+            <div class="container">
+                <div class="level is-mobile">
+                    <div class="level-item"><a href="/" class="title">Quranize</a></div>
+                    <div class="level-right">
+                        <div class="level-item">
+                            <button class="button is-rounded">
+                                <span class="icon" @click="toggleTheme">
+                                    <i class="fa-solid" :class="darkMode ? 'fa-moon' : 'fa-sun'" aria-hidden="true"></i>
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -153,7 +155,7 @@
                                     </div>
                                 </nav>
                             </header>
-                            <article class="panel-block is-active quran-text has-text-primary-100">
+                            <article class="panel-block is-active quran-text">
                                 <span>
                                     {{ location.before_text }}
                                     <mark>{{ location.text }}</mark>
