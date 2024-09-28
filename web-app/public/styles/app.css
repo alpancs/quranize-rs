@@ -8,6 +8,16 @@
     url("fonts/hafs/hafs.otf") format("opentype");
 }
 
+.is-info {
+  --bulma-info-h: 207deg;
+  --bulma-info-s: 60.8%;
+  --bulma-info-l: 52.9%;
+}
+
+#title {
+  color: hsla(221deg, 14%, 93%, 1);
+}
+
 .quran-text {
   font-family: hafs;
   font-size: 1.15em;
