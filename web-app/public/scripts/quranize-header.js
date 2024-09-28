@@ -3,7 +3,7 @@ import { createApp } from "./vue.esm-browser.js";
 createApp({
     data() {
         return {
-            darkMode: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches,
+            darkMode: false,
         };
     },
     methods: {
