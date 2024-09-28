@@ -43,22 +43,27 @@ const app = createApp({
         navigateTab(location, tab) {
             location.activeTab = tab;
             if (tab === 'ID' || tab === 'EN') {
-                delete location.translation;
                 const index = `${location.sura_number}:${location.aya_number}`;
-                this.getTranslation(tab).then(map =>
-                    location.activeTab === tab && (location.translation = map[index]));
+                if (this.translations[tab]?.map) {
+                    location.translation = this.translations[tab].map[index];
+                } else {
+                    delete location.translation;
+                    this.getTranslationMap(tab).then(map => {
+                        this.translations[tab].map = map;
+                        if (location.activeTab === tab) location.translation = map[index];
+                    });
+                }
             }
         },
-        async getTranslation(translation) {
-            if (!this.translations[translation]) return {};
-            if (this.translations[translation].map) return this.translations[translation].map;
+        async getTranslationMap(translation) {
+            const importPath = this.translations[translation]?.path;
+            if (!importPath) throw new Error(`translation ${translation} does not have an import path.`);
             let map = {};
-            (await import(this.translations[translation].path)).default
+            (await import(importPath)).default
                 .split("\n")
                 .map(l => l.split("|"))
                 .filter(x => x.length === 3)
                 .forEach(x => map[`${x[0]}:${x[1]}`] = x[2]);
-            this.translations[translation].map = map;
             return map;
         },
         share() {
