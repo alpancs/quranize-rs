@@ -8,14 +8,11 @@
     url("fonts/hafs/hafs.otf") format("opentype");
 }
 
-.is-info {
-  --bulma-info-h: 207deg;
-  --bulma-info-s: 60.8%;
-  --bulma-info-l: 52.9%;
-}
-
-#title {
-  color: hsla(221deg, 14%, 93%, 1);
+:root {
+  --bulma-info-h: 207.12deg;
+  --bulma-info-s: 60.83%;
+  --bulma-info-l: 52.94%;
+  --bulma-info-invert-l: 93%;
 }
 
 .quran-text {
