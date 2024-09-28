@@ -74,7 +74,7 @@
                         </button>
                     </div>
                     <p class="help" :class="{'is-hidden-touch': hasResults && !examples.includes(keyword)}">
-                        <span class="tags">
+                        <span class="tags is-justify-content-center">
                             <span v-for="example in examples" @click="setKeyword(example)"
                                 class="tag is-rounded is-italic is-clickable" :class="{'is-info': example === keyword}">
                                 {{ example }}
