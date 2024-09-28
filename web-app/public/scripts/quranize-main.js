@@ -45,7 +45,8 @@ const app = createApp({
             if (tab === 'ID' || tab === 'EN') {
                 delete location.translation;
                 const index = `${location.sura_number}:${location.aya_number}`;
-                this.getTranslation(tab).then(map => location.translation = map[index]);
+                this.getTranslation(tab).then(map =>
+                    location.activeTab === tab && (location.translation = map[index]));
             }
         },
         async getTranslation(translation) {
