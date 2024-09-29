@@ -66,9 +66,8 @@ const app = createApp({
                 .forEach(x => map[`${x[0]}:${x[1]}`] = x[2]);
             return map;
         },
-        share() {
-            navigator.share({ url: `${location.href}#${encodeURIComponent(this.keyword.trim())}` });
-        },
+        share: () => navigator.share({ url: `${location.href}#${encodeURIComponent(this.keyword.trim())}` }),
+        copyToClipboard: text => navigator?.clipboard.writeText(text),
     },
     mounted() {
         const URLHash = location.hash.replace(/^#/, "");
@@ -102,7 +101,7 @@ quranizeWorker.onmessage = event => {
     }
 };
 
-if ("serviceWorker" in navigator) navigator.serviceWorker.register("service-worker.js");
+navigator.serviceWorker?.register("service-worker.js");
 
 function getExamples() {
     let candidates = [

@@ -88,7 +88,9 @@
             </div>
             <section v-for="result in encodeResults" class="card">
                 <header class="card-header is-flex-direction-row-reverse is-clickable" @click="clickExpand(result)">
-                    <p class="card-header-title quran-text">{{ result.quran }}</p>
+                    <p class="card-header-title is-justify-content-right">
+                        <span class="quran-text" @click="copyToClipboard(result.quran)">{{ result.quran }}</span>
+                    </p>
                     <span class="card-header-icon">
                         <span class="tag is-rounded" :class="{'is-info': result.expanding}">
                             {{ result.location_count }}
