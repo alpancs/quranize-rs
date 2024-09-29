@@ -66,7 +66,7 @@ const app = createApp({
                 .forEach(x => map[`${x[0]}:${x[1]}`] = x[2]);
             return map;
         },
-        share: () => navigator.share({ url: `${location.href}#${encodeURIComponent(this.keyword.trim())}` }),
+        share() { navigator.share({ url: `${location.href}#${encodeURIComponent(this.keyword.trim())}` }); },
         copyToClipboard: text => navigator?.clipboard.writeText(text),
     },
     mounted() {
