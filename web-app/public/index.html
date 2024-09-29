@@ -118,7 +118,7 @@
                         <article class="panel-block" :class="{'is-justify-content-right': isArActive(location)}">
                             <span class="quran-text" v-if="isArActive(location)">
                                 {{ location.before_text }}
-                                <mark>{{ location.text }}</mark>
+                                <mark @click="copyToClipboard(location.text)">{{ location.text }}</mark>
                                 {{ location.after_text }}
                                 &#xFD3F;<a :href="tanzilURL(location)" target="_blank">
                                     {{ ayaSuffix(location) }}
