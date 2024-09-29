@@ -84,54 +84,52 @@
                     </p>
                 </div>
             </div>
-            <section v-for="result in encodeResults" class="block">
-                <div class="card">
-                    <header class="card-header is-flex-direction-row-reverse is-clickable" @click="clickExpand(result)">
-                        <p class="card-header-title quran-text">{{ result.quran }}</p>
-                        <span class="card-header-icon">
-                            <span class="tag is-rounded" :class="{'is-info': result.expanding}">
-                                {{ result.location_count }}
-                            </span>
+            <section v-for="result in encodeResults" class="card">
+                <header class="card-header is-flex-direction-row-reverse is-clickable" @click="clickExpand(result)">
+                    <p class="card-header-title quran-text">{{ result.quran }}</p>
+                    <span class="card-header-icon">
+                        <span class="tag is-rounded" :class="{'is-info': result.expanding}">
+                            {{ result.location_count }}
                         </span>
-                    </header>
-                    <div class="card-content" v-if="result.expanding">
-                        <div class="block">
-                            <div class="field is-grouped is-grouped-multiline">
-                                <div class="control" v-for="e in result.compactExpls">
-                                    <div class="tags has-addons">
-                                        <span class="tag is-info">{{ e.alphabet }}</span>
-                                        <span class="tag"><span class="quran-text">{{ e.quran }}</span></span>
-                                    </div>
+                    </span>
+                </header>
+                <article class="card-content" v-if="result.expanding">
+                    <div class="block">
+                        <div class="field is-grouped is-grouped-multiline">
+                            <div class="control" v-for="e in result.compactExpls">
+                                <div class="tags has-addons">
+                                    <span class="tag is-info">{{ e.alphabet }}</span>
+                                    <span class="tag"><span class="quran-text">{{ e.quran }}</span></span>
                                 </div>
                             </div>
                         </div>
-                        <nav class="panel" v-for="location in result.locations">
-                            <p class="panel-tabs is-flex-direction-row-reverse">
-                                <a :class="{'is-active': (!location.activeTab && tab === 'AR') || (location.activeTab === tab)}"
-                                    v-for="tab in ['AR', 'ID', 'EN']" @click="navigateTab(location, tab)">
-                                    {{ tab }}
-                                </a>
-                            </p>
-                            <article class="panel-block" :class="{'is-justify-content-right': isArActive(location)}">
-                                <span class="quran-text" v-if="isArActive(location)">
-                                    {{ location.before_text }}
-                                    <mark>{{ location.text }}</mark>
-                                    {{ location.after_text }}
-                                    &#xFD3F;<a :href="tanzilURL(location)" target="_blank">
-                                        {{ ayaSuffix(location) }}
-                                    </a>&#xFD3E;
-                                </span>
-                                <div v-else>
-                                    <span v-if="location.translation">{{ location.translation }}</span>
-                                    <div class="skeleton-lines" v-else>
-                                        <div></div>
-                                        <div></div>
-                                    </div>
-                                </div>
-                            </article>
-                        </nav>
                     </div>
-                </div>
+                    <nav class="panel" v-for="location in result.locations">
+                        <p class="panel-tabs is-flex-direction-row-reverse">
+                            <a :class="{'is-active': (!location.activeTab && tab === 'AR') || (location.activeTab === tab)}"
+                                v-for="tab in ['AR', 'ID', 'EN']" @click="navigateTab(location, tab)">
+                                {{ tab }}
+                            </a>
+                        </p>
+                        <article class="panel-block" :class="{'is-justify-content-right': isArActive(location)}">
+                            <span class="quran-text" v-if="isArActive(location)">
+                                {{ location.before_text }}
+                                <mark>{{ location.text }}</mark>
+                                {{ location.after_text }}
+                                &#xFD3F;<a :href="tanzilURL(location)" target="_blank">
+                                    {{ ayaSuffix(location) }}
+                                </a>&#xFD3E;
+                            </span>
+                            <div v-else>
+                                <span v-if="location.translation">{{ location.translation }}</span>
+                                <div class="skeleton-lines" v-else>
+                                    <div></div>
+                                    <div></div>
+                                </div>
+                            </div>
+                        </article>
+                    </nav>
+                </article>
             </section>
         </div>
     </main>
