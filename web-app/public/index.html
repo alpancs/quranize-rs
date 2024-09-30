@@ -104,7 +104,8 @@
                 </header>
                 <article class="card-content" v-if="result.expanding">
                     <div class="block">
-                        <div class="field is-grouped is-grouped-multiline">
+                        <div class="field is-grouped is-grouped-multiline" :class="control"
+                            v-for="control in ['is-hidden-desktop', 'is-hidden-touch is-justify-content-center']">
                             <div class="control" v-for="e in result.compactExpls">
                                 <div class="tags has-addons">
                                     <span class="tag is-info">{{ e.alphabet }}</span>
