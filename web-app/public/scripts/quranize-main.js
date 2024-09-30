@@ -12,7 +12,10 @@ const app = createApp({
             encodeResults: [],
             supportSharing: "share" in navigator,
             examples: getExamples(),
-            translations: { EN: { path: "./quran/en.sahih.js" }, ID: { path: "./quran/id.indonesian.js" } },
+            translations: {
+                EN: { URL: "scripts/quran/en.sahih.txt" },
+                ID: { URL: "scripts/quran/id.indonesian.txt" },
+            },
         };
     },
     computed: {
@@ -40,31 +43,24 @@ const app = createApp({
         isArActive: location => location.activeTab === undefined || location.activeTab === 'AR',
         ayaSuffix: location => `${suraNames[location.sura_number - 1]}:${toArabicNumber(location.aya_number)}`,
         tanzilURL: location => `https://tanzil.net/#${location.sura_number}:${location.aya_number}`,
-        navigateTab(location, tab) {
+        async navigateTab(location, tab) {
             location.activeTab = tab;
             if (tab === 'ID' || tab === 'EN') {
-                const index = `${location.sura_number}:${location.aya_number}`;
-                if (this.translations[tab]?.map) {
-                    location.translation = this.translations[tab].map[index];
+                if (this.translations[tab]?.data) {
+                    location.translation = this.translations[tab].data[location.index];
                 } else {
                     delete location.translation;
-                    this.getTranslationMap(tab).then(map => {
-                        this.translations[tab].map = map;
-                        if (location.activeTab === tab) location.translation = map[index];
-                    });
+                    const data = await this.getTranslationData(tab);
+                    this.translations[tab].data = data;
+                    if (location.activeTab === tab)
+                        location.translation = data[location.index];
                 }
             }
         },
-        async getTranslationMap(translation) {
-            const importPath = this.translations[translation]?.path;
-            if (!importPath) throw new Error(`translation ${translation} does not have an import path.`);
-            let map = {};
-            (await import(importPath)).default
-                .split("\n")
-                .map(l => l.split("|"))
-                .filter(x => x.length === 3)
-                .forEach(x => map[`${x[0]}:${x[1]}`] = x[2]);
-            return map;
+        async getTranslationData(translation) {
+            const url = this.translations[translation]?.URL;
+            if (url) return (await (await fetch(url)).text()).split("\n");
+            throw `translation ${translation} is not defined.`;
         },
         share() { navigator.share({ url: `${location.href}#${encodeURIComponent(this.keyword.trim())}` }); },
         copyToClipboard: text => navigator?.clipboard.writeText(text),

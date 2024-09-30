@@ -16,6 +16,7 @@ struct JsEncodeResult {
 
 #[derive(serde::Serialize)]
 struct JsLocation<'a> {
+    index: usize,
     sura_number: u8,
     aya_number: u16,
     before_text: &'a str,
@@ -71,6 +72,7 @@ impl JsQuranize {
                     .unwrap_or_default();
                 let k = j + quran.len() + offset;
                 JsLocation {
+                    index: i,
                     sura_number,
                     aya_number,
                     before_text: aya.get(..j).unwrap_or_default(),
