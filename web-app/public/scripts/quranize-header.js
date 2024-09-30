@@ -13,8 +13,4 @@ createApp({
             else document.documentElement.setAttribute("data-theme", "light");
         },
     },
-    mounted() {
-        window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)')
-            .addEventListener("change", event => this.darkMode = event.matches);
-    },
 }).mount("#quranize-header");
