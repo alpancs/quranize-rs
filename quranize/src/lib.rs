@@ -39,7 +39,7 @@ const SURA_STARTS: [usize; 114] = [
     6130, 6138, 6146, 6157, 6168, 6176, 6179, 6188, 6193, 6197, 6204, 6207, 6213, 6216, 6221, 6225,
     6230,
 ];
-const QURAN_TXT: &str = include_str!("quran-uthmani-min.txt");
+const QURAN_TXT: &str = include_str!("quran-simple-min.txt");
 
 /// Struct to encode alphabetic text to quran text.
 pub struct Quranize {
@@ -198,40 +198,42 @@ mod tests {
     fn test_quranize_default() {
         let q: Quranize = Default::default();
         assert_eq!(q.e("illa billah"), ["إِلّا بِاللَّه"]);
-        assert_eq!(q.e("alqur'an"), ["القُرءان"]);
+        assert_eq!(q.e("alqur'an"), ["القُرآن"]);
         assert_eq!(q.e("bismillah"), ["بِسمِ اللَّه"]);
         assert_eq!(q.e("birobbinnas"), ["بِرَبِّ النّاس"]);
-        assert_eq!(q.e("inna anzalnahu"), ["إِنّا أَنزَلنٰهُ"]);
+        assert_eq!(q.e("inna anzalnahu"), ["إِنّا أَنزَلناهُ"]);
         assert_eq!(q.e("wa'tasimu"), ["وَاعتَصِمو"]);
         assert_eq!(q.e("wa'tasimu bihablillah"), ["وَاعتَصِموا بِحَبلِ اللَّه"]);
         assert_eq!(q.e("idza qodho"), ["إِذا قَضَ"]);
         assert_eq!(q.e("masyaallah"), ["ما شاءَ اللَّه"]);
         assert_eq!(q.e("illa man taba"), ["إِلّا مَن تابَ"]);
-        assert_eq!(q.e("alla tahzani"), ["أَلّا تَحزَنى"]);
+        assert_eq!(q.e("alla tahzani"), ["أَلّا تَحزَني"]);
         assert_eq!(q.e("innasya niaka"), ["إِنَّ شانِئَكَ"]);
         assert_eq!(q.e("innasya ni'aka"), ["إِنَّ شانِئَكَ"]);
-        assert_eq!(q.e("wasalamun alaihi"), ["وَسَلٰمٌ عَلَيهِ"]);
-        assert_eq!(q.e("ulaika hum"), ["أُولٰئِكَ هُم"]);
+        assert_eq!(q.e("wasalamun alaihi"), ["وَسَلامٌ عَلَيهِ"]);
+        assert_eq!(q.e("ulaika hum"), ["أُولـٰئِكَ هُم"]);
         assert_eq!(q.e("waladdoollin"), ["وَلَا الضّالّين"]);
         assert_eq!(q.e("undur kaifa"), ["انظُر كَيفَ"]);
-        assert_eq!(q.e("lirrohman"), ["لِلرَّحمٰن"]);
+        assert_eq!(q.e("lirrohman"), ["لِلرَّحمـٰن"]);
         assert_eq!(q.e("waantum muslimun"), ["وَأَنتُم مُسلِمون"]);
         assert_eq!(q.e("laa yukallifullah"), ["لا يُكَلِّفُ اللَّه"]);
-        assert_eq!(q.e("robbil alamin"), ["رَبِّ العٰلَمين"]);
-        assert_eq!(q.e("husnul maab"), ["حُسنُ المَـٔاب"]);
-        assert_eq!(q.e("khusnul ma'ab"), ["حُسنُ المَـٔاب"]);
+        assert_eq!(q.e("robbil alamin"), ["رَبِّ العالَمين"]);
+        assert_eq!(q.e("husnul maab"), ["حُسنُ المَآب"]);
+        assert_eq!(q.e("khusnul ma'ab"), ["حُسنُ المَآب"]);
         assert_eq!(q.e("kufuwan"), ["كُفُوً"]);
-        assert_eq!(q.e("yukhodiun"), ["يُخٰدِعون"]);
+        assert_eq!(q.e("yukhodiun"), ["يُخادِعون"]);
         assert_eq!(q.e("indallah"), ["عِندَ اللَّه"]);
-        assert_eq!(q.e("alimul ghoibi"), ["عٰلِمُ الغَيبِ"]);
+        assert_eq!(q.e("alimul ghoibi"), ["عالِمُ الغَيبِ"]);
         assert_eq!(q.e("kaana dhoifa"), ["كانَ ضَعيفًا"]);
         assert_eq!(q.e("waantum muslimuna"), ["وَأَنتُم مُسلِمونَ"]);
-        assert_eq!(q.e("kitabi la roiba"), ["الكِتٰبِ لا رَيبَ"]);
+        assert_eq!(q.e("kitabi la roiba"), ["الكِتابِ لا رَيبَ"]);
         assert_eq!(q.e("takwili"), ["تَأويلِ"]);
         assert_eq!(q.e("yu'minun"), ["يُؤمِنون"]);
         assert_eq!(q.e("hudan lil muttaqin"), ["هُدًى لِلمُتَّقين"]);
-        assert_eq!(q.e("majreeha wamursaha"), ["مَجر۪ىٰها وَمُرسىٰها"]);
-        assert_eq!(q.e("fabiayyi alai"), ["فَبِأَىِّ ءالاءِ"]);
+        assert_eq!(q.e("majreeha wamursaha"), ["مَجراها وَمُرساها"]);
+        assert_eq!(q.e("fabiayyi alai"), ["فَبِأَيِّ آلاءِ"]);
+        assert_eq!(q.e("wayuallimukumma"), ["وَيُعَلِّمُكُم ما"]);
+        assert_eq!(q.e("wassolat"), ["وَالصَّلاة"]);
     }
 
     #[test]

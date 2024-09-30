@@ -7,7 +7,7 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
         SPACE => &[""],
 
         LETTER_HAMZA => &["", "'", "k"],
-        LETTER_ALEF_WITH_MADDA_ABOVE => &["a", "aa"],
+        LETTER_ALEF_WITH_MADDA_ABOVE => &["a", "aa", "'a", "'aa"],
         LETTER_ALEF_WITH_HAMZA_ABOVE => &["", "'", "k"],
         LETTER_WAW_WITH_HAMZA_ABOVE => &["", "'", "k"],
         LETTER_ALEF_WITH_HAMZA_BELOW => &["", "'", "k"],
@@ -70,7 +70,7 @@ pub(super) fn contextual_map(context: Option<char>, c: char) -> &'static [&'stat
         (Some(KASRA), LETTER_LAM) => &[""],
         (Some(LETTER_ALEF_MAKSURA), LETTER_SUPERSCRIPT_ALEF) => &[""],
         (Some(LETTER_ALEF), LETTER_LAM) => &[""],
-        (Some(LETTER_REH), EMPTY_CENTRE_LOW_STOP) => &["e", "ee"],
+        (Some(LETTER_JEEM), LETTER_REH) => &["re", "ree"],
 
         (Some(c), SHADDA) => map(c),
         _ => &[],
