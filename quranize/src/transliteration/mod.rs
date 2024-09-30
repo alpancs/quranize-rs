@@ -73,6 +73,7 @@ pub(super) fn contextual_map(context: Option<char>, c: char) -> &'static [&'stat
         (Some(LETTER_JEEM), LETTER_REH) => &["re", "ree"],
 
         (Some(c), SHADDA) => map(c),
+
         _ => &[],
     }
 }
@@ -93,6 +94,7 @@ pub(super) fn harf_muqottoah_map(c: char) -> &'static [&'static str] {
         LETTER_NOON => &["nun"],
         LETTER_HEH => &["ha"],
         LETTER_YEH => &["ya"],
+
         _ => &[],
     }
 }
