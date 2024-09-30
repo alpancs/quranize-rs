@@ -28,11 +28,11 @@
   font-family: hafs;
   font-size: 1.15em;
   direction: rtl;
-  line-height: 2.32em;
+  line-height: 2.35em;
 }
 
-mark {
-  background-color: #d5f1d0;
+.quran-text mark {
+  background-color: #c4ecbd;
 }
 
 [v-cloak] {
