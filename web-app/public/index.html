@@ -34,7 +34,12 @@
         <div class="hero-body">
             <div class="container">
                 <div class="level is-mobile">
-                    <div class="level-item"><a href="/" class="title">Quranize</a></div>
+                    <span class="button is-rounded is-invisible">
+                        <span class="icon"></span>
+                    </span>
+                    <div class="level-item">
+                        <a href="/" class="title">Quranize</a>
+                    </div>
                     <div class="level-right">
                         <div class="level-item">
                             <button class="button is-rounded">
@@ -58,10 +63,10 @@
                         <input class="input is-rounded" type="text" ref="keyword" placeholder="masyaallah"
                             :class="hasEmptyResult ? 'is-warning' : 'is-info'" :value="keyword" @input="keywordInputted"
                             @keyup.enter="$refs.keyword.blur()">
-                        <span class="icon is-small is-left">
+                        <span class="icon is-left">
                             <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
                         </span>
-                        <span class="icon is-small is-right" v-show="isEngineReady && keyword">
+                        <span class="icon is-right" v-show="isEngineReady && keyword">
                             <button class="delete" @click="deleteKeyword"></button>
                         </span>
                     </p>
