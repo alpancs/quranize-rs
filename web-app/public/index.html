@@ -43,7 +43,8 @@
                     <div class="level-right">
                         <div class="level-item">
                             <button class="button is-rounded">
-                                <span class="icon" :class="{'has-text-warning': !darkMode}" @click="toggleTheme">
+                                <span class="icon" :class="darkMode ? 'has-text-link-light' : 'has-text-warning'"
+                                    @click="toggleTheme">
                                     <i class="fa-solid" :class="darkMode ? 'fa-moon' : 'fa-sun'" aria-hidden="true"></i>
                                 </span>
                             </button>
