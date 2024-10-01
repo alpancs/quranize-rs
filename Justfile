@@ -1,6 +1,6 @@
 vue_version         := "3.5.10"
 bulma_version       := "1.0.2"
-fontawesome_version := "6.6.0"
+fontawesome_version := "5.15.4"
 public_dir          := "web-app/public"
 
 build-web-app: build-wasm get-vue get-bulma get-fontawesome

@@ -40,20 +40,25 @@ const app = createApp({
             });
             result.expanding ^= true;
         },
-        isArActive: location => location.activeTab === undefined || location.activeTab === 'AR',
-        ayaSuffix: location => `${suraNames[location.sura_number - 1]}:${toArabicNumber(location.aya_number)}`,
+        suraName: location => suraNames[location.sura_number - 1],
+        ayaNumber: location => toArabicNumber(location.aya_number),
         tanzilURL: location => `https://tanzil.net/#${location.sura_number}:${location.aya_number}`,
-        async navigateTab(location, tab) {
-            location.activeTab = tab;
-            if (tab === 'ID' || tab === 'EN') {
-                if (this.translations[tab]?.data) {
-                    location.translation = this.translations[tab].data[location.index];
-                } else {
-                    delete location.translation;
-                    const data = await this.getTranslationData(tab);
-                    this.translations[tab].data = data;
-                    if (location.activeTab === tab)
-                        location.translation = data[location.index];
+        async navigateTranslation(location, translation) {
+            if (location.activeTranslation === translation) {
+                delete location.activeTranslation;
+                delete location.translation;
+                return;
+            }
+
+            location.activeTranslation = translation;
+            if (this.translations[translation]?.data) {
+                location.translation = this.translations[translation].data[location.index];
+            } else {
+                delete location.translation;
+                const data = await this.getTranslationData(translation);
+                this.translations[translation].data = data;
+                if (location.activeTranslation === translation) {
+                    location.translation = data[location.index];
                 }
             }
         },

@@ -45,7 +45,7 @@
                             <button class="button is-rounded">
                                 <span class="icon" :class="darkMode ? 'has-text-link-light' : 'has-text-warning'"
                                     @click="toggleTheme">
-                                    <i class="fa-solid" :class="darkMode ? 'fa-moon' : 'fa-sun'" aria-hidden="true"></i>
+                                    <i class="fas" :class="darkMode ? 'fa-moon' : 'fa-sun'"></i>
                                 </span>
                             </button>
                         </div>
@@ -65,17 +65,17 @@
                             :class="hasEmptyResult ? 'is-warning' : 'is-info'" :value="keyword" @input="keywordInputted"
                             @keyup.enter="$refs.keyword.blur()">
                         <span class="icon is-left">
-                            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                            <i class="fas fa-search"></i>
                         </span>
                         <span class="icon is-right" v-show="isEngineReady && keyword">
-                            <button class="delete" @click="deleteKeyword"></button>
+                            <button class="delete is-small" @click="deleteKeyword"></button>
                         </span>
                     </p>
                     <p class="control">
                         <button class="button is-outlined is-rounded is-info" v-if="supportSharing" @click="share"
                             :disabled="hasEmptyResult">
                             <span class="icon">
-                                <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
+                                <i class="fas fa-share"></i>
                             </span>
                         </button>
                     </p>
@@ -93,8 +93,8 @@
                 </p>
             </div>
             <section v-for="result in encodeResults" class="card">
-                <header class="card-header is-flex-direction-row-reverse is-clickable" @click="clickExpand(result)">
-                    <p class="card-header-title is-justify-content-right">
+                <header class="card-header is-clickable" dir="rtl" @click="clickExpand(result)">
+                    <p class="card-header-title">
                         <span class="quran-text" @click="copyToClipboard(result.quran)">{{ result.quran }}</span>
                     </p>
                     <span class="card-header-icon">
@@ -115,31 +115,41 @@
                             </div>
                         </div>
                     </div>
-                    <nav class="panel" v-for="location in result.locations">
-                        <p class="panel-tabs is-flex-direction-row-reverse">
-                            <a :class="{'is-active': (!location.activeTab && tab === 'AR') || (location.activeTab === tab)}"
-                                v-for="tab in ['AR', 'ID', 'EN']" @click="navigateTab(location, tab)">
-                                {{ tab }}
-                            </a>
-                        </p>
-                        <article class="panel-block" :class="{'is-justify-content-right': isArActive(location)}">
-                            <span class="quran-text" v-if="isArActive(location)">
-                                {{ location.before_text }}
-                                <mark @click="copyToClipboard(location.text)">{{ location.text }}</mark>
-                                {{ location.after_text }}
-                                &#xFD3F;<a :href="tanzilURL(location)" target="_blank">
-                                    {{ ayaSuffix(location) }}
-                                </a>&#xFD3E;
+                    <div class="card" v-for="location in result.locations">
+                        <header class="card-header" dir="rtl">
+                            <p class="card-header-title icon-text">
+                                <span class="quran-text">{{ suraName(location) }} : {{ ayaNumber(location) }}</span>
+                                <a :href="tanzilURL(location)" target="_blank">
+                                    <span class="icon">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </span>
+                                </a>
+                            </p>
+                            <span class="card-header-icon">
+                                <span class="buttons has-addons">
+                                    <button class="button is-small"
+                                        :class="{'is-info': location.activeTranslation === translation}"
+                                        v-for="translation in ['ID', 'EN']"
+                                        @click="navigateTranslation(location, translation)">
+                                        {{ translation }}
+                                    </button>
+                                </span>
                             </span>
-                            <div v-else>
-                                <span v-if="location.translation">{{ location.translation }}</span>
-                                <div class="skeleton-lines" v-else>
-                                    <div></div>
-                                    <div></div>
-                                </div>
+                        </header>
+                        <div class="card-content">
+                            <div class="block quran-text">
+                                <span>{{ location.before_text }}</span>
+                                <mark @click="copyToClipboard(location.text)">{{ location.text }}</mark>
+                                <span>{{ location.after_text }} &#xFD3F;{{ ayaNumber(location) }}&#xFD3E;</span>
                             </div>
-                        </article>
-                    </nav>
+                            <div class="content" v-if="location.translation">{{ location.translation }}</div>
+                            <div class="skeleton-lines" v-else-if="location.activeTranslation">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                        </div>
+                    </div>
                 </article>
             </section>
         </div>
