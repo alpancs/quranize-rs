@@ -118,7 +118,12 @@
                     <div class="card" v-for="location in result.locations">
                         <header class="card-header" dir="rtl">
                             <p class="card-header-title icon-text">
-                                <span class="quran-text">{{ suraName(location) }} : {{ ayaNumber(location) }}</span>
+                                <span class="quran-text is-clickable" :class="{'has-text-link': location.playing}"
+                                    @click="location.playing ^= true">
+                                    {{ suraName(location) }} : {{ ayaNumber(location) }}
+                                </span>
+                                <audio autoplay :src="audioSource(location)" v-if="location.playing"
+                                    @ended="location.playing = false"></audio>
                                 <a :href="tanzilURL(location)" target="_blank">
                                     <span class="icon">
                                         <i class="fas fa-external-link-alt"></i>
