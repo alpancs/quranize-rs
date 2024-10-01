@@ -68,7 +68,7 @@
                             <i class="fas fa-search"></i>
                         </span>
                         <span class="icon is-right" v-show="isEngineReady && keyword">
-                            <button class="delete is-small" @click="deleteKeyword"></button>
+                            <button class="delete" @click="deleteKeyword"></button>
                         </span>
                     </p>
                     <p class="control">
@@ -126,8 +126,8 @@
                                 </a>
                             </p>
                             <span class="card-header-icon">
-                                <span class="buttons has-addons">
-                                    <button class="button is-small"
+                                <span class="buttons are-small has-addons">
+                                    <button class="button is-rounded"
                                         :class="{'is-info': location.activeTranslation === translation}"
                                         v-for="translation in ['ID', 'EN']"
                                         @click="navigateTranslation(location, translation)">
