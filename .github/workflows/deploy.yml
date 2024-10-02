@@ -1,6 +1,8 @@
 name: Deploy to Cloudflare Pages
 
-on: [push]
+on:
+  push:
+    branches:
 
 concurrency:
   group: deployment-${{ github.ref }}
@@ -11,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
