@@ -56,17 +56,13 @@ const app = createApp({
                 location.translation = this.translations[translation].data[location.index];
             } else {
                 delete location.translation;
-                const data = await this.getTranslationData(translation);
+                const url = this.translations[translation]?.URL;
+                const data = (await (await fetch(url)).text()).split("\n");
                 this.translations[translation].data = data;
                 if (location.activeTranslation === translation) {
                     location.translation = data[location.index];
                 }
             }
-        },
-        async getTranslationData(translation) {
-            const url = this.translations[translation]?.URL;
-            if (url) return (await (await fetch(url)).text()).split("\n");
-            throw `translation ${translation} is not defined.`;
         },
         share() { navigator.share({ url: `${location.href}#${encodeURIComponent(this.keyword.trim())}` }); },
         copyToClipboard: text => navigator.clipboard?.writeText(text),
