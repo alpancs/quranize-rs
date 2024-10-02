@@ -1,0 +1,37 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - "*"
+    tags-ignore:
+      - "*"
+
+concurrency:
+  group: deployment-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: wasm32-unknown-unknown
+          profile: minimal
+      - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - uses: extractions/setup-just@v2
+      - run: just prepare-deployment
+      - uses: cloudflare/pages-action@v1
+        with:
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          projectName: quranize
+          directory: web-app/public
+          wranglerVersion: "3.79.0"
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
