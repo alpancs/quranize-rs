@@ -69,7 +69,7 @@ const app = createApp({
             throw `translation ${translation} is not defined.`;
         },
         share() { navigator.share({ url: `${location.href}#${encodeURIComponent(this.keyword.trim())}` }); },
-        copyToClipboard: text => navigator?.clipboard.writeText(text),
+        copyToClipboard: text => navigator.clipboard?.writeText(text),
     },
     mounted() {
         const URLHash = location.hash.replace(/^#/, "");
