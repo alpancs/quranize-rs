@@ -144,7 +144,9 @@
                         <div class="card-content">
                             <div class="block quran-text">
                                 <span>{{ location.before_text }}</span>
-                                <mark @click="copyToClipboard(location.text)">{{ location.text }}</mark>
+                                <mark class="is-clickable" @click="copyToClipboard(location.text)">
+                                    {{ location.text }}
+                                </mark>
                                 <span>{{ location.after_text }} &#xFD3F;{{ ayaNumber(location) }}&#xFD3E;</span>
                             </div>
                             <div class="content" v-if="location.translation">{{ location.translation }}</div>
