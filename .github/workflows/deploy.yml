@@ -3,6 +3,9 @@ name: Deploy to Cloudflare Pages
 on:
   push:
     branches:
+      - "*"
+    tags-ignore:
+      - "*"
 
 concurrency:
   group: deployment-${{ github.ref }}
