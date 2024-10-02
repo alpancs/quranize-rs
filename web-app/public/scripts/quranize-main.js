@@ -5,6 +5,11 @@ import { suraNames } from "./quran/meta.js";
 const quranizeWorker = new Worker("scripts/web-worker.js", { type: "module" });
 
 const app = createApp({
+    mounted() {
+        this.captureURLHash();
+        this.focusInInput();
+    },
+
     data() {
         return {
             isEngineReady: false,
@@ -19,11 +24,23 @@ const app = createApp({
             playing: "",
         };
     },
+
     computed: {
         hasResults() { return this.encodeResults.length > 0; },
         hasEmptyResult() { return this.isEngineReady && this.keyword !== "" && !this.hasResults; },
     },
     methods: {
+        captureURLHash() {
+            const urlHash = location.hash.replace(/^#/, "");
+            if (urlHash) {
+                this.setKeyword(decodeURIComponent(urlHash));
+                history.pushState({}, "", location.href.replace(/#.*$/, ""));
+            }
+        },
+        focusInInput() {
+            setTimeout(() => { this.$refs.keyword.focus(); }, 530);
+        },
+
         keywordInputted(event) {
             this.setKeyword(event.target.value);
         },
@@ -76,14 +93,6 @@ const app = createApp({
             navigator.share({ url: `${location.href}#${encodeURIComponent(this.keyword.trim())}` });
         },
         copyToClipboard: text => navigator.clipboard?.writeText(text),
-    },
-    mounted() {
-        const URLHash = location.hash.replace(/^#/, "");
-        if (URLHash) {
-            this.setKeyword(decodeURIComponent(URLHash));
-            history.pushState({}, "", location.href.replace(/#.*$/, ""));
-        }
-        this.$refs.keyword.focus();
     },
 }).mount("#quranize-main");
 
