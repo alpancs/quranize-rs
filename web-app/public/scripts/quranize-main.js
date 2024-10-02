@@ -33,18 +33,17 @@ createApp({
     methods: {
         registerWebWorker() {
             this.worker = new Worker("scripts/web-worker.js", { type: "module" });
-            this.worker.onmessage = event => {
-                const message = event.data;
-                if (message.status === EventStatus.WorkerInitiated) {
+            this.worker.onmessage = ({ data }) => {
+                if (data.status === EventStatus.WorkerInitiated) {
                     this.workerInitiated = true;
-                } else if (message.status === EventStatus.KeywordEncoded) {
-                    if (message.keyword === this.keyword)
-                        this.encodeResults = message.encodeResults;
-                } else if (message.status === EventStatus.ResultLocated) {
-                    const result = this.encodeResults.find(result => result.quran === message.quran);
+                } else if (data.status === EventStatus.KeywordEncoded) {
+                    if (data.keyword === this.keyword)
+                        this.encodeResults = data.encodeResults;
+                } else if (data.status === EventStatus.ResultLocated) {
+                    const result = this.encodeResults.find(result => result.quran === data.quran);
                     if (result) {
-                        result.locations = message.locations;
-                        result.compactExpls = message.compactExpls;
+                        result.locations = data.locations;
+                        result.compactExpls = data.compactExpls;
                     }
                 }
             };

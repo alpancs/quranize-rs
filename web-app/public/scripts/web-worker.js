@@ -9,19 +9,16 @@ self.onmessage = message => {
         pendingMessage = message;
         return;
     }
-    const data = message.data;
-    switch (data.status) {
-        case EventStatus.KeywordUpdated:
-            const keyword = data.keyword;
-            const encodeResults = quranize.encode(keyword);
-            self.postMessage({ status: EventStatus.KeywordEncoded, keyword, encodeResults });
-            break;
-        case EventStatus.ResultClicked:
-            const quran = data.quran;
-            const compactExpls = compressExplanation(quran, data.expl);
-            const locations = quranize.getLocations(quran);
-            self.postMessage({ status: EventStatus.ResultLocated, quran, compactExpls, locations });
-            break;
+    const { data } = message;
+    if (data.status === EventStatus.KeywordUpdated) {
+        const { keyword } = data;
+        const encodeResults = quranize.encode(keyword);
+        self.postMessage({ status: EventStatus.KeywordEncoded, keyword, encodeResults });
+    } else if (data.status === EventStatus.ResultClicked) {
+        const { quran, expl } = data;
+        const locations = quranize.getLocations(quran);
+        const compactExpls = compressExplanation(quran, expl);
+        self.postMessage({ status: EventStatus.ResultLocated, quran, locations, compactExpls });
     }
 };
 
