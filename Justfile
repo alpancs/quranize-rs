@@ -21,6 +21,7 @@ get-vue:
 
 get-bulma:
     wget https://cdn.jsdelivr.net/npm/bulma@{{bulma_version}}/css/bulma.css -O {{public_dir}}/styles/bulma.css
+    wget https://cdn.jsdelivr.net/npm/bulma@{{bulma_version}}/css/bulma.css.map -O {{public_dir}}/styles/bulma.css.map
 
 get-fontawesome:
     rm -rf {{public_dir}}/styles/fontawesome
