@@ -1,8 +1,8 @@
-import EventStatus from "./event-status.js";
 import { createApp } from "./vue.esm-browser.js";
-import { suraNames } from "./quran/meta.js";
+import { EventStatus } from "./event-status.js";
+import { SuraNames } from "./quran/meta.js";
 
-const app = createApp({
+createApp({
     mounted() {
         this.registerWebWorker();
         this.registerServiceWorker();
@@ -80,7 +80,7 @@ const app = createApp({
             });
             result.expanding ^= true;
         },
-        suraName: location => suraNames[location.sura_number - 1],
+        suraName: location => SuraNames[location.sura_number - 1],
         ayaNumber: location => toArabicNumber(location.aya_number),
         tanzilURL: location => `https://tanzil.net/#${location.sura_number}:${location.aya_number}`,
         audioSource: location => `https://tanzil.net/res/audio/matrood/${location.sura_number.toString().padStart(3, "0")}${location.aya_number.toString().padStart(3, "0")}.mp3`,

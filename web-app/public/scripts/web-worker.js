@@ -1,4 +1,4 @@
-import EventStatus from "./event-status.js";
+import { EventStatus } from "./event-status.js";
 import init, { Quranize, compressExplanation } from "./quranize/quranize.js";
 
 let quranize;

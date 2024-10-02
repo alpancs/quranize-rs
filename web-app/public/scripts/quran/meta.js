@@ -1,4 +1,4 @@
-const suraNames = [
+export const SuraNames = [
     "الفاتحة",
     "البقرة",
     "آل عمران",
@@ -114,4 +114,3 @@ const suraNames = [
     "الفلق",
     "الناس",
 ];
-export { suraNames };
