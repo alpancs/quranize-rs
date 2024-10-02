@@ -13,8 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
@@ -22,9 +20,10 @@ jobs:
           profile: minimal
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - uses: extractions/setup-just@v2
-      - uses: cloudflare/wrangler-action@v3
+      - run: just prepare-deployment
+      - uses: cloudflare/pages-action@v1
         with:
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          preCommands: just prepare-deployment
-          command: pages deploy web-app/public --project-name=quranize
+          projectName: quranize
+          directory: web-app/public
