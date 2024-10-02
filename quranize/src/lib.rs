@@ -1,5 +1,4 @@
 //! Encodes alphabetic text to quran text.
-//! See [`Quranize`] for details.
 //!
 //! # Examples
 //!
@@ -8,14 +7,16 @@
 //! Run `cargo add quranize`, or add the following lines to `Cargo.toml` file.
 //! ```toml
 //! [dependencies]
-//! quranize = "0.12"
+//! quranize = "1.0"
 //! ```
 //!
 //! ## Encoding alphabetic text to quran text
 //!
 //! ```
 //! let q = quranize::Quranize::new();
-//! assert_eq!(q.encode("bismillah").first().unwrap().0, "بِسمِ اللَّه");
+//! assert_eq!(q.encode("bismillahirrohmanirrohim")[0].0, "بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيم");
+//! assert_eq!(q.encode("amma yatasa alun")[0].0, "عَمَّ يَتَساءَلون");
+//! assert_eq!(q.find("عَمَّ يَتَساءَلون"), [(5672, 0)]);
 //! ```
 
 mod normalization;
@@ -51,13 +52,6 @@ impl Quranize {
     const EXPECTED_VERTEX_COUNT: usize = 126_307;
 
     /// Create a new [`Quranize`] instance.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let q = quranize::Quranize::new();
-    /// assert_eq!(q.encode("bismillah").first().unwrap().0, "بِسمِ اللَّه");
-    /// ```
     pub fn new() -> Self {
         let mut tree = suffix_tree::SuffixTree::with_capacity(Self::EXPECTED_VERTEX_COUNT);
         let mut saqs = Vec::with_capacity(AYA_COUNT);
@@ -85,6 +79,18 @@ impl Quranize {
         }
     }
 
+    /// Do transliteration on `s`, returning a list of tuple:
+    ///     - `String`: transliteration result / quran form
+    ///     - `usize`: location count where the quran form above is found in Alquran
+    ///     - `Vec<&'static str>``: explanation for each chars in the quran form above
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let q = quranize::Quranize::new();
+    /// assert_eq!(q.encode("alif lam mim"), [("الم".to_string(), 912, vec!["alif", "lam", "mim"])]);
+    /// assert_eq!(q.encode("minal jinnati wannas")[0].0, "مِنَ الجِنَّةِ وَالنّاس");
+    /// ```
     pub fn encode(&self, s: &str) -> EncodeResults {
         let mut results: EncodeResults = match normalization::normalize(s).as_str() {
             "" => vec![],
