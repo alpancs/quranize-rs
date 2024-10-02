@@ -103,7 +103,7 @@
                         </span>
                     </span>
                 </header>
-                <article class="card-content" v-if="result.expanding">
+                <article class="card-content" v-show="result.expanding">
                     <div class="block">
                         <div class="field is-grouped is-grouped-multiline" :class="control"
                             v-for="control in ['is-hidden-desktop', 'is-hidden-touch is-justify-content-center']">
@@ -118,12 +118,13 @@
                     <div class="card" v-for="location in result.locations">
                         <header class="card-header" dir="rtl">
                             <p class="card-header-title icon-text">
-                                <span class="quran-text is-clickable" :class="{'has-text-link': location.playing}"
-                                    @click="location.playing ^= true">
+                                <span class="quran-text is-clickable"
+                                    :class="{'has-text-link': isPlaying(result, location)}"
+                                    @click="togglePlay(result, location)">
                                     {{ suraName(location) }} : {{ ayaNumber(location) }}
                                 </span>
-                                <audio autoplay :src="audioSource(location)" v-if="location.playing"
-                                    @ended="location.playing = false"></audio>
+                                <audio autoplay :src="audioSource(location)" v-if="isPlaying(result, location)"
+                                    @ended="playing = ''"></audio>
                                 <a :href="tanzilURL(location)" target="_blank">
                                     <span class="icon is-small">
                                         <i class="fas fa-external-link-alt"></i>

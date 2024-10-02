@@ -16,6 +16,7 @@ const app = createApp({
                 EN: { URL: "scripts/quran/en.sahih.txt" },
                 ID: { URL: "scripts/quran/id.indonesian.txt" },
             },
+            playing: "",
         };
     },
     computed: {
@@ -64,7 +65,16 @@ const app = createApp({
                 }
             }
         },
-        share() { navigator.share({ url: `${location.href}#${encodeURIComponent(this.keyword.trim())}` }); },
+        togglePlay(result, location) {
+            const id = result.quran + location.index;
+            this.playing = this.playing === id ? '' : id;
+        },
+        isPlaying(result, location) {
+            return this.playing === result.quran + location.index;
+        },
+        share() {
+            navigator.share({ url: `${location.href}#${encodeURIComponent(this.keyword.trim())}` });
+        },
         copyToClipboard: text => navigator.clipboard?.writeText(text),
     },
     mounted() {
