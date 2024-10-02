@@ -1,5 +1,5 @@
-![Crates.io Version](https://img.shields.io/crates/v/quranize)
-![docs.rs](https://img.shields.io/docsrs/quranize)
+[![Crates.io Version](https://img.shields.io/crates/v/quranize)](https://crates.io/crates/quranize)
+[![docs.rs](https://img.shields.io/docsrs/quranize)](https://docs.rs/quranize)
 
 # Quranize
 
