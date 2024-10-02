@@ -1,4 +1,4 @@
-//! Encodes alphabetic text to quran text.
+//! Quranize encodes alphabetic text into quran text, a.k.a. transliteration.
 //!
 //! # Examples
 //!
@@ -14,9 +14,14 @@
 //!
 //! ```
 //! let q = quranize::Quranize::new();
+//!
 //! assert_eq!(q.encode("bismillahirrohmanirrohim")[0].0, "بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيم");
 //! assert_eq!(q.encode("amma yatasa alun")[0].0, "عَمَّ يَتَساءَلون");
-//! assert_eq!(q.find("عَمَّ يَتَساءَلون"), [(5672, 0)]);
+//!
+//! let (i, _) = q.find("عَمَّ يَتَساءَلون")[0];
+//! let sura = q.get_sura(i).unwrap();
+//! let aya = q.get_aya(i).unwrap();
+//! assert_eq!((sura, aya), (78, 1));
 //! ```
 
 mod normalization;
@@ -42,7 +47,7 @@ const SURA_STARTS: [usize; 114] = [
 ];
 const QURAN_TXT: &str = include_str!("quran-simple-min.txt");
 
-/// Struct to encode alphabetic text to quran text.
+/// Quranize model, for doing transliteration, finding string, and getting aya.
 pub struct Quranize {
     tree: suffix_tree::SuffixTree<'static>,
     saqs: Vec<(u8, u16, &'static str)>,
@@ -80,9 +85,9 @@ impl Quranize {
     }
 
     /// Do transliteration on `s`, returning a list of tuple:
-    ///     - `String`: transliteration result / quran form
-    ///     - `usize`: location count where the quran form above is found in Alquran
-    ///     - `Vec<&'static str>``: explanation for each chars in the quran form above
+    /// - `String`: transliteration result / quran form
+    /// - `usize`: location count where the quran form above is found in Alquran
+    /// - `Vec<&'static str>`: explanation for each chars in the quran form above
     ///
     /// # Examples
     ///
@@ -166,6 +171,17 @@ impl Quranize {
         results_iter.collect()
     }
 
+    /// Find `s` in Alquran, returning a list of `Index`, where
+    /// `Index` is a tuple, containing:
+    /// - `usize`: aya row / aya offset (`0..6236`)
+    /// - `usize`: string offset in a specific aya (`0..length of aya`)
+    ///
+    /// # Examples
+    /// ```
+    /// let q = quranize::Quranize::new();
+    /// let index = q.find("عَمَّ يَتَساءَلون")[0];
+    /// assert_eq!(index, (5672, 0));
+    /// ```
     pub fn find(&self, s: &str) -> Vec<Index> {
         self.tree.find(s, 0)
     }
