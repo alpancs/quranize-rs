@@ -117,14 +117,14 @@ function getExamples() {
         "waantum muslimun", "ya ayyuhannas", "walaqod yassarna", "waltandur nafs", "tabaarokalladzi", "wabarron biwalidati",
     ];
     let examples = [];
-    const EXAMPLE_COUNT = 5 + Math.floor(Math.random() * 3);
+    const EXAMPLE_COUNT = 5 + Math.trunc(Math.random() * 3);
     for (let i = 0; i < EXAMPLE_COUNT; i++)
-        examples.push(...candidates.splice(Math.floor(Math.random() * candidates.length), 1));
+        examples.push(...candidates.splice(Math.trunc(Math.random() * candidates.length), 1));
     return examples;
 }
 
 function toArabicNumber(n) {
     if (n < 0) return `-${toArabicNumber(-n)}`;
     if (n < 10) return String.fromCharCode(0x0660 + n);
-    return toArabicNumber(Math.floor(n / 10)) + toArabicNumber(n % 10);
+    return toArabicNumber(Math.trunc(n / 10)) + toArabicNumber(n % 10);
 }
