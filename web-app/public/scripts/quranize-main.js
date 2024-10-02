@@ -6,6 +6,7 @@ const quranizeWorker = new Worker("scripts/web-worker.js", { type: "module" });
 
 const app = createApp({
     mounted() {
+        this.registerServiceWorker();
         this.captureURLHash();
         this.focusInInput();
     },
@@ -30,6 +31,9 @@ const app = createApp({
         hasEmptyResult() { return this.isEngineReady && this.keyword !== "" && !this.hasResults; },
     },
     methods: {
+        registerServiceWorker() {
+            navigator.serviceWorker?.register("service-worker.js");
+        },
         captureURLHash() {
             const urlHash = location.hash.replace(/^#/, "");
             if (urlHash) {
@@ -117,8 +121,6 @@ quranizeWorker.onmessage = event => {
             break;
     }
 };
-
-navigator.serviceWorker?.register("service-worker.js");
 
 function getExamples() {
     let candidates = [
