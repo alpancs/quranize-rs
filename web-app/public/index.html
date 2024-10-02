@@ -60,14 +60,14 @@
             <div class="block">
                 <div class="field is-grouped">
                     <p class="control has-icons-left is-expanded"
-                        :class="{'has-icons-right': isEngineReady && keyword, 'is-loading': !isEngineReady}">
+                        :class="{'has-icons-right': workerInitiated && keyword, 'is-loading': !workerInitiated}">
                         <input class="input is-rounded" type="text" ref="keyword" placeholder="masyaallah"
                             :class="hasEmptyResult ? 'is-warning' : 'is-info'" :value="keyword" @input="keywordInputted"
                             @keyup.enter="$refs.keyword.blur()">
                         <span class="icon is-left">
                             <i class="fas fa-search"></i>
                         </span>
-                        <span class="icon is-right" v-show="isEngineReady && keyword">
+                        <span class="icon is-right" v-show="workerInitiated && keyword">
                             <button class="delete" @click="deleteKeyword"></button>
                         </span>
                     </p>

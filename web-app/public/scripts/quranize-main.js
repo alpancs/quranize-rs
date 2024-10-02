@@ -13,7 +13,7 @@ const app = createApp({
     data() {
         return {
             worker: undefined,
-            isEngineReady: false,
+            workerInitiated: false,
             keyword: "",
             encodeResults: [],
             supportSharing: "share" in navigator,
@@ -28,15 +28,15 @@ const app = createApp({
 
     computed: {
         hasResults() { return this.encodeResults.length > 0; },
-        hasEmptyResult() { return this.isEngineReady && this.keyword !== "" && !this.hasResults; },
+        hasEmptyResult() { return this.workerInitiated && this.keyword !== "" && !this.hasResults; },
     },
     methods: {
         registerWebWorker() {
             this.worker = new Worker("scripts/web-worker.js", { type: "module" });
             this.worker.onmessage = event => {
                 const message = event.data;
-                if (message.status === EventStatus.EngineInitiated) {
-                    this.isEngineReady = true;
+                if (message.status === EventStatus.WorkerInitiated) {
+                    this.workerInitiated = true;
                 } else if (message.status === EventStatus.KeywordEncoded) {
                     if (message.keyword === this.keyword)
                         this.encodeResults = message.encodeResults;

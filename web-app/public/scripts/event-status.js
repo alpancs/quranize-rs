@@ -1,5 +1,5 @@
 export default Object.freeze({
-    EngineInitiated: "EngineInitiated",
+    WorkerInitiated: "WorkerInitiated",
     KeywordUpdated: "KeywordUpdated",
     KeywordEncoded: "KeywordEncoded",
     ResultClicked: "ResultClicked",
