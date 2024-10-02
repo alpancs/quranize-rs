@@ -25,7 +25,6 @@ self.onmessage = message => {
     }
 };
 
-self.postMessage({ status: EventStatus.EngineInitiationStarted });
 await init({});
 quranize = new Quranize();
 self.postMessage({ status: EventStatus.EngineInitiated });

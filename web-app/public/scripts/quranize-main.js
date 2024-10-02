@@ -2,10 +2,9 @@ import EventStatus from "./event-status.js";
 import { createApp } from "./vue.esm-browser.js";
 import { suraNames } from "./quran/meta.js";
 
-const quranizeWorker = new Worker("scripts/web-worker.js", { type: "module" });
-
 const app = createApp({
     mounted() {
+        this.registerWebWorker();
         this.registerServiceWorker();
         this.captureURLHash();
         this.focusInInput();
@@ -13,6 +12,7 @@ const app = createApp({
 
     data() {
         return {
+            worker: undefined,
             isEngineReady: false,
             keyword: "",
             encodeResults: [],
@@ -31,6 +31,24 @@ const app = createApp({
         hasEmptyResult() { return this.isEngineReady && this.keyword !== "" && !this.hasResults; },
     },
     methods: {
+        registerWebWorker() {
+            this.worker = new Worker("scripts/web-worker.js", { type: "module" });
+            this.worker.onmessage = event => {
+                const message = event.data;
+                if (message.status === EventStatus.EngineInitiated) {
+                    this.isEngineReady = true;
+                } else if (message.status === EventStatus.KeywordEncoded) {
+                    if (message.keyword === this.keyword)
+                        this.encodeResults = message.encodeResults;
+                } else if (message.status === EventStatus.ResultLocated) {
+                    const result = this.encodeResults.find(result => result.quran === message.quran);
+                    if (result) {
+                        result.locations = message.locations;
+                        result.compactExpls = message.compactExpls;
+                    }
+                }
+            };
+        },
         registerServiceWorker() {
             navigator.serviceWorker?.register("service-worker.js");
         },
@@ -54,10 +72,10 @@ const app = createApp({
         },
         setKeyword(keyword) {
             this.keyword = keyword;
-            quranizeWorker.postMessage({ status: EventStatus.KeywordUpdated, keyword });
+            this.worker.postMessage({ status: EventStatus.KeywordUpdated, keyword });
         },
         clickExpand(result) {
-            if (!result.compactExpls || !result.locations) quranizeWorker.postMessage({
+            if (!result.compactExpls || !result.locations) this.worker.postMessage({
                 status: EventStatus.ResultClicked, quran: result.quran, expl: result.explanation
             });
             result.expanding ^= true;
@@ -99,28 +117,6 @@ const app = createApp({
         copyToClipboard: text => navigator.clipboard?.writeText(text),
     },
 }).mount("#quranize-main");
-
-quranizeWorker.onmessage = event => {
-    const message = event.data;
-    switch (message.status) {
-        case EventStatus.EngineInitiationStarted:
-            app.isEngineReady = false;
-            break;
-        case EventStatus.EngineInitiated:
-            app.isEngineReady = true;
-            break;
-        case EventStatus.KeywordEncoded:
-            if (message.keyword === app.keyword) app.encodeResults = message.encodeResults;
-            break;
-        case EventStatus.ResultLocated:
-            const result = app.encodeResults.find(result => result.quran === message.quran);
-            if (result) {
-                result.compactExpls = message.compactExpls;
-                result.locations = message.locations;
-            }
-            break;
-    }
-};
 
 function getExamples() {
     let candidates = [
