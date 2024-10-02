@@ -1,4 +1,4 @@
-//! Quranize encodes alphabetic text into quran text, a.k.a. transliteration.
+//! [Quranize] encodes alphabetic text into quran text, a.k.a. transliteration.
 //!
 //! # Examples
 //!
@@ -186,14 +186,35 @@ impl Quranize {
         self.tree.find(s, 0)
     }
 
+    /// Maps `i` into sura number, where `i` is an aya row / aya offset (`0..6236`).
+    ///
+    /// # Examples
+    /// ```
+    /// let q = quranize::Quranize::new();
+    /// assert_eq!(q.get_sura(5672), Some(78));
+    /// ```
     pub fn get_sura(&self, i: usize) -> Option<u8> {
         Some(self.saqs.get(i)?.0)
     }
 
+    /// Maps `i` into aya number, where `i` is an aya row / aya offset (`0..6236`).
+    ///
+    /// # Examples
+    /// ```
+    /// let q = quranize::Quranize::new();
+    /// assert_eq!(q.get_aya(5672), Some(1));
+    /// ```
     pub fn get_aya(&self, i: usize) -> Option<u16> {
         Some(self.saqs.get(i)?.1)
     }
 
+    /// Maps `i` into aya text, where `i` is an aya row / aya offset (`0..6236`).
+    ///
+    /// # Examples
+    /// ```
+    /// let q = quranize::Quranize::new();
+    /// assert_eq!(q.get_quran(5672), Some("عَمَّ يَتَساءَلونَ"));
+    /// ```
     pub fn get_quran(&self, i: usize) -> Option<&str> {
         Some(self.saqs.get(i)?.2)
     }
