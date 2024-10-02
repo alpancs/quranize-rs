@@ -3,9 +3,12 @@
 
 # Quranize
 
-<https://quranize.github.io>
+Transform transliterations into quran forms.
 
-Encoding transliterations into Quran forms.
+## Web App
+
+<https://quranize.pages.dev>
+
 
 ### Related Projects
 
