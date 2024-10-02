@@ -91,47 +91,36 @@ impl Default for JsQuranize {
 }
 
 #[wasm_bindgen(js_name = compressExplanation)]
-pub fn js_compress_explanation(quran: &str, expl: &str) -> Result<JsValue, Error> {
-    to_value(
-        &compress_explanation(quran, expl)
-            .into_iter()
-            .map(|(e, q)| JsExplanation {
-                alphabet: e,
-                quran: q,
-            })
-            .collect::<Vec<_>>(),
-    )
+pub fn js_compress_explanation(quran: &str, explanation: &str) -> Result<JsValue, Error> {
+    to_value(&compress_explanation(quran, explanation))
 }
 
-fn compress_explanation(quran: &str, expl: &str) -> Vec<(String, String)> {
-    let mut eqs = vec![(String::new(), String::new())];
-    for eq in expl.split('-').zip(quran.chars()) {
-        let mut last1_eq = eqs.pop();
-        let mut last2_eq = eqs.pop();
-        let mut new_eq = None;
-        match (&mut last2_eq, &mut last1_eq, eq) {
-            (
-                Some((ref mut last2_e, ref mut last2_q)),
-                _,
-                (e, q @ ('\u{064B}'..='\u{065F}' | '\u{0670}' | '\u{06EA}')),
-            ) => {
-                last2_e.push_str(e);
-                last2_q.push(q);
+fn compress_explanation(quran: &str, explanation: &str) -> Vec<JsExplanation> {
+    { explanation.split('-').zip(quran.chars()) }
+        .fold(Vec::new(), |mut aqs: Vec<JsExplanation>, (e, q)| {
+            match (aqs.last_mut(), q) {
+                (Some(laq), '\u{064B}'..='\u{0651}' | '\u{0670}') => {
+                    laq.alphabet.push_str(e);
+                    laq.quran.push(q);
+                }
+                _ => aqs.push(JsExplanation {
+                    alphabet: e.to_string(),
+                    quran: q.to_string(),
+                }),
             }
-            (_, Some((_, ref mut last1_q)), ("", q)) => last1_q.push(q),
-            (_, Some((ref mut last1_e, ref mut last1_q)), (e, q)) => {
-                last1_e.push_str(e);
-                last1_q.push(q);
-                new_eq = Some((String::new(), String::new()));
+            aqs
+        })
+        .into_iter()
+        .fold(Vec::new(), |mut aqs, eq| {
+            match aqs.last_mut() {
+                Some(laq) if laq.alphabet.is_empty() => {
+                    laq.alphabet += &eq.alphabet;
+                    laq.quran += &eq.quran;
+                }
+                _ => aqs.push(eq),
             }
-            _ => (),
-        }
-        for eq in [last2_eq, last1_eq, new_eq].into_iter().flatten() {
-            eqs.push(eq);
-        }
-    }
-    eqs.pop();
-    eqs
+            aqs
+        })
 }
 
 #[cfg(test)]
@@ -166,6 +155,10 @@ mod tests {
     #[test]
     fn test_compress_explanation() {
         assert_eq!(
+            compress_explanation("بِرَبِّ النّاسِ", "b-i-r-o-b-b-i----n-n-a-s-")
+                .into_iter()
+                .map(|aq| (aq.alphabet, aq.quran))
+                .collect::<Vec<_>>(),
             [
                 ("bi", "بِ"),
                 ("ro", "رَ"),
@@ -174,8 +167,7 @@ mod tests {
                 ("a", "ا"),
                 ("s", "سِ"),
             ]
-            .map(|(x, y)| (x.to_string(), y.to_string())),
-            *compress_explanation("بِرَبِّ النّاسِ", "b-i-r-o-b-b-i----n-n-a-s-"),
+            .map(|(x, y)| (x.to_string(), y.to_string()))
         );
     }
 }
