@@ -36,8 +36,10 @@ run-server:
         --cache-control-headers=false \
         --log-level=info
 
-deploy: build-wasm get-fontawesome
-    wget https://cdn.jsdelivr.net/npm/vue@{{vue_version}}/dist/vue.esm-browser.prod.js -O {{public_dir}}/scripts/vue.esm-browser.js
-    wget https://cdn.jsdelivr.net/npm/bulma@{{bulma_version}}/css/bulma.min.css -O {{public_dir}}/styles/bulma.css
+deploy: prepare-deployment
     wrangler pages deploy {{public_dir}} --project-name=quranize
     just get-vue get-bulma 2> /dev/null
+
+prepare-deployment: build-wasm get-fontawesome
+    wget https://cdn.jsdelivr.net/npm/vue@{{vue_version}}/dist/vue.esm-browser.prod.js -O {{public_dir}}/scripts/vue.esm-browser.js
+    wget https://cdn.jsdelivr.net/npm/bulma@{{bulma_version}}/css/bulma.min.css -O {{public_dir}}/styles/bulma.css
