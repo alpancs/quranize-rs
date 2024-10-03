@@ -33,5 +33,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           projectName: quranize
           directory: web-app/public
-          wranglerVersion: "3.79.0"
+          wranglerVersion: "3"
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
