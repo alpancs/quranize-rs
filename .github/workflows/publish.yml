@@ -1,4 +1,4 @@
-name: Cargo Publish
+name: Package Publishing
 
 on:
   release:
