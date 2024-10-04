@@ -1,19 +1,20 @@
 import { createApp } from "./vue.esm-browser.js";
 
-const DarkModeQuery = matchMedia("(prefers-color-scheme: dark)");
-
 createApp({
     data: () => ({ darkMode: undefined }),
     methods: {
         toggleTheme() {
-            this.setTheme(this.darkMode ^ true);
+            this.setDataTheme(this.darkMode ? "light" : "dark");
         },
-        setTheme(darkMode) {
-            this.darkMode = darkMode;
-            document.documentElement.setAttribute("data-theme", darkMode ? "dark" : "light");
+        setDataTheme(dataTheme) {
+            document.documentElement.setAttribute("data-theme", dataTheme);
+            this.darkMode = dataTheme === "dark";
+            sessionStorage.dataTheme = dataTheme;
         },
     },
     mounted() {
-        this.setTheme(DarkModeQuery.matches);
+        const dataTheme = sessionStorage.dataTheme ||
+            (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        this.setDataTheme(dataTheme);
     },
 }).mount("#quranize-header");
