@@ -218,6 +218,95 @@ impl Quranize {
     pub fn get_quran(&self, i: usize) -> Option<&str> {
         Some(self.saqs.get(i)?.2)
     }
+
+    pub fn decode(&self, s: &str) -> Vec<String> {
+        let mut results = vec![];
+        let mut harf_muqottoah = false;
+        let mut buffer = String::new();
+
+        for c in s.chars() {
+            if harf_muqottoah {
+                if let Some(tsl) = harf_muqottoah_map(c).first() {
+                    buffer.push_str(tsl);
+                    harf_muqottoah = false;
+                }
+            } else {
+                if let Some(tsl) = map(c).first() {
+                    buffer.push_str(tsl);
+                } else {
+                    // Push the character as-is if no mapping found
+                    buffer.push(c);
+                    harf_muqottoah = contains_harf_muqottoah(c);
+                }
+            }
+
+            if !harf_muqottoah {
+                results.push(buffer.clone());
+                buffer.clear();
+            }
+        }
+
+        // Combine results into a single string or a vector of strings
+        let mut final_strs: Vec<String> = results.join(" ")
+            .split("  ")
+            .map(|s| s.to_string())
+            .map(|s| s.trim().replace(" ", ""))
+            .reduce(|mut a, b| {
+                a.push(' ');
+                a.push_str(&b);
+                a
+            })
+            .into_iter()
+            .collect();
+
+
+        print!("{:?}", final_strs);
+
+        // Now post-process each resulting string to handle the shadda
+        for s in &mut final_strs {
+            let mut chars: Vec<char> = s.chars().collect();
+            let mut i = 0;
+            while i < chars.len() {
+                if chars[i] == '\u{0651}' {
+                    // Found a shadda. If there's a previous character, duplicate it.
+                    if i > 0 {
+                        let prev_char = chars[i - 1];
+
+                        // if it's already duplicated, skip the shadda
+                        if i>1 {
+                            let prev_prev_char = chars[i - 2];
+                            if prev_char == prev_prev_char {
+                                // If the previous char is the same as the one before it, remove the shadda
+                                chars.remove(i);
+                                i += 1;
+                                continue;
+                            }
+                        }
+                        // Replace the shadda with another instance of the previous char
+                        // effectively: previous_char previous_char
+                        chars.remove(i); // remove the shadda
+                        chars.insert(i, prev_char);
+                        // After insertion, the loop will move on, so we don't increment i here
+                    } else {
+                        // If shadda is at index 0 (unlikely), just remove it.
+                        chars.remove(i);
+                    }
+                } else {
+                    i += 1;
+                }
+            }
+
+            // Convert back to string
+            *s = chars.into_iter().collect();
+        }
+
+        final_strs
+    }
+
+}
+
+fn contains_harf_muqottoah(p0: char) -> bool {
+    matches!(p0, '\u{06D6}'..='\u{06DC}')
 }
 
 impl Default for Quranize {
@@ -372,5 +461,25 @@ mod tests {
         assert_eq!(t.vertices.len(), Quranize::EXPECTED_VERTEX_COUNT);
         assert!(t.vertices[0].2);
         assert!(!t.vertices[Quranize::EXPECTED_VERTEX_COUNT - 1].2);
+    }
+
+    #[test]
+    fn test_decode() {
+        let q = Quranize::new();
+
+        assert_eq!(q.decode("إِنّا لِلَّهِ وَإِنّا إِلَيهِ رٰجِعونَ"), ["inna lillahi wa inna ilayhi raji wna"]);
+        assert_eq!(q.decode("بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيم"), ["bismi allahi alrrahm ani alrrahym"]);
+        assert_eq!(q.decode("الحَمدُ لِلَّهِ رَبِّ العالَمين"), ["alhamdu lillahi rabbi al alamyn"]);
+        assert_eq!(q.decode("الرَّحمـٰنِ الرَّحيم"), ["alrrahm ani alrrahym"]);
+        assert_eq!(q.decode("مالِكِ يَومِ الدّين"), ["maliki yawmi alddyn"]);
+        assert_eq!(q.decode("إِيّاكَ نَعبُدُ وَإِيّاكَ نَستَعين"), ["iyyaka na budu wa iyyaka nasta yn"]);
+        assert_eq!(q.decode("اهدِنَا الصِّراطَ المُستَقيم"), ["ahdinaa alssirata almustakym"]);
+        assert_eq!(q.decode("صِراطَ الَّذينَ أَنعَمتَ عَلَيهِم غَيرِ المَغضوبِ عَلَيهِم وَلَا الضّالّين"), ["sirata alladyna an amta alayhim gayri almagdwbi alayhim walaa alddallyn"]);
+
+        assert_eq!(q.decode("قُل هُوَ اللَّهُ أَحَد"), ["kul huwa allahu ahad"]);
+        assert_eq!(q.decode("اللَّهُ الصَّمَد"), ["allahu alssamad"]);
+        assert_eq!(q.decode("لَم يَلِد وَلَم يولَد"), ["lam yalid walam ywlad"]);
+        assert_eq!(q.decode("وَلَم يَكُن لَهُ كُفُوًا أَحَد"), ["walam yakun lahu kufuwana ahad"]);
+
     }
 }
