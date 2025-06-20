@@ -15,6 +15,7 @@ import HelloWorld from './components/HelloWorld.vue'
 
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
+      <font-awesome-icon :icon="['fas', 'share']" />
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
