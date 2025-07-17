@@ -3,11 +3,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 import './style.css'
 import App from './App.vue'
 import HomeView from './views/HomeView.vue'
+import ResultView from './views/ResultView.vue'
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
         { path: '/', component: HomeView },
+        { path: '/result', component: ResultView },
     ],
 })
 

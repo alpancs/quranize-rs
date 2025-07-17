@@ -6,7 +6,11 @@ import HeaderView from './views/HeaderView.vue'
   <HeaderView />
   <section class="section">
     <div class="container is-max-desktop">
-      <RouterView />
+      <RouterView v-slot="{ Component }">
+        <KeepAlive :include="['HomeView']">
+          <component :is="Component" />
+        </KeepAlive>
+      </RouterView>
     </div>
   </section>
 </template>
