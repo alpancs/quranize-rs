@@ -5,7 +5,7 @@ import HeaderView from './views/HeaderView.vue'
 <template>
   <HeaderView />
   <section class="section">
-    <div class="container is-max-widescreen">
+    <div class="container is-max-desktop">
       <RouterView />
     </div>
   </section>
