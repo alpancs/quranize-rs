@@ -18,9 +18,11 @@ watch(keyword, (newKeyword) => {
 </script>
 
 <template>
-    <div class="control has-icons-left" :class="{ 'is-loading': !workerInitiated }">
-        <input class="input is-rounded" type="search" :placeholder="placeholder" spellcheck="false"
-            v-model.trim="keyword" />
-        <span class="icon is-left">🔍</span>
+    <div class="field">
+        <div class="control has-icons-left" :class="{ 'is-loading': !workerInitiated }">
+            <input class="input is-rounded" type="search" :placeholder="placeholder" spellcheck="false"
+                v-model.trim="keyword" />
+            <span class="icon is-left">🔍</span>
+        </div>
     </div>
 </template>
