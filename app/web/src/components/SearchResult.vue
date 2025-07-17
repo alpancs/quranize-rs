@@ -8,10 +8,14 @@ interface SearchResult {
 }
 
 const searchResults = ref<SearchResult[]>([])
-
 const quranizeWorker = inject<Worker>('quranizeWorker')
+let lastEventId = 0
+
 quranizeWorker?.addEventListener('message', ({ data }) => {
-    if (data.status === 'KeywordEncoded') searchResults.value = data.encodeResults
+    if (data.status === 'KeywordEncoded' && data.eventId > lastEventId) {
+        lastEventId = data.eventId
+        searchResults.value = data.encodeResults
+    }
 })
 </script>
 

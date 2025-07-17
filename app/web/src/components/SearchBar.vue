@@ -4,12 +4,17 @@ import { ref, inject, watch } from 'vue'
 const workerInitiated = ref(false)
 const keyword = ref('')
 const placeholder = 'masyaallah'
-
 const quranizeWorker = inject<Worker>('quranizeWorker')
-watch(keyword, (newKeyword) => {
-    quranizeWorker?.postMessage({ status: 'KeywordUpdated', keyword: newKeyword })
+let eventId = 0
+
+quranizeWorker?.addEventListener('message', ({ data: { status } }) => {
+    if (status === 'WorkerInitiated') workerInitiated.value = true
 })
-quranizeWorker?.addEventListener('message', ({ data: { status } }) => status === 'WorkerInitiated' && (workerInitiated.value = true))
+
+watch(keyword, (newKeyword) => {
+    const message = { status: 'KeywordUpdated', eventId: ++eventId, keyword: newKeyword }
+    quranizeWorker?.postMessage(message)
+})
 </script>
 
 <template>

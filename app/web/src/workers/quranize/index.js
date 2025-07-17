@@ -11,9 +11,9 @@ self.onmessage = message => {
     }
     const { data } = message;
     if (data.status === EventStatus.KeywordUpdated) {
-        const { keyword } = data;
+        const { eventId, keyword } = data;
         const encodeResults = quranize.encode(keyword);
-        self.postMessage({ status: EventStatus.KeywordEncoded, keyword, encodeResults });
+        self.postMessage({ status: EventStatus.KeywordEncoded, eventId, encodeResults });
     } else if (data.status === EventStatus.ResultClicked) {
         const { quran, expl } = data;
         const locations = quranize.getLocations(quran);
