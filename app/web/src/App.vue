@@ -4,7 +4,11 @@ import HeaderView from './views/HeaderView.vue'
 
 <template>
   <HeaderView />
-  <RouterView />
+  <section class="section">
+    <div class="container is-max-widescreen">
+      <RouterView />
+    </div>
+  </section>
 </template>
 
 <style scoped></style>
