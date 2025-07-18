@@ -74,4 +74,9 @@ const SuraNames = ["الفاتحة", "البقرة", "آل عمران", "الن�
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.card-header {
+    border-bottom-style: groove;
+    border-bottom-width: thin;
+}
+</style>
