@@ -15,10 +15,10 @@ self.onmessage = message => {
         const encodeResults = quranize.encode(keyword);
         self.postMessage({ status: EventStatus.KeywordEncoded, eventId, encodeResults });
     } else if (data.status === EventStatus.ResultClicked) {
-        const { quran, expl } = data;
+        const { eventId, quran, expl } = data;
         const locations = quranize.getLocations(quran);
         const compactExpls = compressExplanation(quran, expl);
-        self.postMessage({ status: EventStatus.ResultLocated, quran, locations, compactExpls });
+        self.postMessage({ status: EventStatus.ResultLocated, eventId, locations, compactExpls });
     }
 };
 
