@@ -1,27 +1,16 @@
 <script setup lang="ts">
-import { ref, inject, watch } from 'vue'
+import { inject, type Ref } from 'vue';
 
-const workerInitiated = ref(false)
-const keyword = ref('')
+const keyword = defineModel()
 const placeholder = 'masyaallah'
-const quranizeWorker = inject<Worker>('quranizeWorker')
-let eventId = 0
-
-quranizeWorker?.addEventListener('message', ({ data: { status } }) => {
-    if (status === 'WorkerInitiated') workerInitiated.value = true
-})
-
-watch(keyword, (newKeyword) => {
-    const message = { status: 'KeywordUpdated', eventId: ++eventId, keyword: newKeyword }
-    quranizeWorker?.postMessage(message)
-})
+const initialized = inject<Ref<boolean>>('quranize.initialized')
 </script>
 
 <template>
     <div class="field">
-        <div class="control has-icons-left" :class="{ 'is-loading': !workerInitiated }">
-            <input class="input is-rounded" type="search" :placeholder="placeholder" spellcheck="false"
-                v-model.trim="keyword" />
+        <div class="control has-icons-left" :class="{ 'is-loading': !initialized }">
+            <input class="input is-rounded" type="search" v-model.trim="keyword" :placeholder="placeholder"
+                spellcheck="false" autofocus />
             <span class="icon is-left">🔍</span>
         </div>
     </div>

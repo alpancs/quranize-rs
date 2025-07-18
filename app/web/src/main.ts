@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
+import { useQuranize } from './utils/quranize'
 import './style.css'
 import App from './App.vue'
 import HomeView from './views/HomeView.vue'
@@ -16,4 +17,7 @@ const router = createRouter({
 const app = createApp(App)
 app.use(router)
 app.mount('#app')
-app.provide('quranizeWorker', new Worker("/src/workers/quranize", { type: "module" }))
+
+const { initialized, encode } = useQuranize()
+app.provide('quranize.initialized', initialized)
+app.provide('quranize.encode', encode)
