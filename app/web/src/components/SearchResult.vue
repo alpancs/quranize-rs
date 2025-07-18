@@ -20,8 +20,11 @@ quranizeWorker?.addEventListener('message', ({ data }) => {
 </script>
 
 <template>
-    <RouterLink v-for="result in searchResults"
-        :to="{ path: '/result', query: { q: result.quran, e: result.explanation } }" class="box" dir="rtl">
-        <p class="quran-text">{{ result.quran }}</p>
+    <RouterLink :to="{ path: '/result', query: { q: result.quran, e: result.explanation } }"
+        v-for="result in searchResults" class="box" dir="rtl">
+        <div class="is-flex is-align-items-center is-justify-content-space-between">
+            <p class="quran-text is-size-5 has-text-weight-semibold">{{ result.quran }}</p>
+            <span class="tag is-rounded">{{ result.location_count }}</span>
+        </div>
     </RouterLink>
 </template>

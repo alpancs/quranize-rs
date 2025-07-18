@@ -7,7 +7,7 @@ const { q } = route.query
 
 <template>
     <div class="box">
-        {{ q }}
+        <p class="quran-text subtitle is-5 is-spaced">{{ q }}</p>
     </div>
 </template>
 
