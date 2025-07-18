@@ -1,5 +1,7 @@
 <script setup lang="ts">
-defineProps(['searchResults'])
+import type { SearchResults } from '../types/search-result'
+
+defineProps<{ searchResults: SearchResults }>()
 </script>
 
 <template>

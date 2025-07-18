@@ -1,16 +1,11 @@
 import { ref } from 'vue'
-
-interface SearchResult {
-    quran: string
-    explanation: string
-    location_count: number
-}
+import type { SearchResults } from '../types/search-result'
 
 export function useQuranize() {
     let idOffset = 0
     const worker = new Worker("/src/workers/quranize/web-worker", { type: "module" })
     const initialized = getInitialized(worker)
-    const encode = (text: string) => getSearchResultsProm(worker, ++idOffset, text)
+    const encode = (text: string) => getSearchResults(worker, ++idOffset, text)
     return { initialized, encode }
 }
 
@@ -26,9 +21,9 @@ function getInitialized(worker: Worker) {
     return initialized
 }
 
-function getSearchResultsProm(worker: Worker, eventId: number, text: string) {
+function getSearchResults(worker: Worker, eventId: number, text: string) {
     console.log(eventId, text)
-    const searchResults = new Promise<SearchResult[]>((resolve) => {
+    const searchResults = new Promise<SearchResults>((resolve) => {
         const controller = new AbortController()
         worker.addEventListener('message', ({ data }) => {
             if (data.status === 'KeywordEncoded' && data.eventId === eventId) {
