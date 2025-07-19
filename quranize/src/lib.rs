@@ -343,7 +343,7 @@ mod tests {
         let results = q.e("masyaallah");
         let uresults = std::collections::HashSet::<&String>::from_iter(results.iter());
         let is_unique = results.len() == uresults.len();
-        assert!(is_unique, "results are not unique. results: {:#?}", results);
+        assert!(is_unique, "results are not unique. results: {results:#?}");
     }
 
     #[test]

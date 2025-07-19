@@ -130,7 +130,7 @@ mod tests {
                 let (s, a, q) = q.saqs[i];
                 let q = q.split_whitespace().next().unwrap();
                 let all_chars_is_muq = q.chars().all(|c| !harf_muqottoah_map(c).is_empty());
-                assert!(all_chars_is_muq, "i={}, {}:{} => {}", i, s, a, q);
+                assert!(all_chars_is_muq, "i={i}, {s}:{a} => {q}");
             });
     }
 }
