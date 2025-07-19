@@ -7,11 +7,9 @@ const initialized = inject<Ref<boolean>>('quranize.initialized')
 </script>
 
 <template>
-    <div class="field">
-        <div class="control has-icons-left" :class="{ 'is-loading': !initialized }">
-            <input class="input is-rounded" type="search" v-model.trim="keyword" :placeholder="placeholder"
-                spellcheck="false" autofocus />
-            <span class="icon is-left">🔍</span>
-        </div>
+    <div class="control has-icons-left" :class="{ 'is-loading': !initialized }">
+        <input class="input is-rounded" type="search" v-model.trim="keyword" :placeholder="placeholder"
+            spellcheck="false" autofocus />
+        <span class="icon is-left">🔍</span>
     </div>
 </template>
