@@ -16,9 +16,10 @@ const SuraNames = ["الفاتحة", "البقرة", "آل عمران", "الن�
     <div class="card" dir="rtl">
         <header class="card-header">
             <p class="card-header-title">
-                <span class="quran-text">
+                <RouterLink class="quran-text"
+                    :to="{ path: '/quran-page', query: { s: result.sura_number, a: result.aya_number } }">
                     {{ SuraNames[result.sura_number - 1] }} : {{ toArabicNumber(result.aya_number) }}
-                </span>
+                </RouterLink>
             </p>
         </header>
         <div class="card-content">
