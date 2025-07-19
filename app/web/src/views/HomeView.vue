@@ -4,8 +4,9 @@ import SearchBar from '../components/SearchBar.vue';
 import EncodeResult from '../components/EncodeResult.vue';
 import type { EncodeResult as ER } from '../utils/types';
 
-const keyword = ref('');
 const encode = inject<(text: string) => Promise<ER[]>>('quranize.encode');
+
+const keyword = ref('');
 const encodeResults = ref<ER[] | undefined>([]);
 
 watch(keyword, async (newValue) => encodeResults.value = await encode?.(newValue));

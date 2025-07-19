@@ -3,15 +3,17 @@ import { ref, inject } from 'vue';
 import { useRoute } from 'vue-router';
 import type { SearchResult, Explanation } from '../utils/types';
 
-const searchResults = ref<SearchResult[]>([]);
-const compactExpls = ref<Explanation[]>([]);
-const route = useRoute();
 const search = inject<(quran: string) => Promise<SearchResult[]>>('quranize.search');
 const explain = inject<(quran: string, expl: string) => Promise<Explanation[]>>('quranize.explain');
 
+const searchResults = ref<SearchResult[]>([]);
+const compactExpls = ref<Explanation[]>([]);
+
+const route = useRoute();
 const { q, e } = route.query;
 const quran = (Array.isArray(q) ? q[0] : q) ?? '';
 const expl = (Array.isArray(e) ? e[0] : e) ?? '';
+
 search?.(quran).then((v) => searchResults.value = v);
 explain?.(quran, expl).then((v) => compactExpls.value = v);
 
@@ -58,8 +60,13 @@ const SuraNames = ["الفاتحة", "البقرة", "آل عمران", "الن�
 </template>
 
 <style scoped>
+.card {
+    border-style: solid;
+    border-width: 1px;
+}
+
 .card-header {
-    border-bottom-style: groove;
-    border-bottom-width: thin;
+    border-bottom-style: dashed;
+    border-bottom-width: 1px;
 }
 </style>

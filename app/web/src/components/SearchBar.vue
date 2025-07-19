@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { inject, type Ref } from 'vue';
 
+const initialized = inject<Ref<boolean>>('quranize.initialized');
+
 const keyword = defineModel();
 const placeholder = 'masyaallah';
-const initialized = inject<Ref<boolean>>('quranize.initialized');
 </script>
 
 <template>
