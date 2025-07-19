@@ -16,8 +16,12 @@ const router = createRouter({
 
 const app = createApp(App)
 app.use(router)
-app.mount('#app')
 
-const { initialized, encode } = useQuranize()
+const { initialized, encode, search, explain } = useQuranize()
+
 app.provide('quranize.initialized', initialized)
 app.provide('quranize.encode', encode)
+app.provide('quranize.search', search)
+app.provide('quranize.explain', explain)
+
+app.mount('#app')

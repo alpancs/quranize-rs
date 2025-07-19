@@ -14,9 +14,12 @@ interface SearchResult {
 const searchResults = ref<SearchResult[]>([])
 const compactExpls = ref<any[]>([])
 const route = useRoute()
+const search = inject<(quran: string) => Promise<SearchResult[]>>('quranize.search')
+const explain = inject<(quran: string, expl: string) => Promise<any>>('quranize.explain')
+
 const { q, e } = route.query
-const quranizeWorker = inject<Worker>('quranizeWorker')
-let eventId = 0
+search?.(q as string).then((v) => searchResults.value = v)
+explain?.(q as string, e as string).then((v) => compactExpls.value = v)
 
 function suraName(n: number): string {
     return SuraNames[n - 1]
@@ -27,16 +30,6 @@ function toArabicNumber(n: number): string {
     if (n < 10) return String.fromCharCode(0x0660 + n);
     return toArabicNumber(Math.trunc(n / 10)) + toArabicNumber(n % 10);
 }
-
-const message = { status: 'ResultClicked', eventId: ++eventId, quran: q, expl: e }
-quranizeWorker?.postMessage(message)
-
-quranizeWorker?.addEventListener('message', ({ data }) => {
-    if (data.status === 'ResultLocated' && data.eventId === eventId) {
-        searchResults.value = data.locations
-        compactExpls.value = data.compactExpls
-    }
-})
 
 const SuraNames = ["الفاتحة", "البقرة", "آل عمران", "النساء", "المائدة", "الأنعام", "الأعراف", "الأنفال", "التوبة", "يونس", "هود", "يوسف", "الرعد", "ابراهيم", "الحجر", "النحل", "الإسراء", "الكهف", "مريم", "طه", "الأنبياء", "الحج", "المؤمنون", "النور", "الفرقان", "الشعراء", "النمل", "القصص", "العنكبوت", "الروم", "لقمان", "السجدة", "الأحزاب", "سبإ", "فاطر", "يس", "الصافات", "ص", "الزمر", "غافر", "فصلت", "الشورى", "الزخرف", "الدخان", "الجاثية", "الأحقاف", "محمد", "الفتح", "الحجرات", "ق", "الذاريات", "الطور", "النجم", "القمر", "الرحمن", "الواقعة", "الحديد", "المجادلة", "الحشر", "الممتحنة", "الصف", "الجمعة", "المنافقون", "التغابن", "الطلاق", "التحريم", "الملك", "القلم", "الحاقة", "المعارج", "نوح", "الجن", "المزمل", "المدثر", "القيامة", "الانسان", "المرسلات", "النبإ", "النازعات", "عبس", "التكوير", "الإنفطار", "المطففين", "الإنشقاق", "البروج", "الطارق", "الأعلى", "الغاشية", "الفجر", "البلد", "الشمس", "الليل", "الضحى", "الشرح", "التين", "العلق", "القدر", "البينة", "الزلزلة", "العاديات", "القارعة", "التكاثر", "العصر", "الهمزة", "الفيل", "قريش", "الماعون", "الكوثر", "الكافرون", "النصر", "المسد", "الإخلاص", "الفلق", "الناس"];
 </script>

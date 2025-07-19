@@ -1,31 +1,27 @@
-import { EventStatus } from "./event-status.js";
-import init, { Quranize, compressExplanation } from "./engine/quranize.js";
+import init, { Quranize, compressExplanation as explain } from "./engine/quranize.js";
 
 let quranize;
-let pendingMessage;
+let pendingEvents = [];
 
-const messageHandler = (message) => {
-    if (quranize === undefined) {
-        pendingMessage = message;
-        return;
-    }
-    const { data } = message;
-    if (data.status === EventStatus.KeywordUpdated) {
-        const { eventId, keyword } = data;
-        const encodeResults = quranize.encode(keyword ?? '');
-        self.postMessage({ status: EventStatus.KeywordEncoded, eventId, encodeResults });
-    } else if (data.status === EventStatus.ResultClicked) {
-        const { eventId, quran, expl } = data;
-        const locations = quranize.getLocations(quran);
-        const compactExpls = compressExplanation(quran, expl);
-        self.postMessage({ status: EventStatus.ResultLocated, eventId, locations, compactExpls });
-    }
+self.onmessage = (event) => {
+    const { data: { id, subject, body } } = event;
+
+    if (quranize === undefined)
+        return pendingEvents.push(event);
+
+    if (subject === 'encode')
+        return self.postMessage({ id, response: quranize.encode(body.text) });
+
+    if (subject === 'search')
+        return self.postMessage({ id, response: quranize.getLocations(body.quran) });
+
+    if (subject === 'explain')
+        return self.postMessage({ id, response: explain(body.quran, body.expl) });
 };
-self.addEventListener('message', messageHandler);
 
 await init({});
 quranize = new Quranize();
-self.postMessage({ status: EventStatus.WorkerInitiated });
+self.postMessage({ id: 0 });
 
-// TODO: keep track of all pending messages
-if (pendingMessage) messageHandler(pendingMessage);
+pendingEvents.forEach(self.onmessage);
+pendingEvents = undefined;

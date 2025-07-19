@@ -1,37 +1,33 @@
 import { ref } from 'vue'
 import type { SearchResults } from '../types/search-result'
 
+type Subject = 'encode' | 'search' | 'explain'
+
 export function useQuranize() {
-    let idOffset = 0
-    const worker = new Worker("/src/workers/quranize/web-worker", { type: "module" })
-    const initialized = getInitialized(worker)
-    const encode = (text: string) => getSearchResults(worker, ++idOffset, text)
-    return { initialized, encode }
-}
-
-function getInitialized(worker: Worker) {
     const initialized = ref(false)
-    const controller = new AbortController()
-    worker.addEventListener('message', ({ data: { status } }) => {
-        if (status === 'WorkerInitiated') {
-            controller.abort()
-            initialized.value = true
-        }
-    }, { signal: controller.signal })
-    return initialized
-}
+    const worker = new Worker("/src/workers/quranize/web-worker.js", { type: "module" })
+    const resolves = new Map<number, (value: any) => void>()
+    let counter = 0
 
-function getSearchResults(worker: Worker, eventId: number, text: string) {
-    console.log(eventId, text)
-    const searchResults = new Promise<SearchResults>((resolve) => {
-        const controller = new AbortController()
-        worker.addEventListener('message', ({ data }) => {
-            if (data.status === 'KeywordEncoded' && data.eventId === eventId) {
-                controller.abort()
-                resolve(data.encodeResults)
-            }
-        }, { signal: controller.signal })
-    })
-    worker.postMessage({ status: 'KeywordUpdated', eventId, keyword: text })
-    return searchResults
+    function postToWorker<T>(subject: Subject, body: any) {
+        const id = ++counter
+        const promise = new Promise<T>((resolve) => resolves.set(id, resolve))
+        worker.postMessage({ id, subject, body })
+        return promise
+    }
+
+    const encode = (text: string) => postToWorker<SearchResults>('encode', { text })
+    const search = (quran: string) => postToWorker('search', { quran })
+    const explain = (quran: string, expl: string) => postToWorker('explain', { quran, expl })
+
+    worker.onmessage = ({ data: { id, response } }) => {
+        if (id === 0) {
+            initialized.value = true
+        } else {
+            resolves.get(id)?.(response)
+            resolves.delete(id)
+        }
+    }
+
+    return { initialized, encode, search, explain }
 }
