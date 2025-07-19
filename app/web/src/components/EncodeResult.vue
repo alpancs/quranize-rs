@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { EncodeResult } from '../utils/types'
+import type { EncodeResult } from '../utils/types';
 
-defineProps<{ result: EncodeResult }>()
+defineProps<{ result: EncodeResult }>();
 </script>
 
 <template>

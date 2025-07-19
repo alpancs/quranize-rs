@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import HeaderView from './views/HeaderView.vue'
+import HeaderView from './views/HeaderView.vue';
 </script>
 
 <template>
@@ -14,5 +14,3 @@ import HeaderView from './views/HeaderView.vue'
     </div>
   </section>
 </template>
-
-<style scoped></style>

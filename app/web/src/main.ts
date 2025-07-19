@@ -4,13 +4,13 @@ import { useQuranize } from './utils/quranize'
 import './style.css'
 import App from './App.vue'
 import HomeView from './views/HomeView.vue'
-import ResultView from './views/ResultView.vue'
+import SearchResultView from './views/SearchResultView.vue'
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
         { path: '/', component: HomeView },
-        { path: '/search-result', component: ResultView },
+        { path: '/search-result', component: SearchResultView },
     ],
 })
 

@@ -1,13 +1,13 @@
 import init, { Quranize, compressExplanation as explain } from "./engine/quranize";
 
 let quranize: Quranize | undefined;
-let pendingEvents: MessageEvent<any>[] = [];
+let pendingEvents: MessageEvent<any>[] | undefined = [];
 
 self.onmessage = (event) => {
     const { data: { id, subject, body } } = event;
 
     if (quranize === undefined)
-        return pendingEvents.push(event);
+        return pendingEvents?.push(event);
 
     if (subject === 'encode')
         return self.postMessage({ id, response: quranize.encode(body.text) });
@@ -24,4 +24,4 @@ quranize = new Quranize();
 self.postMessage({ id: 0 });
 
 pendingEvents.forEach(self.onmessage);
-pendingEvents = [];
+pendingEvents = undefined;

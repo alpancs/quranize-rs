@@ -1,29 +1,19 @@
 <script setup lang="ts">
-import { ref, inject } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, inject } from 'vue';
+import { useRoute } from 'vue-router';
+import type { SearchResult, Explanation } from '../utils/types';
 
-interface SearchResult {
-    index: number
-    sura_number: number
-    aya_number: number
-    before_text: string
-    text: string
-    after_text: string
-}
+const searchResults = ref<SearchResult[]>([]);
+const compactExpls = ref<Explanation[]>([]);
+const route = useRoute();
+const search = inject<(quran: string) => Promise<SearchResult[]>>('quranize.search');
+const explain = inject<(quran: string, expl: string) => Promise<Explanation[]>>('quranize.explain');
 
-const searchResults = ref<SearchResult[]>([])
-const compactExpls = ref<any[]>([])
-const route = useRoute()
-const search = inject<(quran: string) => Promise<SearchResult[]>>('quranize.search')
-const explain = inject<(quran: string, expl: string) => Promise<any>>('quranize.explain')
-
-const { q, e } = route.query
-search?.(q as string).then((v) => searchResults.value = v)
-explain?.(q as string, e as string).then((v) => compactExpls.value = v)
-
-function suraName(n: number): string {
-    return SuraNames[n - 1]
-}
+const { q, e } = route.query;
+const quran = (Array.isArray(q) ? q[0] : q) ?? '';
+const expl = (Array.isArray(e) ? e[0] : e) ?? '';
+search?.(quran).then((v) => searchResults.value = v);
+explain?.(quran, expl).then((v) => compactExpls.value = v);
 
 function toArabicNumber(n: number): string {
     if (n < 0) return `-${toArabicNumber(-n)}`;
@@ -51,7 +41,7 @@ const SuraNames = ["الفاتحة", "البقرة", "آل عمران", "الن�
         <header class="card-header">
             <p class="card-header-title">
                 <span class="quran-text">
-                    {{ suraName(result.sura_number) }} : {{ toArabicNumber(result.aya_number) }}
+                    {{ SuraNames[result.sura_number - 1] }} : {{ toArabicNumber(result.aya_number) }}
                 </span>
             </p>
         </header>
