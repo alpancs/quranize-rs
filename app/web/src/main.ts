@@ -1,27 +1,15 @@
-import { createApp } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
-import { useQuranize } from './utils/quranize'
-import './style.css'
-import App from './App.vue'
-import HomeView from './views/HomeView.vue'
-import SearchResultView from './views/SearchResultView.vue'
+import { createApp } from 'vue';
+import { router } from './router';
+import { useQuranize } from './utils/quranize';
+import './style.css';
+import App from './App.vue';
 
-const router = createRouter({
-    history: createWebHistory(),
-    routes: [
-        { path: '/', component: HomeView },
-        { path: '/search-result', component: SearchResultView },
-    ],
-})
+const app = createApp(App).use(router);
 
-const app = createApp(App)
-app.use(router)
+const { initialized, encode, search, explain } = useQuranize();
+app.provide('quranize.initialized', initialized);
+app.provide('quranize.encode', encode);
+app.provide('quranize.search', search);
+app.provide('quranize.explain', explain);
 
-const { initialized, encode, search, explain } = useQuranize()
-
-app.provide('quranize.initialized', initialized)
-app.provide('quranize.encode', encode)
-app.provide('quranize.search', search)
-app.provide('quranize.explain', explain)
-
-app.mount('#app')
+app.mount('#app');

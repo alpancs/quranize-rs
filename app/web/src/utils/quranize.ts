@@ -1,24 +1,24 @@
-import { ref } from 'vue'
-import type { EncodeResult } from './types'
+import { ref } from 'vue';
+import type { EncodeResult } from './types';
 
-type Subject = 'encode' | 'search' | 'explain'
+type Subject = 'encode' | 'search' | 'explain';
 
 export function useQuranize() {
-    const initialized = ref(false)
-    const worker = new Worker("/src/workers/quranize/web-worker", { type: "module" })
-    const resolves = new Map<number, (value: any) => void>()
-    let counter = 0
+    const initialized = ref(false);
+    const worker = new Worker("/src/workers/quranize/web-worker", { type: "module" });
+    const resolves = new Map<number, (value: any) => void>();
+    let counter = 0;
 
     function postToWorker<T>(subject: Subject, body: any) {
-        const id = ++counter
-        const promise = new Promise<T>((resolve) => resolves.set(id, resolve))
-        worker.postMessage({ id, subject, body })
-        return promise
+        const id = ++counter;
+        const promise = new Promise<T>((resolve) => resolves.set(id, resolve));
+        worker.postMessage({ id, subject, body });
+        return promise;
     }
 
-    const encode = (text: string) => postToWorker<EncodeResult[]>('encode', { text })
-    const search = (quran: string) => postToWorker('search', { quran })
-    const explain = (quran: string, expl: string) => postToWorker('explain', { quran, expl })
+    const encode = (text: string) => postToWorker<EncodeResult[]>('encode', { text });
+    const search = (quran: string) => postToWorker('search', { quran });
+    const explain = (quran: string, expl: string) => postToWorker('explain', { quran, expl });
 
     worker.onmessage = ({ data: { id, response } }) => {
         if (id === 0) {
@@ -27,7 +27,7 @@ export function useQuranize() {
             resolves.get(id)?.(response)
             resolves.delete(id)
         }
-    }
+    };
 
-    return { initialized, encode, search, explain }
+    return { initialized, encode, search, explain };
 }
