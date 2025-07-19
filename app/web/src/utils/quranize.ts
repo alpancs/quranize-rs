@@ -1,11 +1,11 @@
 import { ref } from 'vue'
-import type { SearchResults } from '../types/search-result'
+import type { EncodeResult } from './types'
 
 type Subject = 'encode' | 'search' | 'explain'
 
 export function useQuranize() {
     const initialized = ref(false)
-    const worker = new Worker("/src/workers/quranize/web-worker.js", { type: "module" })
+    const worker = new Worker("/src/workers/quranize/web-worker", { type: "module" })
     const resolves = new Map<number, (value: any) => void>()
     let counter = 0
 
@@ -16,7 +16,7 @@ export function useQuranize() {
         return promise
     }
 
-    const encode = (text: string) => postToWorker<SearchResults>('encode', { text })
+    const encode = (text: string) => postToWorker<EncodeResult[]>('encode', { text })
     const search = (quran: string) => postToWorker('search', { quran })
     const explain = (quran: string, expl: string) => postToWorker('explain', { quran, expl })
 

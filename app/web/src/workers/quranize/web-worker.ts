@@ -1,7 +1,7 @@
-import init, { Quranize, compressExplanation as explain } from "./engine/quranize.js";
+import init, { Quranize, compressExplanation as explain } from "./engine/quranize";
 
-let quranize;
-let pendingEvents = [];
+let quranize: Quranize | undefined;
+let pendingEvents: MessageEvent<any>[] = [];
 
 self.onmessage = (event) => {
     const { data: { id, subject, body } } = event;
@@ -24,4 +24,4 @@ quranize = new Quranize();
 self.postMessage({ id: 0 });
 
 pendingEvents.forEach(self.onmessage);
-pendingEvents = undefined;
+pendingEvents = [];
