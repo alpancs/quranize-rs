@@ -1,7 +1,9 @@
 <template>
   <header class="hero is-small is-info">
     <div class="hero-body">
-      <p class="title has-text-centered">Quranize</p>
+      <p class="has-text-centered">
+        <RouterLink to="/" class="title">Quranize</RouterLink>
+      </p>
     </div>
   </header>
 </template>
