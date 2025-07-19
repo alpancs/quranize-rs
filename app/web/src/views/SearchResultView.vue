@@ -28,7 +28,7 @@ const SuraNames = ["الفاتحة", "البقرة", "آل عمران", "الن�
 
 <template>
     <div class="block">
-        <p class="quran-text title is-5 has-text-centered">{{ q }}</p>
+        <p class="quran-text title is-4 has-text-centered">{{ q }}</p>
         <div class="field is-grouped is-grouped-multiline is-justify-content-center">
             <div class="control" v-for="e in compactExpls">
                 <div class="tags has-addons">
