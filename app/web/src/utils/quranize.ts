@@ -4,7 +4,7 @@ import type { EncodeResult } from './types';
 type Subject = 'encode' | 'search' | 'explain';
 
 export function useQuranize() {
-    const initialized = ref(false);
+    const initiated = ref(false);
     const worker = new Worker("/src/workers/quranize/web-worker", { type: "module" });
     const resolves = new Map<number, (value: any) => void>();
     let counter = 0;
@@ -22,12 +22,12 @@ export function useQuranize() {
 
     worker.onmessage = ({ data: { id, response } }) => {
         if (id === 0) {
-            initialized.value = true
+            initiated.value = true
         } else {
             resolves.get(id)?.(response)
             resolves.delete(id)
         }
     };
 
-    return { initialized, encode, search, explain };
+    return { initiated, encode, search, explain };
 }

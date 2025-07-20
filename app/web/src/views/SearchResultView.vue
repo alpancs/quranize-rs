@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, inject } from 'vue';
+import { ref, inject, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
 import SearchResult from '../components/SearchResult.vue';
 import type { SearchResult as SR, Explanation } from '../utils/types';
 
+const initiated = inject<Ref<boolean>>('quranize.initiated');
 const search = inject<(quran: string) => Promise<SR[]>>('quranize.search');
 const explain = inject<(quran: string, expl: string) => Promise<Explanation[]>>('quranize.explain');
 
@@ -22,6 +23,7 @@ explain?.(quran, expl).then((v) => compactExpls.value = v);
 <template>
     <div class="block">
         <p class="quran-text title is-4 has-text-centered">{{ q }}</p>
+        <div class="skeleton-block" v-if="!initiated"></div>
         <div class="field is-grouped is-grouped-multiline is-justify-content-center">
             <div class="control" v-for="e in compactExpls">
                 <div class="tags has-addons">
@@ -32,5 +34,6 @@ explain?.(quran, expl).then((v) => compactExpls.value = v);
         </div>
     </div>
 
+    <div class="skeleton-block" v-if="!initiated"></div>
     <SearchResult :result v-for="result in searchResults" />
 </template>

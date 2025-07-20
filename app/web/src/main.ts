@@ -6,8 +6,8 @@ import App from './App.vue';
 
 const app = createApp(App).use(router);
 
-const { initialized, encode, search, explain } = useQuranize();
-app.provide('quranize.initialized', initialized);
+const { initiated, encode, search, explain } = useQuranize();
+app.provide('quranize.initiated', initiated);
 app.provide('quranize.encode', encode);
 app.provide('quranize.search', search);
 app.provide('quranize.explain', explain);
