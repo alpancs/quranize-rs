@@ -4,7 +4,7 @@ import HeaderView from './views/HeaderView.vue';
 
 <template>
   <HeaderView />
-  <section class="section">
+  <section class="section pt-4">
     <div class="container is-max-desktop">
       <RouterView v-slot="{ Component }">
         <KeepAlive include="HomeView">
