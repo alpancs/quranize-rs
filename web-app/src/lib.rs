@@ -82,6 +82,14 @@ impl JsQuranize {
             })
             .collect()
     }
+
+    #[wasm_bindgen(js_name = getQuran)]
+    pub fn get_quran(&self, index: usize) -> String {
+        self.quranize
+            .get_quran(index)
+            .unwrap_or_default()
+            .to_string()
+    }
 }
 
 impl Default for JsQuranize {

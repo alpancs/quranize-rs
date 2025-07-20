@@ -1,11 +1,11 @@
 import { ref } from 'vue';
 import type { EncodeResult } from './types';
 
-type Subject = 'encode' | 'search' | 'explain';
+type Subject = 'encode' | 'search' | 'explain' | 'getQuran';
 
 export function useQuranize() {
     const initiated = ref(false);
-    const worker = new Worker("/src/workers/quranize/web-worker", { type: "module" });
+    const worker = new Worker(new URL("../workers/quranize/web-worker.ts", import.meta.url), { type: "module" });
     const resolves = new Map<number, (value: any) => void>();
     let counter = 0;
 
@@ -19,6 +19,7 @@ export function useQuranize() {
     const encode = (text: string) => postToWorker<EncodeResult[]>('encode', { text });
     const search = (quran: string) => postToWorker('search', { quran });
     const explain = (quran: string, expl: string) => postToWorker('explain', { quran, expl });
+    const getQuran = (index: number) => postToWorker<string>('getQuran', { index });
 
     worker.onmessage = ({ data: { id, response } }) => {
         if (id === 0) {
@@ -29,5 +30,5 @@ export function useQuranize() {
         }
     };
 
-    return { initiated, encode, search, explain };
+    return { initiated, encode, search, explain, getQuran };
 }

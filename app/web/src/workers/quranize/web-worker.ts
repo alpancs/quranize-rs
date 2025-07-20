@@ -17,6 +17,9 @@ self.onmessage = (event) => {
 
     if (subject === 'explain')
         return self.postMessage({ id, response: explain(body.quran, body.expl) });
+
+    if (subject === 'getQuran')
+        return self.postMessage({ id, response: quranize.getQuran(body.index) });
 };
 
 await init({});
