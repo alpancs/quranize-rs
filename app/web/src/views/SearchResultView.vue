@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, inject, type Ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, type LocationQueryValue } from 'vue-router';
 import SearchResult from '../components/SearchResult.vue';
 import type { SearchResult as SR, Explanation } from '../utils/types';
 
@@ -11,10 +11,10 @@ const explain = inject<(quran: string, expl: string) => Promise<Explanation[]>>(
 const searchResults = ref<SR[]>([]);
 const compactExpls = ref<Explanation[]>([]);
 
+const getString = (v: LocationQueryValue | LocationQueryValue[]) => (Array.isArray(v) ? v[0] : v) ?? '';
 const route = useRoute();
-const { q, e } = route.query;
-const quran = (Array.isArray(q) ? q[0] : q) ?? '';
-const expl = (Array.isArray(e) ? e[0] : e) ?? '';
+const quran = getString(route.query.quran);
+const expl = getString(route.query.explanation);
 
 search?.(quran).then((v) => searchResults.value = v);
 explain?.(quran, expl).then((v) => compactExpls.value = v);
@@ -22,7 +22,7 @@ explain?.(quran, expl).then((v) => compactExpls.value = v);
 
 <template>
     <div class="block">
-        <p class="quran-text title is-4 has-text-centered">{{ q }}</p>
+        <p class="quran-text title is-4 has-text-centered">{{ quran }}</p>
         <div class="skeleton-block" v-if="!initiated"></div>
         <div class="field is-grouped is-grouped-multiline is-justify-content-center">
             <div class="control" v-for="e in compactExpls">

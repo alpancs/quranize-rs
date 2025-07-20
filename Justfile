@@ -6,14 +6,12 @@ public_dir          := "web-app/public"
 build-web-app: build-wasm get-vue get-bulma get-fontawesome
 
 build-wasm:
-    rm -rf {{public_dir}}/scripts/quranize
+    rm -rf app/web/src/workers/quranize/quranize-wasm
     wasm-pack build \
-        --no-typescript \
         --target=web \
         --release \
-        --out-dir=public/scripts/quranize \
+        --out-dir=../app/web/src/workers/quranize/quranize-wasm \
         --out-name=quranize \
-        --no-pack \
         web-app
 
 get-vue:

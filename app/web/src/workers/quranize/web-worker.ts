@@ -1,4 +1,4 @@
-import init, { Quranize, compressExplanation as explain } from "./engine/quranize";
+import init, { Quranize, compressExplanation as explain } from "./quranize-wasm";
 
 let quranize: Quranize | undefined;
 let pendingEvents: MessageEvent<any>[] | undefined = [];
