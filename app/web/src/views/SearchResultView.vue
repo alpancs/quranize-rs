@@ -33,7 +33,6 @@ explain?.(quran, expl).then((v) => compactExpls.value = v);
             </div>
         </div>
     </div>
-
     <div class="skeleton-block" v-if="!initiated"></div>
     <SearchResult :result v-for="result in searchResults" />
 </template>
