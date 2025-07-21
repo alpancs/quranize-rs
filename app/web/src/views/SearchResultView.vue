@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { ref, inject, type Ref } from 'vue';
+import { ref } from 'vue';
 import { useRoute, type LocationQueryValue } from 'vue-router';
-import SearchResult from '../components/SearchResult.vue';
+import { initiated, call } from '../utils/quranize';
 import type { SearchResult as SR, Explanation } from '../utils/types';
-
-const initiated = inject<Ref<boolean>>('quranize.initiated');
-const search = inject<(quran: string) => Promise<SR[]>>('quranize.search');
-const explain = inject<(quran: string, expl: string) => Promise<Explanation[]>>('quranize.explain');
+import SearchResult from '../components/SearchResult.vue';
 
 const searchResults = ref<SR[]>([]);
 const compactExpls = ref<Explanation[]>([]);
@@ -16,8 +13,8 @@ const route = useRoute();
 const quran = getString(route.query.quran);
 const expl = getString(route.query.explanation);
 
-search?.(quran).then((v) => searchResults.value = v);
-explain?.(quran, expl).then((v) => compactExpls.value = v);
+call<SR[]>('getLocations', quran).then((v) => searchResults.value = v);
+call<Explanation[]>('explain', quran, expl).then((v) => compactExpls.value = v);
 </script>
 
 <template>

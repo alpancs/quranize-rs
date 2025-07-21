@@ -1,34 +1,24 @@
 import { ref } from 'vue';
-import type { EncodeResult } from './types';
+import type { Quranize } from "../workers/quranize/quranize-wasm";
 
-type Subject = 'encode' | 'search' | 'explain' | 'getQuran';
+export const initiated = ref(false);
 
-export function useQuranize() {
-    const initiated = ref(false);
-    const worker = new Worker(new URL("../workers/quranize/web-worker.ts", import.meta.url), { type: "module" });
-    const resolves = new Map<number, (value: any) => void>();
-    let counter = 0;
+const worker = new Worker(new URL("../workers/quranize/web-worker.ts", import.meta.url), { type: "module" });
+const resolves = new Map<number, Function>();
 
-    function postToWorker<T>(subject: Subject, body: any) {
-        const id = ++counter;
-        const promise = new Promise<T>((resolve) => resolves.set(id, resolve));
-        worker.postMessage({ id, subject, body });
-        return promise;
+worker.onmessage = ({ data: { id, resp } }) => {
+    if (id === 0) {
+        initiated.value = true
+    } else {
+        resolves.get(id)?.(resp)
+        resolves.delete(id)
     }
+};
 
-    const encode = (text: string) => postToWorker<EncodeResult[]>('encode', { text });
-    const search = (quran: string) => postToWorker('search', { quran });
-    const explain = (quran: string, expl: string) => postToWorker('explain', { quran, expl });
-    const getQuran = (index: number) => postToWorker<string>('getQuran', { index });
-
-    worker.onmessage = ({ data: { id, response } }) => {
-        if (id === 0) {
-            initiated.value = true
-        } else {
-            resolves.get(id)?.(response)
-            resolves.delete(id)
-        }
-    };
-
-    return { initiated, encode, search, explain, getQuran };
+let counter = 0;
+export function call<T>(func: keyof Quranize | 'explain', ...args: any[]) {
+    const id = ++counter;
+    const promise = new Promise<T>((resolve) => resolves.set(id, resolve));
+    worker.postMessage({ id, func, args });
+    return promise;
 }

@@ -1,30 +1,25 @@
 import init, { Quranize, compressExplanation as explain } from "./quranize-wasm";
 
+interface Data {
+    id: number;
+    func: keyof Quranize | 'explain';
+    args: any[];
+}
+
 let quranize: Quranize | undefined;
-let pendingEvents: MessageEvent<any>[] | undefined = [];
+let pendingEvents: MessageEvent<Data>[] | undefined = [];
 
-self.onmessage = (event) => {
-    const { data: { id, subject, body } } = event;
-
-    if (quranize === undefined)
-        return pendingEvents?.push(event);
-
-    if (subject === 'encode')
-        return self.postMessage({ id, response: quranize.encode(body.text) });
-
-    if (subject === 'search')
-        return self.postMessage({ id, response: quranize.getLocations(body.quran) });
-
-    if (subject === 'explain')
-        return self.postMessage({ id, response: explain(body.quran, body.expl) });
-
-    if (subject === 'getQuran')
-        return self.postMessage({ id, response: quranize.getQuran(body.index) });
+const eventHandler = (event: MessageEvent<Data>) => {
+    const { data: { id, func, args } } = event;
+    if (quranize === undefined) return pendingEvents?.push(event);
+    if (func === 'explain') return self.postMessage({ id, resp: explain(args[0], args[1]) });
+    self.postMessage({ id, resp: (quranize[func] as Function)(...args) });
 };
+self.onmessage = eventHandler;
 
 await init({});
 quranize = new Quranize();
 self.postMessage({ id: 0 });
 
-pendingEvents.forEach(self.onmessage);
+pendingEvents.forEach(eventHandler);
 pendingEvents = undefined;

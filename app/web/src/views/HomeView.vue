@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import { ref, inject, watch, type Ref } from 'vue';
+import { ref, watch } from 'vue';
+import { initiated, call } from '../utils/quranize';
+import type { EncodeResult as ER } from '../utils/types';
 import SearchBar from '../components/SearchBar.vue';
 import EncodeResult from '../components/EncodeResult.vue';
-import type { EncodeResult as ER } from '../utils/types';
-
-const initiated = inject<Ref<boolean>>('quranize.initiated');
-const encode = inject<(text: string) => Promise<ER[]>>('quranize.encode');
 
 const keyword = ref('');
-const encodeResults = ref<ER[] | undefined>([]);
+const encodeResults = ref<ER[]>([]);
 
-watch(keyword, async (newValue) => encodeResults.value = await encode?.(newValue));
+watch(keyword, async (text) => encodeResults.value = await call('encode', text));
 </script>
 
 <template>
