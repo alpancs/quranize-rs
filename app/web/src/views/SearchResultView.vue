@@ -1,20 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRoute, type LocationQueryValue } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { initiated, call } from '../utils/quranize';
 import type { SearchResult as SR, Explanation } from '../utils/types';
 import SearchResult from '../components/SearchResult.vue';
 
+const route = useRoute();
+const { quran, explanation: expl } = route.query;
+
 const searchResults = ref<SR[]>([]);
 const compactExpls = ref<Explanation[]>([]);
 
-const getString = (v: LocationQueryValue | LocationQueryValue[]) => (Array.isArray(v) ? v[0] : v) ?? '';
-const route = useRoute();
-const quran = getString(route.query.quran);
-const expl = getString(route.query.explanation);
-
 call<SR[]>('getLocations', quran).then((v) => searchResults.value = v);
-call<Explanation[]>('explain', quran, expl).then((v) => compactExpls.value = v);
+call<Explanation[]>('compressExpl', quran, expl).then((v) => compactExpls.value = v);
 </script>
 
 <template>

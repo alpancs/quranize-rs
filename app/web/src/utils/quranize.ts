@@ -16,7 +16,7 @@ worker.onmessage = ({ data: { id, resp } }) => {
 };
 
 let counter = 0;
-export function call<T>(func: keyof Quranize | 'explain', ...args: any[]) {
+export function call<T>(func: keyof Quranize, ...args: any[]) {
     const id = ++counter;
     const promise = new Promise<T>((resolve) => resolves.set(id, resolve));
     worker.postMessage({ id, func, args });

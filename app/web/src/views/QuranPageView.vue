@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRoute, type LocationQueryValue } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { call } from '../utils/quranize';
 
-const getString = (v: LocationQueryValue | LocationQueryValue[]) => (Array.isArray(v) ? v[0] : v) ?? '';
 const route = useRoute();
+const index = parseInt(route.query.index as string);
+
 const quran = ref('');
 const quran1 = ref('');
-const index = parseInt(getString(route.query.index));
+
 call<string>('getQuran', index).then((v) => quran.value = v);
 call<string>('getQuran', index + 1).then((v) => quran1.value = v);
 </script>

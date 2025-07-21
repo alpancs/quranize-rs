@@ -81,6 +81,7 @@ dependencies = [
 name = "quranize-wasm"
 version = "0.0.0"
 dependencies = [
+ "js-sys",
  "pretty_assertions",
  "quranize",
  "serde",

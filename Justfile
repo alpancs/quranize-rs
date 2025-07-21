@@ -11,8 +11,7 @@ build-wasm:
         --target=web \
         --release \
         --out-dir=../app/web/src/workers/quranize/quranize-wasm \
-        --out-name=quranize \
-        web-app
+        quranize-wasm
 
 get-vue:
     wget https://cdn.jsdelivr.net/npm/vue@{{vue_version}}/dist/vue.esm-browser.js -O {{public_dir}}/scripts/vue.esm-browser.js
