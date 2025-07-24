@@ -7,8 +7,8 @@ defineProps<{ result: EncodeResult }>();
 <template>
     <RouterLink :to="{ path: '/search-result', query: result }" class="box" dir="rtl">
         <div class="is-flex is-justify-content-space-between is-align-items-center">
-            <p class="quran-text is-size-5 has-text-weight-semibold">{{ result.quran }}</p>
-            <span class="tag is-rounded">{{ result.location_count }}</span>
+            <p class="quran-text has-text-weight-semibold">{{ result.quran }}</p>
+            <span class="tag is-rounded">{{ result.location_count }}x</span>
         </div>
     </RouterLink>
 </template>
