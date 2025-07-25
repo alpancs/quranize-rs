@@ -127,7 +127,7 @@ mod tests {
         (0..AYA_COUNT)
             .filter(|&i| contains_harf_muqottoah((i, 0)))
             .for_each(|i| {
-                let (s, a, q) = q.saqs[i];
+                let (_, s, a, q) = q.data[i];
                 let q = q.split_whitespace().next().unwrap();
                 let all_chars_is_muq = q.chars().all(|c| !harf_muqottoah_map(c).is_empty());
                 assert!(all_chars_is_muq, "i={i}, {s}:{a} => {q}");
