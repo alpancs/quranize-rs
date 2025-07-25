@@ -17,9 +17,9 @@ struct JsEncodeResult {
 
 #[derive(serde::Serialize)]
 struct JsLocation<'a> {
-    page_number: u16,
-    sura_number: u8,
-    aya_number: u16,
+    page: u16,
+    sura: u8,
+    aya: u16,
     before_text: &'a str,
     text: &'a str,
     after_text: &'a str,
@@ -78,9 +78,9 @@ impl JsQuranize {
                     .unwrap_or_default();
                 let k = j + query.len() + offset;
                 JsLocation {
-                    page_number: p,
-                    sura_number: s,
-                    aya_number: a,
+                    page: p,
+                    sura: s,
+                    aya: a,
                     before_text: q.get(..j).unwrap_or_default(),
                     text: q.get(j..k).unwrap_or_default(),
                     after_text: q.get(k..).unwrap_or_default(),
@@ -146,9 +146,9 @@ mod tests {
     fn test_encode() {
         let q = JsQuranize::new();
         let locs = &q.get_locations(&q.encode("bismillah")[0].quran);
-        let l = locs.iter().find(|l| l.sura_number == 1).unwrap();
-        assert_eq!(1, l.sura_number);
-        assert_eq!(1, l.aya_number);
+        let l = locs.iter().find(|l| l.sura == 1).unwrap();
+        assert_eq!(1, l.sura);
+        assert_eq!(1, l.aya);
         assert_eq!("", l.before_text);
         assert_eq!("بِسمِ اللَّهِ", l.text);
         assert_eq!(" الرَّحمـٰنِ الرَّحيمِ", l.after_text);
@@ -159,8 +159,8 @@ mod tests {
         assert_eq!("", l.after_text);
 
         let l = &q.get_locations(&q.encode("arrohmanirrohim")[0].quran)[0];
-        assert_eq!(1, l.sura_number);
-        assert_eq!(1, l.aya_number);
+        assert_eq!(1, l.sura);
+        assert_eq!(1, l.aya);
         assert_eq!("بِسمِ اللَّهِ ", l.before_text);
         assert_eq!("الرَّحمـٰنِ الرَّحيمِ", l.text);
         assert_eq!("", l.after_text);
