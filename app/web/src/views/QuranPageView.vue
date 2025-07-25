@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { call, toArabicNumber } from '../utils/quranize';
+import { call, toArabicNumber, getSuraName } from '../utils/quranize';
 import MarkedQuranText from '../components/MarkedQuranText.vue';
 import AyaNumber from '../components/AyaNumber.vue';
 
-type QuranPageData = {
+type PageItem = {
     sura: number;
     aya: number;
     text: string;
-}[];
+};
 
 const route = useRoute();
 const page = parseInt(route.query.page as string);
@@ -19,19 +19,22 @@ const beforeText = route.query.before_text as string;
 const text = route.query.text as string;
 const afterText = route.query.after_text as string;
 
-const quranData = ref<QuranPageData>([]);
+const pageItems = ref<PageItem[]>([]);
 
-call<QuranPageData>('getPage', page).then((v) => quranData.value = v);
+call<PageItem[]>('getPage', page).then((v) => pageItems.value = v);
 </script>
 
 <template>
-    <div class="block">
-        <div class="has-text-justified is-size-5" dir="rtl">
-            <span v-for="(quran, index) in quranData" :key="index">
+    <div class="message">
+        <div class="message-body has-text-justified" dir="rtl">
+            <span v-for="item in pageItems">
+                <p v-if="item.aya === 1" class="mt-4 quran-text has-text-centered has-text-weight-bold">
+                    سورة {{ getSuraName(item.sura) }}
+                </p>
                 <MarkedQuranText :beforeMarked="beforeText" :marked="text" :afterMarked="afterText"
-                    v-if="quran.sura === sura && quran.aya === aya" />
-                <span class="quran-text" v-else>{{ quran.text }}</span>
-                <AyaNumber :aya="quran.aya" />
+                    v-if="item.sura === sura && item.aya === aya" />
+                <span class="quran-text" v-else>{{ item.text }}</span>
+                <AyaNumber :aya="item.aya" />
             </span>
         </div>
     </div>
