@@ -194,6 +194,28 @@ impl Quranize {
     pub fn get_data(&self, i: usize) -> Option<&(u16, u8, u16, &str)> {
         self.data.get(i)
     }
+
+    /// Get the data for a specific page number (`page`: 1..604).
+    /// Returns a vector of tuples, each tuple contains:
+    /// - `u16`: page number
+    /// - `u8`: sura number
+    /// - `u16`: aya number
+    /// - `&str`: aya text
+    /// # Examples
+    /// ```
+    /// let q = quranize::Quranize::new();
+    /// let page_data = q.get_data_from_page(582).unwrap();
+    /// assert_eq!(page_data.len(), 30);
+    /// assert_eq!(page_data[0], &(582, 78, 1, "عَمَّ يَتَساءَلونَ"));
+    /// ```
+    pub fn get_data_from_page(&self, page: u16) -> Option<Vec<&(u16, u8, u16, &str)>> {
+        let same_page = |&&(p, _, _, _): &&(u16, u8, u16, &str)| p == page;
+        let pos = { self.data.binary_search_by_key(&page, |&(p, _, _, _)| p) }.ok()?;
+        let left_item_count = self.data[..pos].iter().rev().take_while(same_page).count();
+        let left_pos = pos - left_item_count;
+        let page_data = self.data[left_pos..].iter().take_while(same_page).collect();
+        Some(page_data)
+    }
 }
 
 impl Default for Quranize {
