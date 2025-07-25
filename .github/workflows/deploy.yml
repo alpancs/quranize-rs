@@ -27,11 +27,9 @@ jobs:
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - uses: extractions/setup-just@v2
       - run: just prepare-deployment
-      - uses: cloudflare/pages-action@v1
+      - uses: cloudflare/wrangler-action@v3
         with:
-          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          projectName: quranize
-          directory: app/web/dist
-          wranglerVersion: "3"
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy app/web/dist --project-name=quranize
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
