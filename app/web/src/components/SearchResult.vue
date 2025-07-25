@@ -4,6 +4,7 @@ import type { SearchResult } from '../utils/types';
 defineProps<{ result: SearchResult }>();
 
 function toArabicNumber(n: number): string {
+    if (n === undefined) return "";
     if (n < 0) return `-${toArabicNumber(-n)}`;
     if (n < 10) return String.fromCharCode(0x0660 + n);
     return toArabicNumber(Math.trunc(n / 10)) + toArabicNumber(n % 10);
@@ -17,7 +18,7 @@ const SuraNames = ["الفاتحة", "البقرة", "آل عمران", "الن�
         <header class="card-header">
             <p class="card-header-title">
                 <RouterLink :to="{ path: '/quran-page', query: result }" class="quran-text">
-                    {{ SuraNames[result.sura_number - 1] }} : {{ toArabicNumber(result.aya_number) }}
+                    {{ SuraNames[result.sura - 1] }} : {{ toArabicNumber(result.aya) }}
                 </RouterLink>
             </p>
         </header>
@@ -26,7 +27,7 @@ const SuraNames = ["الفاتحة", "البقرة", "آل عمران", "الن�
                 <p class="quran-text">
                     <span>{{ result.before_text }}</span>
                     <mark>{{ result.text }}</mark>
-                    <span>{{ result.after_text }} &#xFD3F;{{ toArabicNumber(result.aya_number) }}&#xFD3E;</span>
+                    <span>{{ result.after_text }} &#xFD3F;{{ toArabicNumber(result.aya) }}&#xFD3E;</span>
                 </p>
             </div>
         </div>

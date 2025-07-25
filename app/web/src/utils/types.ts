@@ -5,9 +5,9 @@ export type EncodeResult = {
 }
 
 export type SearchResult = {
-    index: number;
-    sura_number: number;
-    aya_number: number;
+    page: number;
+    sura: number;
+    aya: number;
     before_text: string;
     text: string;
     after_text: string;
