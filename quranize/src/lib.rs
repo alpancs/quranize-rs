@@ -371,4 +371,21 @@ mod tests {
         assert!(t.vertices[0].2);
         assert!(!t.vertices[Quranize::EXPECTED_VERTEX_COUNT - 1].2);
     }
+
+    #[test]
+    fn test_get_data_from_page() {
+        let q = Quranize::new();
+        let page1_data = q.get_data_from_page(1).unwrap();
+        assert_eq!(page1_data.len(), 7);
+        assert_eq!(page1_data[0].1, 1);
+        assert_eq!(page1_data[0].2, 1);
+        assert_eq!(page1_data[0].3, "بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيمِ");
+        let page2_data = q.get_data_from_page(2).unwrap();
+        assert_eq!(page2_data.len(), 5);
+        let page3_data = q.get_data_from_page(3).unwrap();
+        assert_eq!(page3_data.len(), 11);
+        let page604_data = q.get_data_from_page(604).unwrap();
+        assert_eq!(page604_data.len(), 15);
+        assert_eq!(page604_data[0].3, "قُل هُوَ اللَّهُ أَحَدٌ");
+    }
 }
