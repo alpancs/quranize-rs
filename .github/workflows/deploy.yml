@@ -32,6 +32,6 @@ jobs:
           accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           projectName: quranize
-          directory: web-app/public
+          directory: app/web/dist
           wranglerVersion: "3"
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
