@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { call, toArabicNumber, getSuraName } from '../utils/quranize';
 import MarkedQuranText from '../components/MarkedQuranText.vue';
@@ -12,7 +12,7 @@ type PageItem = {
 };
 
 const route = useRoute();
-const page = parseInt(route.query.page as string);
+const page = computed(() => parseInt(route.query.page as string));
 const sura = parseInt(route.query.sura as string);
 const aya = parseInt(route.query.aya as string);
 const beforeText = route.query.before_text as string;
@@ -21,7 +21,9 @@ const afterText = route.query.after_text as string;
 
 const pageItems = ref<PageItem[]>([]);
 
-call<PageItem[]>('getPage', page).then((v) => pageItems.value = v);
+call<PageItem[]>('getPage', page.value).then((v) => pageItems.value = v);
+
+watch(page, (p) => call<PageItem[]>('getPage', p).then((v) => pageItems.value = v));
 </script>
 
 <template>
@@ -39,6 +41,14 @@ call<PageItem[]>('getPage', page).then((v) => pageItems.value = v);
         </div>
     </div>
     <div class="block">
-        <p class="quran-text subtitle has-text-centered is-size-5">◄ {{ toArabicNumber(page) }} ►</p>
+        <p class="quran-text subtitle has-text-centered is-size-5">
+            <RouterLink v-show="page < 604"
+                :to="{ query: { page: page + 1, sura, aya, before_text: beforeText, text, after_text: afterText } }">◄
+            </RouterLink>
+            {{ toArabicNumber(page) }}
+            <RouterLink v-show="page > 1"
+                :to="{ query: { page: page - 1, sura, aya, before_text: beforeText, text, after_text: afterText } }">►
+            </RouterLink>
+        </p>
     </div>
 </template>
