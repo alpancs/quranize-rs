@@ -23,7 +23,7 @@ const pageItems = ref<PageItem[]>([]);
 
 call<PageItem[]>('getPage', page.value).then((v) => pageItems.value = v);
 
-watch(page, (p) => call<PageItem[]>('getPage', p).then((v) => pageItems.value = v));
+watch(page, async (p) => pageItems.value = await call<PageItem[]>('getPage', p));
 </script>
 
 <template>
