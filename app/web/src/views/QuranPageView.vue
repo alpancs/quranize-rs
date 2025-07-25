@@ -27,8 +27,8 @@ watch(page, (p) => call<PageItem[]>('getPage', p).then((v) => pageItems.value = 
 </script>
 
 <template>
-    <div class="message">
-        <div class="message-body has-text-justified" dir="rtl">
+    <div class="block">
+        <div class="has-text-justified" dir="rtl">
             <span v-for="item in pageItems">
                 <p v-if="item.aya === 1" class="mt-4 quran-text has-text-centered has-text-weight-bold">
                     سورة {{ getSuraName(item.sura) }}
