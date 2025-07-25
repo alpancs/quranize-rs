@@ -17,7 +17,7 @@ struct JsEncodeResult {
 
 #[derive(serde::Serialize)]
 struct JsLocation<'a> {
-    index: usize,
+    page_number: u16,
     sura_number: u8,
     aya_number: u16,
     before_text: &'a str,
@@ -57,28 +57,26 @@ impl JsQuranize {
     }
 
     #[wasm_bindgen(js_name = getLocations)]
-    pub fn js_get_locations(&self, quran: &str) -> Result<JsValue, Error> {
-        to_value(&self.get_locations(quran))
+    pub fn js_get_locations(&self, query: &str) -> Result<JsValue, Error> {
+        to_value(&self.get_locations(query))
     }
 
-    fn get_locations(&self, quran: &str) -> Vec<JsLocation> {
-        { self.quranize.find(quran).into_iter() }
+    fn get_locations(&self, query: &str) -> Vec<JsLocation> {
+        { self.quranize.find(query).into_iter() }
             .map(|(i, j)| {
-                let sura_number = self.quranize.get_sura(i).unwrap_or_default();
-                let aya_number = self.quranize.get_aya(i).unwrap_or_default();
-                let aya = self.quranize.get_quran(i).unwrap_or_default();
-                let offset = aya
-                    .get(j + quran.len()..)
+                let (p, s, a, q) = self.quranize.get_data(i).copied().unwrap_or_default();
+                let offset = q
+                    .get(j + query.len()..)
                     .and_then(|s| Some(s.split(' ').next()?.len()))
                     .unwrap_or_default();
-                let k = j + quran.len() + offset;
+                let k = j + query.len() + offset;
                 JsLocation {
-                    index: i,
-                    sura_number,
-                    aya_number,
-                    before_text: aya.get(..j).unwrap_or_default(),
-                    text: aya.get(j..k).unwrap_or_default(),
-                    after_text: aya.get(k..).unwrap_or_default(),
+                    page_number: p,
+                    sura_number: s,
+                    aya_number: a,
+                    before_text: q.get(..j).unwrap_or_default(),
+                    text: q.get(j..k).unwrap_or_default(),
+                    after_text: q.get(k..).unwrap_or_default(),
                 }
             })
             .collect()
@@ -87,8 +85,10 @@ impl JsQuranize {
     #[wasm_bindgen(js_name = getQuran)]
     pub fn get_quran(&self, index: usize) -> String {
         self.quranize
-            .get_quran(index)
+            .get_data(index)
+            .copied()
             .unwrap_or_default()
+            .3
             .to_string()
     }
 

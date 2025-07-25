@@ -19,9 +19,8 @@
 //! assert_eq!(q.encode("amma yatasa alun")[0].0, "عَمَّ يَتَساءَلون");
 //!
 //! let (i, _) = q.find("عَمَّ يَتَساءَلون")[0];
-//! let sura = q.get_sura(i).unwrap();
-//! let aya = q.get_aya(i).unwrap();
-//! assert_eq!((sura, aya), (78, 1));
+//! let &(page, sura, aya, _) = q.get_data(i).unwrap();
+//! assert_eq!((page, sura, aya), (582, 78, 1));
 //! ```
 
 mod normalization;
@@ -180,37 +179,20 @@ impl Quranize {
         self.tree.find(s, 0)
     }
 
-    /// Maps `i` into sura number, where `i` is an aya row / aya offset (`0..6236`).
+    /// Get the data for a specific aya row / aya offset (`i`: 0..6236).
+    /// Data is a tuple of:
+    /// - `u16`: page number
+    /// - `u8`: sura number
+    /// - `u16`: aya number
+    /// - `&str`: aya text
     ///
     /// # Examples
     /// ```
     /// let q = quranize::Quranize::new();
-    /// assert_eq!(q.get_sura(5672), Some(78));
+    /// assert_eq!(q.get_data(5672), Some(&(582, 78, 1, "عَمَّ يَتَساءَلونَ")));
     /// ```
-    pub fn get_sura(&self, i: usize) -> Option<u8> {
-        Some(self.data.get(i)?.1)
-    }
-
-    /// Maps `i` into aya number, where `i` is an aya row / aya offset (`0..6236`).
-    ///
-    /// # Examples
-    /// ```
-    /// let q = quranize::Quranize::new();
-    /// assert_eq!(q.get_aya(5672), Some(1));
-    /// ```
-    pub fn get_aya(&self, i: usize) -> Option<u16> {
-        Some(self.data.get(i)?.2)
-    }
-
-    /// Maps `i` into aya text, where `i` is an aya row / aya offset (`0..6236`).
-    ///
-    /// # Examples
-    /// ```
-    /// let q = quranize::Quranize::new();
-    /// assert_eq!(q.get_quran(5672), Some("عَمَّ يَتَساءَلونَ"));
-    /// ```
-    pub fn get_quran(&self, i: usize) -> Option<&str> {
-        Some(self.data.get(i)?.3)
+    pub fn get_data(&self, i: usize) -> Option<&(u16, u8, u16, &str)> {
+        self.data.get(i)
     }
 }
 
