@@ -31,6 +31,13 @@ struct JsExplanation {
     quran: String,
 }
 
+#[derive(serde::Serialize)]
+struct JsQuranPageData<'a> {
+    sura: u8,
+    aya: u16,
+    text: &'a str,
+}
+
 #[wasm_bindgen(js_class = Quranize)]
 impl JsQuranize {
     #[wasm_bindgen(constructor)]
@@ -82,14 +89,18 @@ impl JsQuranize {
             .collect()
     }
 
-    #[wasm_bindgen(js_name = getQuran)]
-    pub fn get_quran(&self, index: usize) -> String {
+    #[wasm_bindgen(js_name = getPage)]
+    pub fn js_get_page(&self, page: u16) -> Result<JsValue, Error> {
+        to_value(&self.get_page(page))
+    }
+
+    fn get_page(&self, page: u16) -> Vec<JsQuranPageData> {
         self.quranize
-            .get_data(index)
-            .copied()
+            .get_data_from_page(page)
             .unwrap_or_default()
-            .3
-            .to_string()
+            .into_iter()
+            .map(|&(_, sura, aya, text)| JsQuranPageData { sura, aya, text })
+            .collect()
     }
 
     #[wasm_bindgen(js_name = compressExpl)]
