@@ -1,3 +1,6 @@
+run-app-web:
+    cd app/web && npm run dev
+
 build-wasm:
     rm -rf app/web/src/workers/quranize/quranize-wasm
     wasm-pack build \
