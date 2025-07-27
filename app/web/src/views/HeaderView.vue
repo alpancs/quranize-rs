@@ -42,7 +42,7 @@ onMounted(() => {
       <div class="navbar-menu" :class="{ 'is-active': isBurgerActive }">
         <div class="navbar-end">
           <div class="navbar-item has-dropdown" :class="{ 'is-active': isThemeMenuActive }"
-            @click="isThemeMenuActive = !isThemeMenuActive">
+            @mouseenter="isThemeMenuActive = true" @mouseleave="isThemeMenuActive = false">
             <a class="navbar-link">
               Theme
             </a>
