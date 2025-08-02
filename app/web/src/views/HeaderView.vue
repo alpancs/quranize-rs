@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
+type Theme = 'light' | 'dark' | 'auto';
+
 const isBurgerActive = ref(false);
 const isThemeMenuActive = ref(false);
-const theme = ref<'light' | 'dark' | 'auto'>('auto');
+const theme = ref<Theme>('auto');
 
-function setTheme(newTheme: 'light' | 'dark' | 'auto') {
+function setTheme(newTheme: Theme) {
   theme.value = newTheme;
   if (newTheme === 'auto') {
     document.documentElement.removeAttribute('data-theme');
@@ -16,7 +18,7 @@ function setTheme(newTheme: 'light' | 'dark' | 'auto') {
 }
 
 onMounted(() => {
-  const savedTheme = (localStorage.getItem('theme') as 'light' | 'dark' | 'auto') || 'auto';
+  const savedTheme = (localStorage.getItem('theme') as Theme) || 'auto';
   setTheme(savedTheme);
 });
 </script>
