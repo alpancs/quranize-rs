@@ -1,60 +1,59 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 
-type Theme = 'light' | 'dark' | 'auto';
+type Theme = 0 | 1 | 2; // 0: system, 1: light, 2: dark
 
-const isBurgerActive = ref(false);
-const isThemeMenuActive = ref(false);
-const theme = ref<Theme>('auto');
+const themes = [
+  { name: 'system', icon: 'desktop', colorClass: '' },
+  { name: 'light', icon: 'sun', colorClass: 'has-text-warning' },
+  { name: 'dark', icon: 'moon', colorClass: 'has-text-link' },
+];
+
+const theme = ref<Theme>(0);
+const themeIcon = computed(() => themes[theme.value]?.icon);
+const themeColorClass = computed(() => themes[theme.value]?.colorClass);
+
+function switchTheme() {
+  setTheme(((theme.value + 1) % themes.length) as Theme);
+}
 
 function setTheme(newTheme: Theme) {
   theme.value = newTheme;
-  if (newTheme === 'auto') {
+  if (newTheme === 0) {
     document.documentElement.removeAttribute('data-theme');
   } else {
-    document.documentElement.setAttribute('data-theme', newTheme);
+    document.documentElement.setAttribute('data-theme', themes[newTheme]?.name);
   }
-  localStorage.setItem('theme', newTheme);
+  localStorage.setItem('theme', newTheme.toString());
 }
 
 onMounted(() => {
-  const savedTheme = (localStorage.getItem('theme') as Theme) || 'auto';
-  setTheme(savedTheme);
+  setTheme((parseInt(localStorage.getItem('theme')!) || 0) as Theme);
 });
 </script>
 
 <template>
-  <nav class="navbar is-info is-fixed-top has-shadow">
-    <div class="container is-max-desktop">
-      <div class="navbar-brand">
-        <div class="navbar-end">
-          <RouterLink to="/" class="navbar-item">
-            <span class="has-text-weight-extrabold is-size-3">Quranize</span>
-          </RouterLink>
-        </div>
-        <a role="button" class="navbar-burger" :class="{ 'is-active': isBurgerActive }" aria-label="menu"
-          aria-expanded="false" data-target="navbarBasicExample" @click="isBurgerActive = !isBurgerActive">
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-        </a>
-      </div>
-      <div class="navbar-menu" :class="{ 'is-active': isBurgerActive }">
-        <div class="navbar-end">
-          <div class="navbar-item has-dropdown" :class="{ 'is-active': isThemeMenuActive }"
-            @mouseenter="isThemeMenuActive = true" @mouseleave="isThemeMenuActive = false">
-            <a class="navbar-link">
-              Theme
-            </a>
-            <div class="navbar-dropdown is-right">
-              <a class="navbar-item" :class="{ 'is-active': theme === 'light' }" @click="setTheme('light')">☀️ Light</a>
-              <a class="navbar-item" :class="{ 'is-active': theme === 'auto' }" @click="setTheme('auto')">✨ Auto</a>
-              <a class="navbar-item" :class="{ 'is-active': theme === 'dark' }" @click="setTheme('dark')">🌙 Dark</a>
+  <header class="hero is-small is-info">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="level is-mobile">
+          <span class="button is-rounded is-invisible">
+            <span class="icon"></span>
+          </span>
+          <div class="level-item">
+            <a href="/" class="title">Quranize</a>
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <button class="button is-rounded" @click="switchTheme">
+                <span class="icon" :class="themeColorClass">
+                  <font-awesome-icon :icon="['fas', themeIcon]" />
+                </span>
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </nav>
+  </header>
 </template>
