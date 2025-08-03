@@ -6,7 +6,7 @@ type Theme = 0 | 1 | 2; // 0: system, 1: light, 2: dark
 const themes = [
   { name: 'system', icon: 'desktop', colorClass: '' },
   { name: 'light', icon: 'sun', colorClass: 'has-text-warning' },
-  { name: 'dark', icon: 'moon', colorClass: 'has-text-link' },
+  { name: 'dark', icon: 'moon', colorClass: 'has-text-link-light' },
 ];
 
 const theme = ref<Theme>(0);
