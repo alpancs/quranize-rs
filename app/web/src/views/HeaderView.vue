@@ -41,7 +41,7 @@ onMounted(() => {
             <span class="icon"></span>
           </span>
           <div class="level-item">
-            <a href="/" class="title">Quranize</a>
+            <RouterLink to="/" class="title">Quranize</RouterLink>
           </div>
           <div class="level-right">
             <div class="level-item">
