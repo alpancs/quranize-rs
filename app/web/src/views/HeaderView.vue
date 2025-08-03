@@ -24,13 +24,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <nav class="navbar is-fixed-top has-shadow">
+  <nav class="navbar is-info is-fixed-top has-shadow">
     <div class="container is-max-desktop">
       <div class="navbar-brand">
         <div class="navbar-end">
-
           <RouterLink to="/" class="navbar-item">
-            <span class="has-text-weight-extrabold is-size-3">Home</span>
+            <span class="has-text-weight-extrabold is-size-3">Quranize</span>
           </RouterLink>
         </div>
         <a role="button" class="navbar-burger" :class="{ 'is-active': isBurgerActive }" aria-label="menu"
