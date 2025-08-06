@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, inject, type Ref } from 'vue';
+import { useRoute } from 'vue-router';
 
 const themes = {
   system: { icon: 'desktop', colorClass: '' },
@@ -30,6 +31,15 @@ function setTheme(newTheme: Theme) {
 }
 
 setTheme(localStorage.getItem('theme') as Theme);
+
+const route = useRoute();
+const inQuranPage = computed(() => route.path === '/quran-page');
+const lang = inject<Ref<string>>('lang');
+
+function switchLang() {
+  if (lang?.value === 'ar') lang.value = 'id';
+  else if (lang?.value === 'id') lang.value = 'ar';
+}
 </script>
 
 <template>
@@ -37,6 +47,7 @@ setTheme(localStorage.getItem('theme') as Theme);
     <div class="hero-body">
       <div class="container is-max-desktop">
         <div class="level is-mobile">
+
           <div class="level-left">
             <div class="level-item">
               <button class="button is-rounded" @click="switchTheme">
@@ -46,16 +57,19 @@ setTheme(localStorage.getItem('theme') as Theme);
               </button>
             </div>
           </div>
+
           <div class="level-item">
             <RouterLink to="/" class="title">Quranize</RouterLink>
           </div>
+
           <div class="level-right">
             <div class="level-item">
-              <span class="button is-rounded is-invisible">
-                <span class="icon"></span>
-              </span>
+              <button class="tag is-rounded is-uppercase" :class="{ 'is-invisible': !inQuranPage }" @click="switchLang">
+                {{ lang }}
+              </button>
             </div>
           </div>
+
         </div>
       </div>
     </div>

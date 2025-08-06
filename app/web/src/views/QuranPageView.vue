@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, inject, ref, watch, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { call, toArabicNumber, getSuraName } from '../utils/quranize';
+import plainTextID from '../utils/quran/id.indonesian.txt?raw';
 import MarkedQuranText from '../components/MarkedQuranText.vue';
 import AyaNumber from '../components/AyaNumber.vue';
 
@@ -27,23 +28,49 @@ watch(() => route.query.page, async (newPage) => {
     page.value = parseInt(newPage as string);
     pageItems.value = await call<PageItem[]>('getPage', page.value);
 });
+
+function buildTextID() {
+    const m = new Map();
+    plainTextID.split('\n').forEach((line) => {
+        const split = line.split('|');
+        if (split.length === 3) {
+            const [sura, aya, text] = split;
+            m.set(`${sura}.${aya}`, text);
+            console.log(`${sura}.${aya}`, text);
+        }
+    });
+    return m;
+}
+
+const lang = inject<Ref<string>>('lang');
+const isAR = computed(() => lang?.value === 'ar');
+const isID = computed(() => lang?.value === 'id');
+const textID = buildTextID();
 </script>
 
 <template>
     <div class="box">
-        <div class="has-text-justified" dir="rtl">
+        <div class="has-text-justified" :dir="isAR ? 'rtl' : 'ltr'">
             <span v-for="item in pageItems">
                 <p v-if="item.aya === 1" class="mt-4 quran-text has-text-centered has-text-weight-bold">
                     سورة {{ getSuraName(item.sura) }}
                 </p>
-                <MarkedQuranText :beforeMarked="beforeText" :marked="text" :afterMarked="afterText"
-                    v-if="item.sura === sura && item.aya === aya" />
-                <span class="quran-text" v-else>{{ item.text }}</span>
-                <AyaNumber :aya="item.aya" />
+
+                <span v-if="isAR">
+                    <MarkedQuranText :beforeMarked="beforeText" :marked="text" :afterMarked="afterText"
+                        v-if="item.sura === sura && item.aya === aya" />
+                    <span class="quran-text" v-else>{{ item.text }}</span>
+                    <AyaNumber :aya="item.aya" />
+                </span>
+
+                <span v-if="isID">
+                    ({{ item.aya }}) {{ textID.get(`${item.sura}.${item.aya}`) }}
+                </span>
             </span>
         </div>
     </div>
-    <div class="buttons has-addons is-centered quran-text are-small">
+
+    <nav class="buttons has-addons is-centered quran-text are-small">
         <RouterLink class="button is-rounded" v-if="page < 604"
             :to="{ query: { page: page + 1, sura, aya, before_text: beforeText, text, after_text: afterText } }">
             <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-left" /></span>
@@ -63,5 +90,5 @@ watch(() => route.query.page, async (newPage) => {
         <span v-else class="button is-rounded" disabled>
             <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-right" /></span>
         </span>
-    </div>
+    </nav>
 </template>

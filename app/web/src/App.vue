@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { provide, ref } from 'vue';
 import HeaderView from './views/HeaderView.vue';
+
+provide('lang', ref('ar'));
 </script>
 
 <template>
