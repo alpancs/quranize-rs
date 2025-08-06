@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { call, toArabicNumber, getSuraName } from '../utils/quranize';
 import MarkedQuranText from '../components/MarkedQuranText.vue';
@@ -12,7 +12,7 @@ type PageItem = {
 };
 
 const route = useRoute();
-const page = computed(() => parseInt(route.query.page as string));
+const page = ref(parseInt(route.query.page as string));
 const sura = parseInt(route.query.sura as string);
 const aya = parseInt(route.query.aya as string);
 const beforeText = route.query.before_text as string;
@@ -23,7 +23,10 @@ const pageItems = ref<PageItem[]>([]);
 
 call<PageItem[]>('getPage', page.value).then((v) => pageItems.value = v);
 
-watch(page, async (p) => pageItems.value = await call<PageItem[]>('getPage', p));
+watch(() => route.query.page, async (newPage) => {
+    page.value = parseInt(newPage as string);
+    pageItems.value = await call<PageItem[]>('getPage', page.value);
+});
 </script>
 
 <template>
