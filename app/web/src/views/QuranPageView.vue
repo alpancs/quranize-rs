@@ -27,7 +27,7 @@ watch(page, async (p) => pageItems.value = await call<PageItem[]>('getPage', p))
 </script>
 
 <template>
-    <div class="block">
+    <div class="box">
         <div class="has-text-justified" dir="rtl">
             <span v-for="item in pageItems">
                 <p v-if="item.aya === 1" class="mt-4 quran-text has-text-centered has-text-weight-bold">
@@ -40,15 +40,17 @@ watch(page, async (p) => pageItems.value = await call<PageItem[]>('getPage', p))
             </span>
         </div>
     </div>
-    <div class="block">
-        <p class="quran-text subtitle has-text-centered is-size-5">
-            <RouterLink v-show="page < 604"
-                :to="{ query: { page: page + 1, sura, aya, before_text: beforeText, text, after_text: afterText } }">◄
-            </RouterLink>
-            {{ toArabicNumber(page) }}
-            <RouterLink v-show="page > 1"
-                :to="{ query: { page: page - 1, sura, aya, before_text: beforeText, text, after_text: afterText } }">►
-            </RouterLink>
-        </p>
+    <div class="buttons has-addons is-centered quran-text are-small">
+        <RouterLink class="button is-rounded" v-if="page < 604"
+            :to="{ query: { page: page + 1, sura, aya, before_text: beforeText, text, after_text: afterText } }">
+            <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-left" /></span>
+            <span>{{ toArabicNumber(page + 1) }}</span>
+        </RouterLink>
+        <span class="button is-info">{{ toArabicNumber(page) }}</span>
+        <RouterLink class="button is-rounded" v-if="page > 1"
+            :to="{ query: { page: page - 1, sura, aya, before_text: beforeText, text, after_text: afterText } }">
+            <span>{{ toArabicNumber(page - 1) }}</span>
+            <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-right" /></span>
+        </RouterLink>
     </div>
 </template>
