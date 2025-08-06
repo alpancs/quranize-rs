@@ -36,7 +36,6 @@ function buildTextID() {
         if (split.length === 3) {
             const [sura, aya, text] = split;
             m.set(`${sura}.${aya}`, text);
-            console.log(`${sura}.${aya}`, text);
         }
     });
     return m;
