@@ -1,9 +1,10 @@
 import { ref } from 'vue';
+import Worker from '../workers/quranize/web-worker.ts?worker'
 import type { Quranize } from '../workers/quranize/quranize-wasm';
 
 export const initiated = ref(false);
 
-const worker = new Worker(new URL("../workers/quranize/web-worker.ts", import.meta.url), { type: "module" });
+const worker = new Worker();
 const resolves = new Map<number, Function>();
 
 worker.onmessage = ({ data: { id, resp } }) => {
