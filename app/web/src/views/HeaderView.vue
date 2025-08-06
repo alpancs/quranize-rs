@@ -60,7 +60,7 @@ const lang = inject<Ref<string>>('lang');
           <div class="level-right">
             <div class="level-item">
               <div class="tags has-addons" :class="{ 'is-invisible': !inQuranPage }">
-                <button v-for="l in ['ar', 'id']" class="tag is-rounded is-uppercase"
+                <button v-for="l in ['ar', 'id']" class="tag is-rounded is-uppercase has-text-weight-semibold"
                   :class="{ 'is-primary': lang === l }" @click="lang = l">{{ l }}</button>
               </div>
             </div>
