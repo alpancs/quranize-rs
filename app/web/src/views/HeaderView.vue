@@ -35,11 +35,6 @@ setTheme(localStorage.getItem('theme') as Theme);
 const route = useRoute();
 const inQuranPage = computed(() => route.path === '/quran-page');
 const lang = inject<Ref<string>>('lang');
-
-function switchLang() {
-  if (lang?.value === 'ar') lang.value = 'id';
-  else if (lang?.value === 'id') lang.value = 'ar';
-}
 </script>
 
 <template>
@@ -64,9 +59,10 @@ function switchLang() {
 
           <div class="level-right">
             <div class="level-item">
-              <button class="tag is-rounded is-uppercase" :class="{ 'is-invisible': !inQuranPage }" @click="switchLang">
-                {{ lang }}
-              </button>
+              <div class="tags has-addons" :class="{ 'is-invisible': !inQuranPage }">
+                <button v-for="l in ['ar', 'id']" class="tag is-rounded is-uppercase"
+                  :class="{ 'is-primary': lang === l }" @click="lang = l">{{ l }}</button>
+              </div>
             </div>
           </div>
 
