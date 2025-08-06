@@ -1,35 +1,35 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed } from 'vue';
 
-type Theme = 0 | 1 | 2; // 0: system, 1: light, 2: dark
+const themes = {
+  system: { icon: 'desktop', colorClass: '' },
+  light: { icon: 'sun', colorClass: 'has-text-warning' },
+  dark: { icon: 'moon', colorClass: 'has-text-link-light' },
+};
+type Theme = keyof typeof themes;
 
-const themes = [
-  { name: 'system', icon: 'desktop', colorClass: '' },
-  { name: 'light', icon: 'sun', colorClass: 'has-text-warning' },
-  { name: 'dark', icon: 'moon', colorClass: 'has-text-link-light' },
-];
-
-const theme = ref<Theme>(0);
+const theme = ref<Theme>('system');
 const themeIcon = computed(() => themes[theme.value]?.icon);
 const themeColorClass = computed(() => themes[theme.value]?.colorClass);
 
 function switchTheme() {
-  setTheme(((theme.value + 1) % themes.length) as Theme);
+  if (theme.value === 'system') setTheme('light');
+  else if (theme.value === 'light') setTheme('dark');
+  else if (theme.value === 'dark') setTheme('system');
 }
 
 function setTheme(newTheme: Theme) {
-  theme.value = newTheme;
-  if (newTheme === 0) {
-    document.documentElement.removeAttribute('data-theme');
+  if (newTheme === 'light' || newTheme === 'dark') {
+    document.documentElement.setAttribute('data-theme', newTheme);
   } else {
-    document.documentElement.setAttribute('data-theme', themes[newTheme]?.name);
+    newTheme = 'system';
+    document.documentElement.removeAttribute('data-theme');
   }
-  localStorage.setItem('theme', newTheme.toString());
+  theme.value = newTheme;
+  localStorage.setItem('theme', newTheme);
 }
 
-onMounted(() => {
-  setTheme((parseInt(localStorage.getItem('theme')!) || 0) as Theme);
-});
+setTheme(localStorage.getItem('theme') as Theme);
 </script>
 
 <template>
