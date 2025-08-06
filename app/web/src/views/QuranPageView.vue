@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, ref, watch, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { call, toArabicNumber, getSuraName } from '../utils/quranize';
+import { call, toArabicNumber, getSuraNameAR } from '../utils/quranize';
 import plainTextID from '../utils/quran/id.indonesian.txt?raw';
 import MarkedQuranText from '../components/MarkedQuranText.vue';
 import AyaNumber from '../components/AyaNumber.vue';
@@ -52,7 +52,7 @@ const textID = buildTextID();
         <div class="has-text-justified" :dir="isAR ? 'rtl' : 'ltr'">
             <span v-for="item in pageItems">
                 <p v-if="item.aya === 1" class="mt-4 quran-text has-text-centered has-text-weight-bold">
-                    سورة {{ getSuraName(item.sura) }}
+                    سورة {{ getSuraNameAR(item.sura) }}
                 </p>
 
                 <span v-if="isAR">
