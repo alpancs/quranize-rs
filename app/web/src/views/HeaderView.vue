@@ -37,19 +37,23 @@ setTheme(localStorage.getItem('theme') as Theme);
     <div class="hero-body">
       <div class="container is-max-desktop">
         <div class="level is-mobile">
-          <span class="button is-rounded is-invisible">
-            <span class="icon"></span>
-          </span>
-          <div class="level-item">
-            <RouterLink to="/" class="title">Quranize</RouterLink>
-          </div>
-          <div class="level-right">
+          <div class="level-left">
             <div class="level-item">
               <button class="button is-rounded" @click="switchTheme">
                 <span class="icon" :class="themeColorClass">
                   <font-awesome-icon :icon="['fas', themeIcon]" />
                 </span>
               </button>
+            </div>
+          </div>
+          <div class="level-item">
+            <RouterLink to="/" class="title">Quranize</RouterLink>
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <span class="button is-rounded is-invisible">
+                <span class="icon"></span>
+              </span>
             </div>
           </div>
         </div>
