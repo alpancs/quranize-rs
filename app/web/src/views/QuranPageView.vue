@@ -46,11 +46,19 @@ watch(page, async (p) => pageItems.value = await call<PageItem[]>('getPage', p))
             <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-left" /></span>
             <span>{{ toArabicNumber(page + 1) }}</span>
         </RouterLink>
+        <span v-else class="button is-rounded" disabled>
+            <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-left" /></span>
+        </span>
+
         <span class="button is-info">{{ toArabicNumber(page) }}</span>
+
         <RouterLink class="button is-rounded" v-if="page > 1"
             :to="{ query: { page: page - 1, sura, aya, before_text: beforeText, text, after_text: afterText } }">
             <span>{{ toArabicNumber(page - 1) }}</span>
             <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-right" /></span>
         </RouterLink>
+        <span v-else class="button is-rounded" disabled>
+            <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-right" /></span>
+        </span>
     </div>
 </template>
