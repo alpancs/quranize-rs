@@ -71,24 +71,29 @@ const textID = buildTextID();
         </div>
     </div>
 
-    <nav class="buttons has-addons is-centered quran-text are-small">
-        <RouterLink class="button is-rounded" v-if="page < 604"
+    <nav class="tags has-addons is-centered">
+        <RouterLink class="tag is-rounded" v-if="page < 604"
             :to="{ query: { page: page + 1, sura, aya, before_text: beforeText, text, after_text: afterText } }">
             <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-left" /></span>
-            <span>{{ toArabicNumber(page + 1) }}</span>
+            <span v-if="isAR" class="quran-text">{{ toArabicNumber(page + 1) }}</span>
+            <span v-else>{{ page + 1 }}</span>
         </RouterLink>
-        <span v-else class="button is-rounded" disabled>
+        <span v-else class="tag is-rounded" disabled>
             <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-left" /></span>
         </span>
 
-        <span class="button is-info">{{ toArabicNumber(page) }}</span>
+        <button class="tag is-primary has-text-weight-bold">
+            <span v-if="isAR" class="quran-text">{{ toArabicNumber(page) }}</span>
+            <span v-else>{{ page }}</span>
+        </button>
 
-        <RouterLink class="button is-rounded" v-if="page > 1"
+        <RouterLink class="tag is-rounded" v-if="page > 1"
             :to="{ query: { page: page - 1, sura, aya, before_text: beforeText, text, after_text: afterText } }">
-            <span>{{ toArabicNumber(page - 1) }}</span>
+            <span v-if="isAR" class="quran-text">{{ toArabicNumber(page - 1) }}</span>
+            <span v-else>{{ page - 1 }}</span>
             <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-right" /></span>
         </RouterLink>
-        <span v-else class="button is-rounded" disabled>
+        <span v-else class="tag is-rounded" disabled>
             <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-right" /></span>
         </span>
     </nav>
