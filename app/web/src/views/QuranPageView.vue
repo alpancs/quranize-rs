@@ -2,7 +2,6 @@
 import { computed, inject, ref, watch, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { call, toArabicNumber, getSuraNameAR, getSuraNameID } from '../utils/quranize';
-import plainTextID from '../utils/quran/id.indonesian.txt?raw';
 import MarkedQuranText from '../components/MarkedQuranText.vue';
 import AyaNumber from '../components/AyaNumber.vue';
 
@@ -29,22 +28,10 @@ watch(() => route.query.page, async (newPage) => {
     pageItems.value = await call<PageItem[]>('getPage', page.value);
 });
 
-function buildTextID() {
-    const m = new Map();
-    plainTextID.split('\n').forEach((line) => {
-        const split = line.split('|');
-        if (split.length === 3) {
-            const [sura, aya, text] = split;
-            m.set(`${sura}.${aya}`, text);
-        }
-    });
-    return m;
-}
-
 const lang = inject<Ref<string>>('lang');
 const isAR = computed(() => lang?.value === 'ar');
 const isID = computed(() => lang?.value === 'id');
-const textID = buildTextID();
+const getTextID = inject<Function>('getTextID');
 </script>
 
 <template>
@@ -65,7 +52,7 @@ const textID = buildTextID();
                     <AyaNumber :aya="item.aya" />
                 </span>
                 <span v-if="isID">
-                    ({{ item.aya }}) {{ textID.get(`${item.sura}.${item.aya}`) }}
+                    ({{ item.aya }}) {{ getTextID?.(item.sura, item.aya) }}
                 </span>
             </span>
         </div>
