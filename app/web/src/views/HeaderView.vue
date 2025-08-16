@@ -3,31 +3,32 @@ import { ref, computed, inject, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 const themes = {
-  system: { icon: 'desktop', colorClass: '' },
+  '': { icon: 'desktop', colorClass: '' },
   light: { icon: 'sun', colorClass: 'has-text-warning' },
   dark: { icon: 'moon', colorClass: 'has-text-link-light' },
 };
 type Theme = keyof typeof themes;
 
-const theme = ref<Theme>('system');
+const theme = ref<Theme>('');
 const themeIcon = computed(() => themes[theme.value]?.icon);
 const themeColorClass = computed(() => themes[theme.value]?.colorClass);
 
 function switchTheme() {
-  if (theme.value === 'system') setTheme('light');
-  else if (theme.value === 'light') setTheme('dark');
-  else if (theme.value === 'dark') setTheme('system');
+  if (theme.value === 'light') setTheme('dark');
+  else if (theme.value === 'dark') setTheme('');
+  else setTheme('light');
 }
 
 function setTheme(newTheme: Theme) {
   if (newTheme === 'light' || newTheme === 'dark') {
     document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
   } else {
-    newTheme = 'system';
     document.documentElement.removeAttribute('data-theme');
+    localStorage.removeItem('theme');
+    newTheme = '';
   }
   theme.value = newTheme;
-  localStorage.setItem('theme', newTheme);
 }
 
 setTheme(localStorage.getItem('theme') as Theme);
