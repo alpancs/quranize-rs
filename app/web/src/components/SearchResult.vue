@@ -8,6 +8,10 @@ defineProps<{ result: SearchResult }>();
 
 const expanded = ref(false);
 const getTextID = inject<Function>('getTextID');
+
+function toggleExpanded() {
+    expanded.value = !expanded.value;
+}
 </script>
 
 <template>
@@ -21,7 +25,7 @@ const getTextID = inject<Function>('getTextID');
                     {{ getSuraNameAR(result.sura) }} : {{ toArabicNumber(result.aya) }}
                 </RouterLink>
             </p>
-            <button class="card-header-icon" @click="expanded = !expanded">
+            <button class="card-header-icon" @click="toggleExpanded">
                 <span class="icon">
                     <font-awesome-icon :icon="['fas', expanded ? 'angle-up' : 'angle-down']" />
                 </span>
@@ -31,7 +35,7 @@ const getTextID = inject<Function>('getTextID');
             <div class="content">
                 <p dir="rtl">
                     <MarkedQuranText :beforeMarked="result.before_text" :marked="result.text"
-                        :afterMarked="result.after_text" />
+                        :afterMarked="result.after_text" @click="toggleExpanded" class="is-clickable" />
                 </p>
                 <p v-if="expanded">{{ getTextID?.(result.sura, result.aya) }}</p>
             </div>
