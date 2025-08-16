@@ -7,15 +7,25 @@ defineProps<{ result: SearchResult }>();
 </script>
 
 <template>
-    <article class="message" dir="rtl">
-        <div class="message-body">
-            <span class="quran-text pl-2">
-                <RouterLink :to="{ path: '/quran-page', query: result }" class="button">
+    <div class="card" dir="rtl">
+        <header class="card-header">
+            <p class="card-header-title quran-text">
+                <RouterLink class="icon-text" :to="{ path: '/quran-page', query: result }">
+                    <span class="icon">
+                        <font-awesome-icon icon="fa-solid fa-book" />
+                    </span>
                     {{ getSuraNameAR(result.sura) }} : {{ toArabicNumber(result.aya) }}
                 </RouterLink>
-            </span>
+            </p>
+            <button class="card-header-icon">
+                <span class="icon">
+                    <font-awesome-icon icon="fa-solid fa-angle-down" />
+                </span>
+            </button>
+        </header>
+        <div class="card-content">
             <MarkedQuranText :beforeMarked="result.before_text" :marked="result.text"
                 :afterMarked="result.after_text" />
         </div>
-    </article>
+    </div>
 </template>
