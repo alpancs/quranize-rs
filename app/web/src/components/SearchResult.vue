@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { inject, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { getSuraNameAR, toArabicNumber } from '../utils/quranize';
 import type { SearchResult } from '../utils/types';
 import MarkedQuranText from '../components/MarkedQuranText.vue';
 
-defineProps<{ result: SearchResult }>();
+const { result } = defineProps<{ result: SearchResult }>();
+const router = useRouter();
 
 const expanded = ref(false);
 const getTextID = inject<Function>('getTextID');
@@ -12,18 +14,22 @@ const getTextID = inject<Function>('getTextID');
 function toggleExpanded() {
     expanded.value = !expanded.value;
 }
+
+function toQuranPage() {
+    router.push({ path: '/quran-page', query: result });
+}
 </script>
 
 <template>
     <div class="card">
         <header class="card-header" dir="rtl">
             <p class="card-header-title quran-text">
-                <RouterLink class="icon-text" :to="{ path: '/quran-page', query: result }">
+                <span class="icon-text is-clickable" @click="toQuranPage">
                     <span class="icon">
-                        <font-awesome-icon icon="fa-solid fa-book" />
+                        <font-awesome-icon icon="fa-solid fa-book-open" />
                     </span>
                     {{ getSuraNameAR(result.sura) }} : {{ toArabicNumber(result.aya) }}
-                </RouterLink>
+                </span>
             </p>
             <button class="card-header-icon" @click="toggleExpanded">
                 <span class="icon">
