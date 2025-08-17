@@ -1,39 +1,25 @@
 <script setup lang="ts">
 import { inject, ref } from 'vue';
-import { call, getSuraNameAR, toArabicNumber } from '../utils/quranize';
+import { getPageItemGroups, getSuraNameAR, toArabicNumber, type PageItem } from '../utils/quranize';
 import type { SearchResult } from '../utils/types';
 import MarkedQuranText from '../components/MarkedQuranText.vue';
 import AyaNumber from '../components/AyaNumber.vue';
-
-type PageItem = {
-    sura: number;
-    aya: number;
-    text: string;
-};
 
 const { result } = defineProps<{ result: SearchResult }>();
 
 const getTextID = inject<Function>('getTextID');
 const isTranslationVisible = ref(false);
 const isQuranPageVisible = ref(false);
-const quranPageGroups = ref<PageItem[][]>([]);
+const pageItemGroups = ref<PageItem[][]>([]);
 
 function toggleTranslationVisibility() {
     isTranslationVisible.value = !isTranslationVisible.value;
 }
 
-function openQuranPage() {
+async function openQuranPage() {
     isQuranPageVisible.value = true;
-    if (quranPageGroups.value.length === 0) updateQuranPageGroups();
-}
-
-async function updateQuranPageGroups() {
-    const pageItems = await call<PageItem[]>('getPage', result.page);
-    quranPageGroups.value = pageItems.reduce<PageItem[][]>((acc, curr, i, arr) => {
-        if (i === 0 || arr[i - 1].sura !== curr.sura) acc.push([curr]);
-        else acc[acc.length - 1].push(curr);
-        return acc;
-    }, []);
+    if (pageItemGroups.value.length === 0)
+        pageItemGroups.value = await getPageItemGroups(result.page);
 }
 
 function closeQuranPage() {
@@ -83,7 +69,7 @@ function closeQuranPage() {
                 <button class="delete" aria-label="close" @click="closeQuranPage"></button>
             </header>
             <section class="modal-card-body" dir="rtl">
-                <div class="quran-text" v-for="items in quranPageGroups">
+                <div class="quran-text" v-for="items in pageItemGroups">
                     <p class="has-text-centered mt-4 has-text-weight-semibold" v-if="items[0].aya === 1">
                         سورة {{ getSuraNameAR(items[0].sura) }}
                     </p>

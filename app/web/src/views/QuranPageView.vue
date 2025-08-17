@@ -1,66 +1,67 @@
 <script setup lang="ts">
 import { computed, inject, ref, watch, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { call, toArabicNumber, getSuraNameAR, getSuraNameID } from '../utils/quranize';
+import { toArabicNumber, getSuraNameAR, getSuraNameID, getPageItemGroups, type PageItem } from '../utils/quranize';
 import MarkedQuranText from '../components/MarkedQuranText.vue';
 import AyaNumber from '../components/AyaNumber.vue';
-
-type PageItem = {
-    sura: number;
-    aya: number;
-    text: string;
-};
 
 const route = useRoute();
 const page = ref(parseInt(route.query.page as string));
 const sura = parseInt(route.query.sura as string);
 const aya = parseInt(route.query.aya as string);
-const beforeText = route.query.before_text as string;
-const text = route.query.text as string;
-const afterText = route.query.after_text as string;
+const beforeMarked = route.query.before_text as string;
+const marked = route.query.text as string;
+const afterMarked = route.query.after_text as string;
 
-const pageItems = ref<PageItem[]>([]);
-
-call<PageItem[]>('getPage', page.value).then((v) => pageItems.value = v);
+const pageItemGroups = ref<PageItem[][]>([]);
+getPageItemGroups(page.value).then((v) => pageItemGroups.value = v);
 
 watch(() => route.query.page, async (newPage) => {
     page.value = parseInt(newPage as string);
-    pageItems.value = await call<PageItem[]>('getPage', page.value);
+    pageItemGroups.value = await getPageItemGroups(page.value);
 });
 
 const lang = inject<Ref<string>>('lang');
 const isAR = computed(() => lang?.value === 'ar');
 const isID = computed(() => lang?.value === 'id');
 const getTextID = inject<Function>('getTextID');
+
+const needMark = (item: PageItem) => item.sura === sura && item.aya === aya;
 </script>
 
 <template>
     <div class="box">
-        <div class="has-text-justified" :dir="isAR ? 'rtl' : 'ltr'">
-            <span v-for="item in pageItems">
-                <p v-if="isAR && item.aya === 1" class="mt-4 quran-text has-text-centered has-text-weight-bold">
-                    سورة {{ getSuraNameAR(item.sura) }}
+        <div v-if="isAR" dir="rtl">
+            <div v-for="items in pageItemGroups">
+                <p class="has-text-centered mt-4 has-text-weight-semibold quran-text" v-if="items[0].aya === 1">
+                    سورة {{ getSuraNameAR(items[0].sura) }}
                 </p>
-                <p v-if="isID && item.aya === 1" class="mt-4 has-text-centered has-text-weight-bold">
-                    Surah {{ getSuraNameID(item.sura) }}
+                <p class="has-text-justified">
+                    <span v-for="item in items">
+                        <MarkedQuranText v-if="needMark(item)" :beforeMarked :marked :afterMarked />
+                        <span v-else class="quran-text">{{ item.text }}</span>
+                        <AyaNumber :aya="item.aya" />
+                    </span>
                 </p>
-
-                <span v-if="isAR">
-                    <MarkedQuranText :beforeMarked="beforeText" :marked="text" :afterMarked="afterText"
-                        v-if="item.sura === sura && item.aya === aya" />
-                    <span class="quran-text" v-else>{{ item.text }}</span>
-                    <AyaNumber :aya="item.aya" />
-                </span>
-                <span v-if="isID">
-                    ({{ item.aya }}) {{ getTextID?.(item.sura, item.aya) }}
-                </span>
-            </span>
+            </div>
+        </div>
+        <div v-if="isID" class="has-text-justified">
+            <div v-for="items in pageItemGroups">
+                <p class="has-text-centered mt-4 has-text-weight-semibold" v-if="items[0].aya === 1">
+                    Surah {{ getSuraNameID(items[0].sura) }}
+                </p>
+                <p class="has-text-justified">
+                    <span v-for="item in items">
+                        ({{ item.aya }}) {{ getTextID?.(item.sura, item.aya) }}
+                    </span>
+                </p>
+            </div>
         </div>
     </div>
 
     <nav class="tags has-addons is-centered">
         <RouterLink class="tag is-rounded" v-if="page < 604"
-            :to="{ query: { page: page + 1, sura, aya, before_text: beforeText, text, after_text: afterText } }">
+            :to="{ query: { page: page + 1, sura, aya, before_text: beforeMarked, text: marked, after_text: afterMarked } }">
             <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-left" /></span>
             <span v-if="isAR" class="quran-text">{{ toArabicNumber(page + 1) }}</span>
             <span v-else>{{ page + 1 }}</span>
@@ -75,7 +76,7 @@ const getTextID = inject<Function>('getTextID');
         </button>
 
         <RouterLink class="tag is-rounded" v-if="page > 1"
-            :to="{ query: { page: page - 1, sura, aya, before_text: beforeText, text, after_text: afterText } }">
+            :to="{ query: { page: page - 1, sura, aya, before_text: beforeMarked, text: marked, after_text: afterMarked } }">
             <span v-if="isAR" class="quran-text">{{ toArabicNumber(page - 1) }}</span>
             <span v-else>{{ page - 1 }}</span>
             <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-right" /></span>
