@@ -51,7 +51,7 @@ impl<'a> SuffixTree<'a> {
         self.vertices[v].1 += 1;
     }
 
-    pub(super) fn edges_from(&self, v: usize) -> Range<Edge<'a>> {
+    pub(super) fn edges_from(&self, v: usize) -> Range<'_, Edge<'a>> {
         self.edges.range((v, 0, "")..(v + 1, 0, ""))
     }
 

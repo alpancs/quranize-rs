@@ -68,7 +68,7 @@ impl JsQuranize {
         to_value(&self.get_locations(query))
     }
 
-    fn get_locations(&self, query: &str) -> Vec<JsLocation> {
+    fn get_locations(&self, query: &str) -> Vec<JsLocation<'_>> {
         { self.quranize.find(query).into_iter() }
             .map(|(i, j)| {
                 let (p, s, a, q) = self.quranize.get_data(i).copied().unwrap_or_default();
@@ -94,7 +94,7 @@ impl JsQuranize {
         to_value(&self.get_page(page))
     }
 
-    fn get_page(&self, page: u16) -> Vec<JsQuranPageData> {
+    fn get_page(&self, page: u16) -> Vec<JsQuranPageData<'_>> {
         self.quranize
             .get_data_from_page(page)
             .unwrap_or_default()

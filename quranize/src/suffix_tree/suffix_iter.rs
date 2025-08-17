@@ -1,4 +1,4 @@
-pub(super) fn suffix_iter(s: &str) -> SuffixIter {
+pub(super) fn suffix_iter(s: &str) -> SuffixIter<'_> {
     SuffixIter { s, i: 0 }
 }
 
