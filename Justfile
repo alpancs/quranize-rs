@@ -2,12 +2,9 @@ run-app-web:
     cd app/web && npm run dev
 
 build-wasm:
+    wasm-pack build --target=web --release quranize-wasm
     rm -rf app/web/src/workers/quranize/quranize-wasm
-    wasm-pack build \
-        --target=web \
-        --release \
-        --out-dir=../app/web/src/workers/quranize/quranize-wasm \
-        quranize-wasm
+    mv quranize-wasm/pkg app/web/src/workers/quranize/quranize-wasm
 
 build-app-web:
     cd app/web && npm ci && npm run build
