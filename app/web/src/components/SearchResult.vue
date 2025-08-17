@@ -80,7 +80,9 @@ function closeQuranPage() {
             </header>
             <section class="modal-card-body">
                 <div class="quran-text" v-for="items in quranPageGroups">
-                    <p class="has-text-centered" v-if="items[0].aya === 1">سورة {{ getSuraNameAR(items[0].sura) }}</p>
+                    <p class="has-text-centered subtitle" v-if="items[0].aya === 1">
+                        سورة {{ getSuraNameAR(items[0].sura) }}
+                    </p>
                     <p class="has-text-justified">
                         <span v-for="item in items">
                             <MarkedQuranText v-if="item.sura === result.sura && item.aya === result.aya"
