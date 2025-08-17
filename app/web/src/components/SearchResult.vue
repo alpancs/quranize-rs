@@ -84,7 +84,7 @@ function closeQuranPage() {
             </header>
             <section class="modal-card-body" dir="rtl">
                 <div class="quran-text" v-for="items in quranPageGroups">
-                    <p class="has-text-centered subtitle mt-5 mb-4" v-if="items[0].aya === 1">
+                    <p class="has-text-centered mt-4 has-text-weight-semibold" v-if="items[0].aya === 1">
                         سورة {{ getSuraNameAR(items[0].sura) }}
                     </p>
                     <p class="has-text-justified">
