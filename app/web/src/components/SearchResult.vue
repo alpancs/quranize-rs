@@ -71,14 +71,18 @@ function closeQuranPage() {
 
     <div class="modal is-active" v-if="isQuranPageVisible">
         <div class="modal-background" @click="closeQuranPage"></div>
-        <div class="modal-card" dir="rtl">
-            <header class="modal-card-head quran-text">
+        <div class="modal-card">
+            <header class="modal-card-head">
                 <p class="modal-card-title">
-                    {{ toArabicNumber(result.page) }}
+                    <router-link :to="{ path: '/quran-page', query: result }" class="tag is-medium">
+                        <span class="icon">
+                            <font-awesome-icon icon="fa-solid fa-up-right-and-down-left-from-center" />
+                        </span>
+                    </router-link>
                 </p>
                 <button class="delete" aria-label="close" @click="closeQuranPage"></button>
             </header>
-            <section class="modal-card-body">
+            <section class="modal-card-body" dir="rtl">
                 <div class="quran-text" v-for="items in quranPageGroups">
                     <p class="has-text-centered subtitle mt-5 mb-4" v-if="items[0].aya === 1">
                         سورة {{ getSuraNameAR(items[0].sura) }}
@@ -94,15 +98,6 @@ function closeQuranPage() {
                     </p>
                 </div>
             </section>
-            <footer class="modal-card-foot">
-                <div class="buttons">
-                    <router-link :to="{ path: '/quran-page', query: result }" class="button is-rounded">
-                        <span class="icon">
-                            <font-awesome-icon icon="fa-solid fa-up-right-and-down-left-from-center" />
-                        </span>
-                    </router-link>
-                </div>
-            </footer>
         </div>
     </div>
 </template>
