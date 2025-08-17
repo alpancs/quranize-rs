@@ -29,7 +29,7 @@ const needMark = (item: PageItem) => item.sura === sura && item.aya === aya;
 </script>
 
 <template>
-    <div class="box">
+    <div class="block">
         <div :dir="isAR ? 'rtl' : 'ltr'">
             <div v-for="items in pageItemGroups">
                 <p v-if="items[0].aya === 1" class="has-text-centered mt-4 has-text-weight-semibold">
