@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { provide, ref } from 'vue';
 import HeaderView from './views/HeaderView.vue';
-import plainTextID from './utils/quran/id.indonesian.txt?raw';
 
-const textIDMap = (function () {
+const textIDMap = (async function () {
   const map = new Map<string, string>();
+  const plainTextID = (await import('./utils/quran/id.indonesian.txt?raw')).default;
   plainTextID.split('\n').forEach((line) => {
     const split = line.split('|');
     if (split.length === 3) {
@@ -15,12 +15,8 @@ const textIDMap = (function () {
   return map;
 })();
 
-function getTextID(sura: number, aya: number) {
-  return textIDMap.get(`${sura}.${aya}`);
-}
-
 provide('lang', ref('ar'));
-provide('getTextID', getTextID);
+provide('getTextID', async (sura: number, aya: number) => (await textIDMap).get(`${sura}.${aya}`));
 </script>
 
 <template>

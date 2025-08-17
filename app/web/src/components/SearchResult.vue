@@ -7,10 +7,13 @@ import AyaNumber from '../components/AyaNumber.vue';
 
 const { result } = defineProps<{ result: SearchResult }>();
 
-const getTextID = inject<Function>('getTextID');
 const isTranslationVisible = ref(false);
 const isQuranPageVisible = ref(false);
 const pageItemGroups = ref<PageItem[][]>([]);
+const textID = ref('');
+
+inject<Function>('getTextID')?.(result.sura, result.aya)
+    .then((v: string) => textID.value = v);
 
 function toggleTranslationVisibility() {
     isTranslationVisible.value = !isTranslationVisible.value;
@@ -50,7 +53,7 @@ function closeQuranPage() {
                     <MarkedQuranText :beforeMarked="result.before_text" :marked="result.text"
                         :afterMarked="result.after_text" @click="toggleTranslationVisibility" class="is-clickable" />
                 </p>
-                <p v-if="isTranslationVisible">{{ getTextID?.(result.sura, result.aya) }}</p>
+                <p v-if="isTranslationVisible">{{ textID }}</p>
             </div>
         </div>
     </div>

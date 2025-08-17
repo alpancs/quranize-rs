@@ -5,6 +5,8 @@ import { toArabicNumber, getSuraNameAR, getSuraNameID, getPageItemGroups, type P
 import MarkedQuranText from '../components/MarkedQuranText.vue';
 import AyaNumber from '../components/AyaNumber.vue';
 
+type PageItemExt = PageItem & { textID?: string };
+
 const route = useRoute();
 const page = ref(parseInt(route.query.page as string));
 const sura = parseInt(route.query.sura as string);
@@ -13,17 +15,23 @@ const beforeMarked = route.query.before_text as string;
 const marked = route.query.text as string;
 const afterMarked = route.query.after_text as string;
 
-const pageItemGroups = ref<PageItem[][]>([]);
+const pageItemGroups = ref<PageItemExt[][]>([]);
 getPageItemGroups(page.value).then((v) => pageItemGroups.value = v);
-
-watch(() => route.query.page, async (newPage) => {
-    page.value = parseInt(newPage as string);
-    pageItemGroups.value = await getPageItemGroups(page.value);
-});
 
 const lang = inject<Ref<string>>('lang');
 const isAR = computed(() => lang?.value === 'ar');
 const getTextID = inject<Function>('getTextID');
+
+watch(() => route.query.page, (newValue) => {
+    page.value = parseInt(newValue as string);
+    getPageItemGroups(page.value).then((v) => pageItemGroups.value = v);
+});
+
+watch(pageItemGroups, (newValue) => {
+    newValue.forEach((items) => items.forEach((item) =>
+        getTextID?.(item.sura, item.aya).then((textID: string) => item.textID = textID)
+    ));
+});
 
 const needMark = (item: PageItem) => item.sura === sura && item.aya === aya;
 </script>
@@ -44,7 +52,7 @@ const needMark = (item: PageItem) => item.sura === sura && item.aya === aya;
                             <AyaNumber :aya="item.aya" />
                         </span>
                         <span v-else>
-                            ({{ item.aya }}) {{ getTextID?.(item.sura, item.aya) }}
+                            ({{ item.aya }}) {{ item.textID }}
                         </span>
                     </span>
                 </p>
