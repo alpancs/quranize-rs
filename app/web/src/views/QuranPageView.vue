@@ -23,7 +23,6 @@ watch(() => route.query.page, async (newPage) => {
 
 const lang = inject<Ref<string>>('lang');
 const isAR = computed(() => lang?.value === 'ar');
-const isID = computed(() => lang?.value === 'id');
 const getTextID = inject<Function>('getTextID');
 
 const needMark = (item: PageItem) => item.sura === sura && item.aya === aya;
@@ -31,28 +30,20 @@ const needMark = (item: PageItem) => item.sura === sura && item.aya === aya;
 
 <template>
     <div class="box">
-        <div v-if="isAR" dir="rtl">
+        <div :dir="isAR ? 'rtl' : 'ltr'">
             <div v-for="items in pageItemGroups">
-                <p class="has-text-centered mt-4 has-text-weight-semibold quran-text" v-if="items[0].aya === 1">
-                    سورة {{ getSuraNameAR(items[0].sura) }}
+                <p v-if="items[0].aya === 1" class="has-text-centered mt-4 has-text-weight-semibold">
+                    <span v-if="isAR" class="quran-text">سورة {{ getSuraNameAR(items[0].sura) }}</span>
+                    <span v-else>Surah {{ getSuraNameID(items[0].sura) }}</span>
                 </p>
                 <p class="has-text-justified">
                     <span v-for="item in items">
-                        <MarkedQuranText v-if="needMark(item)" :beforeMarked :marked :afterMarked />
-                        <span v-else class="quran-text">{{ item.text }}</span>
-                        <AyaNumber :aya="item.aya" />
-                    </span>
-                </p>
-            </div>
-        </div>
-        <div v-if="isID" class="has-text-justified">
-            <div v-for="items in pageItemGroups">
-                <p class="has-text-centered mt-4 has-text-weight-semibold" v-if="items[0].aya === 1">
-                    Surah {{ getSuraNameID(items[0].sura) }}
-                </p>
-                <p class="has-text-justified">
-                    <span v-for="item in items">
-                        ({{ item.aya }}) {{ getTextID?.(item.sura, item.aya) }}
+                        <span v-if="isAR">
+                            <MarkedQuranText v-if="needMark(item)" :beforeMarked :marked :afterMarked />
+                            <span v-else class="quran-text">{{ item.text }}</span>
+                            <AyaNumber :aya="item.aya" />
+                        </span>
+                        <span v-else>({{ item.aya }}) {{ getTextID?.(item.sura, item.aya) }}</span>
                     </span>
                 </p>
             </div>
