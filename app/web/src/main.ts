@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 library.add(
     fas.faSearch,
     fas.faDesktop, fas.faMoon, fas.faSun,
-    fas.faAngleDown, fas.faAngleUp, fas.faBookOpen,
+    fas.faAngleDown, fas.faAngleUp, fas.faBookOpen, fas.faUpRightAndDownLeftFromCenter,
     fas.faCaretLeft, fas.faCaretRight,
 );
 
