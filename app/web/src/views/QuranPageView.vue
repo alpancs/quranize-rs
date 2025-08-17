@@ -43,7 +43,9 @@ const needMark = (item: PageItem) => item.sura === sura && item.aya === aya;
                             <span v-else class="quran-text">{{ item.text }}</span>
                             <AyaNumber :aya="item.aya" />
                         </span>
-                        <span v-else>({{ item.aya }}) {{ getTextID?.(item.sura, item.aya) }}</span>
+                        <span v-else>
+                            ({{ item.aya }}) {{ getTextID?.(item.sura, item.aya) }}
+                        </span>
                     </span>
                 </p>
             </div>
