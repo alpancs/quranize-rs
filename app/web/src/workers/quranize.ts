@@ -1,4 +1,4 @@
-import init, { Quranize } from "./quranize-wasm";
+import init, { Quranize } from "../utils/quranize-wasm";
 
 interface Data {
     id: number;

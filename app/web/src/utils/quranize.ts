@@ -1,6 +1,6 @@
 import { ref } from 'vue';
-import Worker from '../workers/quranize/web-worker.ts?worker';
-import type { Quranize } from '../workers/quranize/quranize-wasm';
+import Worker from '../workers/quranize.ts?worker';
+import type { Quranize } from './quranize-wasm';
 
 export type PageItem = {
     sura: number;
