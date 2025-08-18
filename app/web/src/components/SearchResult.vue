@@ -61,7 +61,7 @@ function closeQuranPage() {
     <div class="modal is-active" v-if="isQuranPageVisible">
         <div class="modal-background" @click="closeQuranPage"></div>
         <div class="modal-card">
-            <header class="modal-card-head">
+            <header class="modal-card-head mt-6">
                 <p class="modal-card-title">
                     <router-link :to="{ path: '/quran-page', query: result }" class="tag is-medium">
                         <span class="icon">
