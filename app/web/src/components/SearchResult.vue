@@ -4,6 +4,7 @@ import { getPageItemGroups, getSuraNameAR, toArabicNumber, type PageItem } from 
 import type { SearchResult } from '../utils/types';
 import MarkedQuranText from '../components/MarkedQuranText.vue';
 import AyaNumber from '../components/AyaNumber.vue';
+import { onBeforeRouteLeave } from 'vue-router';
 
 const { result } = defineProps<{ result: SearchResult }>();
 
@@ -28,6 +29,13 @@ async function openQuranPage() {
 function closeQuranPage() {
     isQuranPageVisible.value = false;
 }
+
+onBeforeRouteLeave((to) => {
+    if (isQuranPageVisible.value && to.path === '/') {
+        closeQuranPage();
+        return false;
+    }
+});
 </script>
 
 <template>
