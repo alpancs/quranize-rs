@@ -6,8 +6,8 @@ import QuranPageView from './views/QuranPageView.vue';
 export const router = createRouter({
     history: createWebHistory(),
     routes: [
-        { path: '/', component: HomeView },
-        { path: '/search-result', component: SearchResultView },
-        { path: '/quran-page', component: QuranPageView },
+        { name: 'Home', component: HomeView, path: '/' },
+        { name: 'SearchResult', component: SearchResultView, path: '/index' },
+        { name: 'QuranPage', component: QuranPageView, path: '/quran/pages/:page' },
     ],
 });

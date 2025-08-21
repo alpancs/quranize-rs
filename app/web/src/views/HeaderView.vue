@@ -54,7 +54,7 @@ const lang = inject<Ref<string>>('lang');
           </div>
 
           <div class="level-item">
-            <RouterLink to="/" class="title">Quranize</RouterLink>
+            <RouterLink :to="{ name: 'Home' }" class="title">Quranize</RouterLink>
           </div>
 
           <div class="level-right">

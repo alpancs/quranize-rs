@@ -8,32 +8,37 @@ import AyaNumber from '../components/AyaNumber.vue';
 type PageItemExt = PageItem & { textID?: string };
 
 const route = useRoute();
-const page = ref(parseInt(route.query.page as string));
-const sura = parseInt(route.query.sura as string);
-const aya = parseInt(route.query.aya as string);
-const beforeMarked = route.query.before_text as string;
-const marked = route.query.text as string;
-const afterMarked = route.query.after_text as string;
+const markedSura = parseInt(route.query.markedSura as string);
+const markedAya = parseInt(route.query.markedAya as string);
+const beforeMarked = route.query.beforeMarked as string;
+const marked = route.query.marked as string;
+const afterMarked = route.query.afterMarked as string;
 
+const page = ref(0);
 const pageItemGroups = ref<PageItemExt[][]>([]);
-getPageItemGroups(page.value).then((v) => pageItemGroups.value = v);
 
 const lang = inject<Ref<string>>('lang');
 const isAR = computed(() => lang?.value === 'ar');
 const getTextID = inject<Function>('getTextID');
 
-watch(() => route.query.page, (newValue) => {
-    page.value = parseInt(newValue as string);
-    getPageItemGroups(page.value).then((v) => pageItemGroups.value = v);
-});
+watch(
+    () => route.params.page,
+    async (newValue) => {
+        page.value = parseInt(newValue as string);
+        pageItemGroups.value = await getPageItemGroups(page.value);
+    },
+    { immediate: true },
+);
 
-watch(pageItemGroups, (newValue) => {
-    newValue.forEach((items) => items.forEach((item) =>
-        getTextID?.(item.sura, item.aya).then((textID: string) => item.textID = textID)
-    ));
-});
+watch(pageItemGroups, (newValue) =>
+    newValue.forEach((items) =>
+        items.forEach(async (item) =>
+            item.textID = await getTextID?.(item.sura, item.aya)
+        )
+    )
+);
 
-const needMark = (item: PageItem) => item.sura === sura && item.aya === aya;
+const needMark = (item: PageItem) => item.sura === markedSura && item.aya === markedAya;
 </script>
 
 <template>
@@ -61,8 +66,7 @@ const needMark = (item: PageItem) => item.sura === sura && item.aya === aya;
     </div>
 
     <nav class="tags has-addons is-centered">
-        <RouterLink class="tag is-rounded" v-if="page < 604"
-            :to="{ query: { page: page + 1, sura, aya, before_text: beforeMarked, text: marked, after_text: afterMarked } }">
+        <RouterLink :to="{ params: { page: page + 1 }, query: route.query }" v-if="page < 604" class="tag is-rounded">
             <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-left" /></span>
             <span v-if="isAR" class="quran-text">{{ toArabicNumber(page + 1) }}</span>
             <span v-else>{{ page + 1 }}</span>
@@ -76,8 +80,7 @@ const needMark = (item: PageItem) => item.sura === sura && item.aya === aya;
             <span v-else>{{ page }}</span>
         </button>
 
-        <RouterLink class="tag is-rounded" v-if="page > 1"
-            :to="{ query: { page: page - 1, sura, aya, before_text: beforeMarked, text: marked, after_text: afterMarked } }">
+        <RouterLink :to="{ params: { page: page - 1 }, query: route.query }" v-if="page > 1" class="tag is-rounded">
             <span v-if="isAR" class="quran-text">{{ toArabicNumber(page - 1) }}</span>
             <span v-else>{{ page - 1 }}</span>
             <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-right" /></span>

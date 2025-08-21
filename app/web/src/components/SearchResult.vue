@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, ref } from 'vue';
+import { inject, ref, watch } from 'vue';
 import { getPageItemGroups, getSuraNameAR, toArabicNumber, type PageItem } from '../utils/quranize';
 import type { SearchResult } from '../utils/types';
 import MarkedQuranText from '../components/MarkedQuranText.vue';
@@ -20,18 +20,34 @@ function toggleTranslationVisibility() {
     isTranslationVisible.value = !isTranslationVisible.value;
 }
 
-async function openQuranPage() {
+function openQuranPage() {
     isQuranPageVisible.value = true;
-    if (pageItemGroups.value.length === 0)
-        pageItemGroups.value = await getPageItemGroups(result.page);
 }
 
 function closeQuranPage() {
     isQuranPageVisible.value = false;
 }
 
+watch(
+    isQuranPageVisible,
+    async () => pageItemGroups.value = await getPageItemGroups(result.page),
+    { once: true },
+);
+
+const toQuranPage = {
+    name: 'QuranPage',
+    params: { page: result.page },
+    query: {
+        markedSura: result.sura,
+        markedAya: result.aya,
+        beforeMarked: result.before_text,
+        marked: result.text,
+        afterMarked: result.after_text,
+    },
+};
+
 onBeforeRouteLeave((to) => {
-    if (isQuranPageVisible.value && to.path === '/') {
+    if (isQuranPageVisible.value && to.name === 'Home') {
         closeQuranPage();
         return false;
     }
@@ -71,11 +87,11 @@ onBeforeRouteLeave((to) => {
         <div class="modal-card">
             <header class="modal-card-head mt-6">
                 <p class="modal-card-title">
-                    <router-link :to="{ path: '/quran-page', query: result }" class="tag is-medium">
+                    <RouterLink :to="toQuranPage" class="tag is-medium">
                         <span class="icon">
                             <font-awesome-icon icon="fa-solid fa-up-right-and-down-left-from-center" />
                         </span>
-                    </router-link>
+                    </RouterLink>
                 </p>
                 <button class="delete" aria-label="close" @click="closeQuranPage"></button>
             </header>
