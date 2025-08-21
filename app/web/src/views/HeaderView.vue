@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed, inject, type Ref } from 'vue';
-import { useRoute } from 'vue-router';
 
 const themes = {
   system: { icon: 'desktop', colorClass: '' },
@@ -32,8 +31,6 @@ function setTheme(newTheme: Theme) {
 
 setTheme(localStorage.getItem('theme') as Theme ?? 'light');
 
-const route = useRoute();
-const inQuranPage = computed(() => route.path === '/quran-page');
 const lang = inject<Ref<string>>('lang');
 </script>
 
@@ -59,7 +56,7 @@ const lang = inject<Ref<string>>('lang');
 
           <div class="level-right">
             <div class="level-item">
-              <div class="tags has-addons" :class="{ 'is-invisible': !inQuranPage }">
+              <div class="tags has-addons" :class="{ 'is-invisible': !($route.name === 'QuranPage') }">
                 <button v-for="l in ['ar', 'id']" class="tag is-rounded is-uppercase has-text-weight-semibold"
                   :class="{ 'is-primary': lang === l }" @click="lang = l">{{ l }}</button>
               </div>
