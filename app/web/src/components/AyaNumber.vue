@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { toArabicNumber } from '../utils/quranize';
+import { toArabicNumber } from "../utils/quranize";
 
 defineProps<{ aya: number }>();
 </script>
