@@ -90,7 +90,7 @@ const needMark = (item: PageItem) =>
         </div>
     </div>
 
-    <nav class="tags has-addons is-centered">
+    <nav class="tags has-addons is-centered" v-if="pageItemGroups.length">
         <RouterLink
             :to="{ params: { page: page + 1 }, query: route.query }"
             v-if="page < 604"
