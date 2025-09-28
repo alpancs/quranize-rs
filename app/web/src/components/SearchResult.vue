@@ -57,7 +57,7 @@ onBeforeRouteLeave((to) => {
 <template>
     <div class="card">
         <header class="card-header" dir="rtl">
-            <p class="card-header-title quran-text is-clickable" @click="openQuranPage">
+            <p class="card-header-title quran-text is-size-5 is-clickable" @click="openQuranPage">
                 <span class="icon-text">
                     <span class="icon">
                         <font-awesome-icon icon="fa-solid fa-book-open" />
