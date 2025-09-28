@@ -15,6 +15,7 @@
     "@fortawesome/fontawesome-svg-core": "^7.0.1",
     "@fortawesome/free-solid-svg-icons": "^7.0.1",
     "@fortawesome/vue-fontawesome": "^3.1.2",
+    "@vueuse/core": "^13.9.0",
     "bulma": "^1.0.4",
     "vue": "^3.5.22",
     "vue-router": "^4.5.1"
