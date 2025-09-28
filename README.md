@@ -14,8 +14,8 @@ Transform transliterations into quran forms.
 
 #### Former version of this project
 
-- Go: <https://github.com/alpancs/quranize>
-- Application: <https://github.com/alpancs/quranize-service>
+- Go package: <https://github.com/alpancs/quranize>
+- Web App: <https://github.com/alpancs/quranize-service>
 
 ### License
 

@@ -19,38 +19,28 @@
 //! assert_eq!(q.encode("amma yatasa alun")[0].0, "عَمَّ يَتَساءَلون");
 //!
 //! let (i, _) = q.find("عَمَّ يَتَساءَلون")[0];
-//! let sura = q.get_sura(i).unwrap();
-//! let aya = q.get_aya(i).unwrap();
-//! assert_eq!((sura, aya), (78, 1));
+//! let &(page, sura, aya, _) = q.get_data(i).unwrap();
+//! assert_eq!((page, sura, aya), (582, 78, 1));
 //! ```
 
 mod normalization;
+mod quran_metadata;
 mod suffix_tree;
 mod transliteration;
 
-use suffix_tree::{Edge, Index};
+use suffix_tree::{Edge, Index, SuffixTree};
 use transliteration::{contextual_map, harf_muqottoah_map, map};
 
 type EncodeResults = Vec<(String, usize, Vec<&'static str>)>;
 type PrevMap = (char, &'static str);
 
-const AYA_COUNT: usize = 6236;
-const SURA_STARTS: [usize; 114] = [
-    0, 7, 293, 493, 669, 789, 954, 1160, 1235, 1364, 1473, 1596, 1707, 1750, 1802, 1901, 2029,
-    2140, 2250, 2348, 2483, 2595, 2673, 2791, 2855, 2932, 3159, 3252, 3340, 3409, 3469, 3503, 3533,
-    3606, 3660, 3705, 3788, 3970, 4058, 4133, 4218, 4272, 4325, 4414, 4473, 4510, 4545, 4583, 4612,
-    4630, 4675, 4735, 4784, 4846, 4901, 4979, 5075, 5104, 5126, 5150, 5163, 5177, 5188, 5199, 5217,
-    5229, 5241, 5271, 5323, 5375, 5419, 5447, 5475, 5495, 5551, 5591, 5622, 5672, 5712, 5758, 5800,
-    5829, 5848, 5884, 5909, 5931, 5948, 5967, 5993, 6023, 6043, 6058, 6079, 6090, 6098, 6106, 6125,
-    6130, 6138, 6146, 6157, 6168, 6176, 6179, 6188, 6193, 6197, 6204, 6207, 6213, 6216, 6221, 6225,
-    6230,
-];
+use quran_metadata::*;
 const QURAN_TXT: &str = include_str!("quran-simple-min.txt");
 
 /// Quranize model, for doing transliteration, finding string, and getting aya.
 pub struct Quranize {
+    data: Vec<(u16, u8, u16, &'static str)>,
     tree: suffix_tree::SuffixTree<'static>,
-    saqs: Vec<(u8, u16, &'static str)>,
 }
 
 impl Quranize {
@@ -58,22 +48,25 @@ impl Quranize {
 
     /// Create a new [`Quranize`] instance.
     pub fn new() -> Self {
-        let mut tree = suffix_tree::SuffixTree::with_capacity(Self::EXPECTED_VERTEX_COUNT);
-        let mut saqs = Vec::with_capacity(AYA_COUNT);
-        let mut sura_num = 1;
+        let mut data = Vec::with_capacity(AYA_COUNT);
+        let mut tree = SuffixTree::with_capacity(Self::EXPECTED_VERTEX_COUNT);
+
+        let mut sura_num = 0;
+        let mut page = 0;
         (0..AYA_COUNT)
             .zip(QURAN_TXT.split_inclusive('\n'))
             .map(|(i, q)| {
-                sura_num += (i == SURA_STARTS.get(sura_num).copied().unwrap_or(AYA_COUNT)) as usize;
+                sura_num += (SURA_STARTS.get(sura_num) == Some(&i)) as usize;
                 let aya_num = i - SURA_STARTS[sura_num - 1] + 1;
-                ((i, sura_num as u8, aya_num as u16), q)
+                page += (PAGE_OFFSETS.get(page) == Some(&(sura_num, aya_num))) as usize;
+                (i, page as u16, sura_num as u8, aya_num as u16, q)
             })
-            .map(|((i, s, a), q)| ((i, s, a), Self::trim_basmalah(s, a, q)))
-            .for_each(|((i, s, a), q)| {
+            .map(|(i, p, s, a, q)| (i, p, s, a, Self::trim_basmalah(s, a, q)))
+            .for_each(|(i, p, s, a, q)| {
+                data.push((p, s, a, q.trim_end()));
                 tree.construct(i, q);
-                saqs.push((s, a, q.trim()));
             });
-        Self { tree, saqs }
+        Self { data, tree }
     }
 
     fn trim_basmalah(s: u8, a: u16, q: &str) -> &str {
@@ -186,37 +179,42 @@ impl Quranize {
         self.tree.find(s, 0)
     }
 
-    /// Maps `i` into sura number, where `i` is an aya row / aya offset (`0..6236`).
+    /// Get the data for a specific aya row / aya offset (`i`: 0..6236).
+    /// Data is a tuple of:
+    /// - `u16`: page number
+    /// - `u8`: sura number
+    /// - `u16`: aya number
+    /// - `&str`: aya text
     ///
     /// # Examples
     /// ```
     /// let q = quranize::Quranize::new();
-    /// assert_eq!(q.get_sura(5672), Some(78));
+    /// assert_eq!(q.get_data(5672), Some(&(582, 78, 1, "عَمَّ يَتَساءَلونَ")));
     /// ```
-    pub fn get_sura(&self, i: usize) -> Option<u8> {
-        Some(self.saqs.get(i)?.0)
+    pub fn get_data(&self, i: usize) -> Option<&(u16, u8, u16, &str)> {
+        self.data.get(i)
     }
 
-    /// Maps `i` into aya number, where `i` is an aya row / aya offset (`0..6236`).
-    ///
+    /// Get the data for a specific page number (`page`: 1..604).
+    /// Returns a vector of tuples, each tuple contains:
+    /// - `u16`: page number
+    /// - `u8`: sura number
+    /// - `u16`: aya number
+    /// - `&str`: aya text
     /// # Examples
     /// ```
     /// let q = quranize::Quranize::new();
-    /// assert_eq!(q.get_aya(5672), Some(1));
+    /// let page_data = q.get_data_from_page(582).unwrap();
+    /// assert_eq!(page_data.len(), 30);
+    /// assert_eq!(page_data[0], &(582, 78, 1, "عَمَّ يَتَساءَلونَ"));
     /// ```
-    pub fn get_aya(&self, i: usize) -> Option<u16> {
-        Some(self.saqs.get(i)?.1)
-    }
-
-    /// Maps `i` into aya text, where `i` is an aya row / aya offset (`0..6236`).
-    ///
-    /// # Examples
-    /// ```
-    /// let q = quranize::Quranize::new();
-    /// assert_eq!(q.get_quran(5672), Some("عَمَّ يَتَساءَلونَ"));
-    /// ```
-    pub fn get_quran(&self, i: usize) -> Option<&str> {
-        Some(self.saqs.get(i)?.2)
+    pub fn get_data_from_page(&self, page: u16) -> Option<Vec<&(u16, u8, u16, &str)>> {
+        let same_page = |&&(p, _, _, _): &&(u16, u8, u16, &str)| p == page;
+        let pos = { self.data.binary_search_by_key(&page, |&(p, _, _, _)| p) }.ok()?;
+        let left_item_count = self.data[..pos].iter().rev().take_while(same_page).count();
+        let left_pos = pos - left_item_count;
+        let page_data = self.data[left_pos..].iter().take_while(same_page).collect();
+        Some(page_data)
     }
 }
 
@@ -343,7 +341,7 @@ mod tests {
         let results = q.e("masyaallah");
         let uresults = std::collections::HashSet::<&String>::from_iter(results.iter());
         let is_unique = results.len() == uresults.len();
-        assert!(is_unique, "results are not unique. results: {:#?}", results);
+        assert!(is_unique, "results are not unique. results: {results:#?}");
     }
 
     #[test]
@@ -372,5 +370,22 @@ mod tests {
         assert_eq!(t.vertices.len(), Quranize::EXPECTED_VERTEX_COUNT);
         assert!(t.vertices[0].2);
         assert!(!t.vertices[Quranize::EXPECTED_VERTEX_COUNT - 1].2);
+    }
+
+    #[test]
+    fn test_get_data_from_page() {
+        let q = Quranize::new();
+        let page1_data = q.get_data_from_page(1).unwrap();
+        assert_eq!(page1_data.len(), 7);
+        assert_eq!(page1_data[0].1, 1);
+        assert_eq!(page1_data[0].2, 1);
+        assert_eq!(page1_data[0].3, "بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيمِ");
+        let page2_data = q.get_data_from_page(2).unwrap();
+        assert_eq!(page2_data.len(), 5);
+        let page3_data = q.get_data_from_page(3).unwrap();
+        assert_eq!(page3_data.len(), 11);
+        let page604_data = q.get_data_from_page(604).unwrap();
+        assert_eq!(page604_data.len(), 15);
+        assert_eq!(page604_data[0].3, "قُل هُوَ اللَّهُ أَحَدٌ");
     }
 }

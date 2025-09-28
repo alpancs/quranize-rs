@@ -1,11 +1,11 @@
-@import "bulma.css";
+@import "bulma/css/bulma.min.css";
 
 @font-face {
   font-family: hafs;
   font-display: swap;
-  src: url("fonts/hafs/hafs.woff2") format("woff2"),
-    url("fonts/hafs/hafs.woff") format("woff"),
-    url("fonts/hafs/hafs.otf") format("opentype");
+  src: url("./assets/fonts/hafs/hafs.woff2") format("woff2"),
+    url("./assets/fonts/hafs/hafs.woff") format("woff"),
+    url("./assets/fonts/hafs/hafs.otf") format("opentype");
 }
 
 :root {
@@ -17,8 +17,6 @@
 
 .quran-text {
   font-family: hafs;
-  font-size: 1.15em;
-  direction: rtl;
   line-height: 2.35em;
 }
 
@@ -26,6 +24,6 @@
   background-color: #c4ecbd;
 }
 
-[v-cloak] {
-  display: none;
+.translation mark {
+  background-color: #c4ecbd;
 }

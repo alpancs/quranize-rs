@@ -1,4 +1,3 @@
 [workspace]
-
-members = ["quranize", "web-app"]
+members = ["quranize", "quranize-wasm"]
 resolver = "2"

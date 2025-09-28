@@ -11,147 +11,147 @@
     "categories": [ "alquran", "utilities" ],
     "icons": [
         {
-            "src": "android/android-launchericon-512-512.png",
+            "src": "img/android/android-launchericon-512-512.png",
             "sizes": "512x512"
         },
         {
-            "src": "android/android-launchericon-192-192.png",
+            "src": "img/android/android-launchericon-192-192.png",
             "sizes": "192x192"
         },
         {
-            "src": "android/android-launchericon-144-144.png",
+            "src": "img/android/android-launchericon-144-144.png",
             "sizes": "144x144"
         },
         {
-            "src": "android/android-launchericon-96-96.png",
+            "src": "img/android/android-launchericon-96-96.png",
             "sizes": "96x96"
         },
         {
-            "src": "android/android-launchericon-72-72.png",
+            "src": "img/android/android-launchericon-72-72.png",
             "sizes": "72x72"
         },
         {
-            "src": "android/android-launchericon-48-48.png",
+            "src": "img/android/android-launchericon-48-48.png",
             "sizes": "48x48"
         },
         {
-            "src": "ios/16.png",
+            "src": "img/ios/16.png",
             "sizes": "16x16"
         },
         {
-            "src": "ios/20.png",
+            "src": "img/ios/20.png",
             "sizes": "20x20"
         },
         {
-            "src": "ios/29.png",
+            "src": "img/ios/29.png",
             "sizes": "29x29"
         },
         {
-            "src": "ios/32.png",
+            "src": "img/ios/32.png",
             "sizes": "32x32"
         },
         {
-            "src": "ios/40.png",
+            "src": "img/ios/40.png",
             "sizes": "40x40"
         },
         {
-            "src": "ios/50.png",
+            "src": "img/ios/50.png",
             "sizes": "50x50"
         },
         {
-            "src": "ios/57.png",
+            "src": "img/ios/57.png",
             "sizes": "57x57"
         },
         {
-            "src": "ios/58.png",
+            "src": "img/ios/58.png",
             "sizes": "58x58"
         },
         {
-            "src": "ios/60.png",
+            "src": "img/ios/60.png",
             "sizes": "60x60"
         },
         {
-            "src": "ios/64.png",
+            "src": "img/ios/64.png",
             "sizes": "64x64"
         },
         {
-            "src": "ios/72.png",
+            "src": "img/ios/72.png",
             "sizes": "72x72"
         },
         {
-            "src": "ios/76.png",
+            "src": "img/ios/76.png",
             "sizes": "76x76"
         },
         {
-            "src": "ios/80.png",
+            "src": "img/ios/80.png",
             "sizes": "80x80"
         },
         {
-            "src": "ios/87.png",
+            "src": "img/ios/87.png",
             "sizes": "87x87"
         },
         {
-            "src": "ios/100.png",
+            "src": "img/ios/100.png",
             "sizes": "100x100"
         },
         {
-            "src": "ios/114.png",
+            "src": "img/ios/114.png",
             "sizes": "114x114"
         },
         {
-            "src": "ios/120.png",
+            "src": "img/ios/120.png",
             "sizes": "120x120"
         },
         {
-            "src": "ios/128.png",
+            "src": "img/ios/128.png",
             "sizes": "128x128"
         },
         {
-            "src": "ios/144.png",
+            "src": "img/ios/144.png",
             "sizes": "144x144"
         },
         {
-            "src": "ios/152.png",
+            "src": "img/ios/152.png",
             "sizes": "152x152"
         },
         {
-            "src": "ios/167.png",
+            "src": "img/ios/167.png",
             "sizes": "167x167"
         },
         {
-            "src": "ios/180.png",
+            "src": "img/ios/180.png",
             "sizes": "180x180"
         },
         {
-            "src": "ios/192.png",
+            "src": "img/ios/192.png",
             "sizes": "192x192"
         },
         {
-            "src": "ios/256.png",
+            "src": "img/ios/256.png",
             "sizes": "256x256"
         },
         {
-            "src": "ios/512.png",
+            "src": "img/ios/512.png",
             "sizes": "512x512"
         },
         {
-            "src": "ios/1024.png",
+            "src": "img/ios/1024.png",
             "sizes": "1024x1024"
         }
     ],
     "screenshots": [
         {
-            "src": "screenshots/Screenshot_2023-05-24-21-50-36-387_com.microsoft.emmx.jpg",
+            "src": "img/screenshots/Screenshot_2023-05-24-21-50-36-387_com.microsoft.emmx.jpg",
             "sizes": "1080x2400",
             "type": "image/jpeg"
         },
         {
-            "src": "screenshots/Screenshot_2023-05-24-21-50-50-668_com.microsoft.emmx.jpg",
+            "src": "img/screenshots/Screenshot_2023-05-24-21-50-50-668_com.microsoft.emmx.jpg",
             "sizes": "1080x2400",
             "type": "image/jpeg"
         },
         {
-            "src": "screenshots/Screenshot_2023-05-24-21-51-00-101_com.microsoft.emmx.jpg",
+            "src": "img/screenshots/Screenshot_2023-05-24-21-51-00-101_com.microsoft.emmx.jpg",
             "sizes": "1080x2400",
             "type": "image/jpeg"
         }
