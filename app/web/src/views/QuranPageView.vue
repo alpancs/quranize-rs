@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, inject, ref, watch, type Ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed, inject, ref, watch, useTemplateRef, type Ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useSwipe } from '@vueuse/core';
 import { toArabicNumber, getSuraNameAR, getSuraNameID, getPageItemGroups, type PageItem } from '../utils/quranize';
 import AyaNumber from '../components/AyaNumber.vue';
 
@@ -34,11 +35,18 @@ watch(pageItemGroups, (newValue) =>
     )
 );
 
+const router = useRouter();
+const { direction } = useSwipe(useTemplateRef('quran-page'));
+watch(direction, (d) => {
+  if (d === 'right' && page.value < 604) router.push({ params: { page: page.value + 1 }, query: route.query });
+  if (d === 'left' && page.value > 1) router.push({ params: { page: page.value - 1 }, query: route.query });
+});
+
 const needMark = (item: PageItem) => item.sura === markedSura && item.aya === markedAya;
 </script>
 
 <template>
-    <div class="block">
+    <div class="block" ref="quran-page">
         <div :dir="isAR ? 'rtl' : 'ltr'">
             <div v-for="items in pageItemGroups">
                 <p v-if="items[0]!.aya === 1" class="has-text-centered has-text-weight-semibold">
