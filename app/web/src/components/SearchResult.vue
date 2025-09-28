@@ -9,7 +9,7 @@ import {
 import type { SearchResult } from "../utils/types";
 import MarkedQuranText from "../components/MarkedQuranText.vue";
 import AyaNumber from "../components/AyaNumber.vue";
-import { onBeforeRouteLeave } from "vue-router";
+import { useRouter, onBeforeRouteLeave } from "vue-router";
 
 const { result } = defineProps<{ result: SearchResult }>();
 
@@ -45,6 +45,16 @@ const toQuranPage = {
     params: { page: result.page },
     query: { markedSura: result.sura, markedAya: result.aya },
 };
+
+const router = useRouter();
+
+function navToQuranPage(item: PageItem) {
+    router.push({
+        name: "QuranPage",
+        params: { page: result.page },
+        query: { markedSura: item.sura, markedAya: item.aya },
+    });
+}
 
 onBeforeRouteLeave((to) => {
     if (isQuranPageVisible.value && to.name === "Home") {
@@ -133,7 +143,11 @@ onBeforeRouteLeave((to) => {
                         سورة {{ getSuraNameAR(items[0].sura) }}
                     </p>
                     <p class="has-text-justified">
-                        <span v-for="item in items">
+                        <span
+                            class="is-clickable"
+                            @click="navToQuranPage(item)"
+                            v-for="item in items"
+                        >
                             <MarkedQuranText
                                 v-if="
                                     item.sura === result.sura &&
