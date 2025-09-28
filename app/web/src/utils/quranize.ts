@@ -42,10 +42,10 @@ const SuraNamesID = ["Al-Faatiha", "Al-Baqara", "Aal-i-Imraan", "An-Nisaa", "Al-
 
 export async function getPageItemGroups(page: number) {
     const pageItems = await call<PageItem[]>('getPage', page);
-    return pageItems.reduce<PageItem[][]>((acc, curr, i, arr) => {
-        if (i === 0 || arr[i - 1].sura !== curr.sura) acc.push([curr]);
-        else acc[acc.length - 1].push(curr);
-        return acc;
+    return pageItems.reduce<PageItem[][]>((groups, curr, i) => {
+        if (i === 0 || curr.sura > pageItems[i - 1]!.sura) groups.push([curr]);
+        else groups[groups.length - 1]!.push(curr);
+        return groups;
     }, []);
 }
 

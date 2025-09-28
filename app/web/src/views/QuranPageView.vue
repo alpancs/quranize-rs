@@ -45,9 +45,9 @@ const needMark = (item: PageItem) => item.sura === markedSura && item.aya === ma
     <div class="block">
         <div :dir="isAR ? 'rtl' : 'ltr'">
             <div v-for="items in pageItemGroups">
-                <p v-if="items[0].aya === 1" class="has-text-centered mt-4 has-text-weight-semibold">
-                    <span v-if="isAR" class="quran-text">سورة {{ getSuraNameAR(items[0].sura) }}</span>
-                    <span v-else>Surah {{ getSuraNameID(items[0].sura) }}</span>
+                <p v-if="items[0]!.aya === 1" class="has-text-centered mt-4 has-text-weight-semibold">
+                    <span v-if="isAR" class="quran-text">سورة {{ getSuraNameAR(items[0]!.sura) }}</span>
+                    <span v-else>Surah {{ getSuraNameID(items[0]!.sura) }}</span>
                 </p>
                 <p class="has-text-justified">
                     <span v-for="item in items">

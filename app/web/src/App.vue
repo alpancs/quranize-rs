@@ -9,7 +9,7 @@ const textIDMap = (async function () {
     const split = line.split('|');
     if (split.length === 3) {
       const [sura, aya, text] = split;
-      map.set(`${sura}.${aya}`, text);
+      map.set(`${sura}.${aya}`, text!);
     }
   });
   return map;
