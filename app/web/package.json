@@ -7,9 +7,9 @@
     "build-wasm": "wasm-pack build --target=web --release ../../quranize-wasm",
     "replace-wasm": "rm -rf src/utils/quranize-wasm && mv ../../quranize-wasm/pkg src/utils/quranize-wasm",
     "prepare-wasm": "npm run build-wasm && npm run replace-wasm",
-    "dev": "vite --host=0.0.0.0",
+    "dev": "vite --host",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview --host"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.0.1",
