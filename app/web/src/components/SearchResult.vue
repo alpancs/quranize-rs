@@ -73,9 +73,9 @@ onBeforeRouteLeave((to) => {
         </header>
         <div class="card-content">
             <div class="content">
-                <p dir="rtl">
+                <p dir="rtl" class="quran-text is-size-5 is-clickable" @click="toggleTranslationVisibility">
                     <MarkedQuranText :beforeMarked="result.before_text" :marked="result.text"
-                        :afterMarked="result.after_text" @click="toggleTranslationVisibility" class="is-clickable" />
+                        :afterMarked="result.after_text" />
                 </p>
                 <p v-if="isTranslationVisible">{{ textID }}</p>
             </div>
@@ -95,9 +95,9 @@ onBeforeRouteLeave((to) => {
                 </p>
                 <button class="delete" aria-label="close" @click="closeQuranPage"></button>
             </header>
-            <section class="modal-card-body" dir="rtl">
-                <div class="quran-text" v-for="items in pageItemGroups">
-                    <p class="has-text-centered mt-4 has-text-weight-semibold" v-if="items[0].aya === 1">
+            <section class="modal-card-body">
+                <div dir="rtl" class="quran-text is-size-5" v-for="items in pageItemGroups">
+                    <p class="has-text-centered has-text-weight-semibold" v-if="items[0]?.aya === 1">
                         سورة {{ getSuraNameAR(items[0].sura) }}
                     </p>
                     <p class="has-text-justified">
