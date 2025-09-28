@@ -5,5 +5,5 @@ defineProps<{ aya: number }>();
 </script>
 
 <template>
-    <span class="quran-text ml-2 mr-1">&#xFD3F;{{ toArabicNumber(aya) }}&#xFD3E;</span>
+    <span class="ml-2 mr-1">&#xFD3F;{{ toArabicNumber(aya) }}&#xFD3E;</span>
 </template>
