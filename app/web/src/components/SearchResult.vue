@@ -57,11 +57,11 @@ onBeforeRouteLeave((to) => {
 <template>
     <div class="card">
         <header class="card-header" dir="rtl">
-            <p class="card-header-title quran-text">
+            <p class="card-header-title quran-text is-clickable" @click="openQuranPage">
                 <span class="icon-text">
-                    <button class="icon" @click="openQuranPage">
+                    <span class="icon">
                         <font-awesome-icon icon="fa-solid fa-book-open" />
-                    </button>
+                    </span>
                     {{ getSuraNameAR(result.sura) }} : {{ toArabicNumber(result.aya) }}
                 </span>
             </p>
