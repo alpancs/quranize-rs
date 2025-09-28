@@ -37,13 +37,7 @@ watch(
 const toQuranPage = {
     name: 'QuranPage',
     params: { page: result.page },
-    query: {
-        markedSura: result.sura,
-        markedAya: result.aya,
-        beforeMarked: result.before_text,
-        marked: result.text,
-        afterMarked: result.after_text,
-    },
+    query: { markedSura: result.sura, markedAya: result.aya },
 };
 
 onBeforeRouteLeave((to) => {

@@ -2,7 +2,6 @@
 import { computed, inject, ref, watch, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { toArabicNumber, getSuraNameAR, getSuraNameID, getPageItemGroups, type PageItem } from '../utils/quranize';
-import MarkedQuranText from '../components/MarkedQuranText.vue';
 import AyaNumber from '../components/AyaNumber.vue';
 
 type PageItemExt = PageItem & { textID?: string };
@@ -10,9 +9,6 @@ type PageItemExt = PageItem & { textID?: string };
 const route = useRoute();
 const markedSura = parseInt(route.query.markedSura as string);
 const markedAya = parseInt(route.query.markedAya as string);
-const beforeMarked = route.query.beforeMarked as string;
-const marked = route.query.marked as string;
-const afterMarked = route.query.afterMarked as string;
 
 const page = ref(0);
 const pageItemGroups = ref<PageItemExt[][]>([]);
@@ -52,12 +48,14 @@ const needMark = (item: PageItem) => item.sura === markedSura && item.aya === ma
                 <p class="has-text-justified">
                     <span v-for="item in items">
                         <span v-if="isAR" class="quran-text is-size-5">
-                            <MarkedQuranText v-if="needMark(item)" :beforeMarked :marked :afterMarked />
-                            <span v-else>{{ item.text }}</span>
+                            <component :is="needMark(item) ? 'mark' : 'span'">{{ item.text }}</component>
                             <AyaNumber :aya="item.aya" />
                         </span>
-                        <span v-else>
-                            ({{ item.aya }}) {{ item.textID }}
+                        <span v-else class="translation">
+                            ({{ item.aya }})
+                            <component :is="needMark(item) ? 'mark' : 'span'">
+                                {{ item.textID }}
+                            </component>
                         </span>
                     </span>
                 </p>
