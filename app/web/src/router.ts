@@ -7,7 +7,7 @@ export const router = createRouter({
   history: createWebHistory(),
   routes: [
     { name: "Home", component: HomeView, path: "/" },
-    { name: "SearchResult", component: SearchResultView, path: "/search" },
-    { name: "QuranPage", component: QuranPageView, path: "/quran/pages/:page" },
+    { name: "SearchResult", component: SearchResultView, path: "/results" },
+    { name: "QuranPage", component: QuranPageView, path: "/quran-pages/:page" },
   ],
 });
