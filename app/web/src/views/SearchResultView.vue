@@ -27,9 +27,9 @@ call<Explanation[]>("compressExpl", quran, expl).then(
             <div class="control" v-for="e in compactExpls">
                 <div class="tags has-addons">
                     <span class="tag is-info">{{ e.alphabet }}</span>
-                    <span class="tag"
-                        ><span class="quran-text">{{ e.quran }}</span></span
-                    >
+                    <span class="tag">
+                        <span class="quran-text is-size-6">{{ e.quran }}</span>
+                    </span>
                 </div>
             </div>
         </div>
