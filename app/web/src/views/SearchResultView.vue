@@ -2,19 +2,17 @@
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 import { initiated, call } from "../utils/quranize";
-import type { SearchResult as SR, Explanation } from "../utils/types";
+import type { SearchResult as SR, Explanation as Exp } from "../utils/types";
 import SearchResultDetail from "../components/SearchResultDetail.vue";
 
 const route = useRoute();
 const { quran, explanation: expl } = route.query;
 
 const searchResults = ref<SR[]>([]);
-const explanations = ref<Explanation[]>([]);
+const explanations = ref<Exp[]>([]);
 
 call<SR[]>("getLocations", quran).then((v) => (searchResults.value = v));
-call<Explanation[]>("compressExpl", quran, expl).then(
-    (v) => (explanations.value = v),
-);
+call<Exp[]>("compressExpl", quran, expl).then((v) => (explanations.value = v));
 </script>
 
 <template>
