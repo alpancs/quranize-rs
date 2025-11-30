@@ -67,10 +67,7 @@ onBeforeRouteLeave((to) => {
 <template>
     <div class="card">
         <header class="card-header" dir="rtl">
-            <p
-                class="card-header-title quran-text is-size-5 is-clickable"
-                @click="openQuranPage"
-            >
+            <p class="card-header-title quran-text is-size-5 is-clickable" @click="openQuranPage">
                 <span class="icon-text">
                     <span class="icon">
                         <font-awesome-icon icon="fa-solid fa-book-open" />
@@ -79,32 +76,20 @@ onBeforeRouteLeave((to) => {
                     {{ toArabicNumber(result.aya) }}
                 </span>
             </p>
-            <button
-                class="card-header-icon"
-                @click="toggleTranslationVisibility"
-            >
+            <button class="card-header-icon" @click="toggleTranslationVisibility">
                 <span class="icon">
-                    <font-awesome-icon
-                        :icon="[
-                            'fas',
-                            isTranslationVisible ? 'angle-up' : 'angle-down',
-                        ]"
-                    />
+                    <font-awesome-icon :icon="[
+                        'fas',
+                        isTranslationVisible ? 'angle-up' : 'angle-down',
+                    ]" />
                 </span>
             </button>
         </header>
         <div class="card-content">
             <div class="content">
-                <p
-                    dir="rtl"
-                    class="quran-text is-size-5 is-clickable"
-                    @click="toggleTranslationVisibility"
-                >
-                    <MarkedQuranText
-                        :beforeMarked="result.before_text"
-                        :marked="result.text"
-                        :afterMarked="result.after_text"
-                    />
+                <p dir="rtl" class="quran-text is-size-5 is-clickable" @click="toggleTranslationVisibility">
+                    <MarkedQuranText :beforeMarked="result.before_text" :marked="result.text"
+                        :afterMarked="result.after_text" />
                 </p>
                 <p v-if="isTranslationVisible">{{ textID }}</p>
             </div>
@@ -118,45 +103,24 @@ onBeforeRouteLeave((to) => {
                 <p class="modal-card-title">
                     <RouterLink :to="toQuranPage" class="tag is-medium">
                         <span class="icon">
-                            <font-awesome-icon
-                                icon="fa-solid fa-up-right-and-down-left-from-center"
-                            />
+                            <font-awesome-icon icon="fa-solid fa-up-right-and-down-left-from-center" />
                         </span>
                     </RouterLink>
                 </p>
-                <button
-                    class="delete"
-                    aria-label="close"
-                    @click="closeQuranPage"
-                ></button>
+                <button class="delete" aria-label="close" @click="closeQuranPage"></button>
             </header>
             <section class="modal-card-body">
-                <div
-                    dir="rtl"
-                    class="quran-text is-size-5"
-                    v-for="items in pageItemGroups"
-                >
-                    <p
-                        class="has-text-centered has-text-weight-semibold"
-                        v-if="items[0]?.aya === 1"
-                    >
+                <div dir="rtl" class="quran-text is-size-5" v-for="items in pageItemGroups">
+                    <p class="has-text-centered has-text-weight-semibold" v-if="items[0]?.aya === 1">
                         سورة {{ getSuraNameAR(items[0].sura) }}
                     </p>
                     <p class="has-text-justified">
-                        <span
-                            class="is-clickable"
-                            @click="navToQuranPage(item)"
-                            v-for="item in items"
-                        >
-                            <MarkedQuranText
-                                v-if="
-                                    item.sura === result.sura &&
-                                    item.aya === result.aya
-                                "
-                                :beforeMarked="result.before_text"
-                                :marked="result.text"
-                                :afterMarked="result.after_text"
-                            />
+                        <span class="is-clickable" @click="navToQuranPage(item)" v-for="item in items">
+                            <MarkedQuranText v-if="
+                                item.sura === result.sura &&
+                                item.aya === result.aya
+                            " :beforeMarked="result.before_text" :marked="result.text"
+                                :afterMarked="result.after_text" />
                             <span v-else>{{ item.text }}</span>
                             <AyaNumber :aya="item.aya" />
                         </span>
