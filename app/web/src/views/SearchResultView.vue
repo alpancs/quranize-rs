@@ -8,10 +8,10 @@ import SearchResultDetail from "../components/SearchResultDetail.vue";
 const route = useRoute();
 const { quran, explanation: expl } = route.query;
 
-const searchResults = ref<SR[]>([]);
+const results = ref<SR[]>([]);
 const explanations = ref<Exp[]>([]);
 
-call<SR[]>("getLocations", quran).then((v) => (searchResults.value = v));
+call<SR[]>("getLocations", quran).then((v) => (results.value = v));
 call<Exp[]>("compressExpl", quran, expl).then((v) => (explanations.value = v));
 </script>
 
@@ -33,5 +33,5 @@ call<Exp[]>("compressExpl", quran, expl).then((v) => (explanations.value = v));
         </div>
     </div>
     <div class="skeleton-block" v-if="!initiated"></div>
-    <SearchResultDetail :result v-for="result in searchResults" />
+    <SearchResultDetail :result v-for="result in results" />
 </template>
