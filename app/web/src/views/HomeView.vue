@@ -12,9 +12,8 @@ watch(keyword, async (text) => (results.value = await call("encode", text)));
 </script>
 
 <template>
-    <div class="block">
-        <SearchBar v-model="keyword" />
-    </div>
+    <div class="block"><SearchBar v-model="keyword" /></div>
+
     <div class="skeleton-block" v-if="!initiated && keyword"></div>
     <SearchResult :result v-for="result in results" />
 </template>
