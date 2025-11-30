@@ -3,17 +3,17 @@ import { ref } from "vue";
 import { useRoute } from "vue-router";
 import { initiated, call } from "../utils/quranize";
 import type { SearchResult as SR, Explanation } from "../utils/types";
-import SearchResult from "../components/SearchResult.vue";
+import SearchResultDetail from "../components/SearchResultDetail.vue";
 
 const route = useRoute();
 const { quran, explanation: expl } = route.query;
 
 const searchResults = ref<SR[]>([]);
-const compactExpls = ref<Explanation[]>([]);
+const explanations = ref<Explanation[]>([]);
 
 call<SR[]>("getLocations", quran).then((v) => (searchResults.value = v));
 call<Explanation[]>("compressExpl", quran, expl).then(
-    (v) => (compactExpls.value = v),
+    (v) => (explanations.value = v),
 );
 </script>
 
@@ -24,7 +24,7 @@ call<Explanation[]>("compressExpl", quran, expl).then(
         <div
             class="field is-grouped is-grouped-multiline is-justify-content-center"
         >
-            <div class="control" v-for="e in compactExpls">
+            <div class="control" v-for="e in explanations">
                 <div class="tags has-addons">
                     <span class="tag is-info">{{ e.alphabet }}</span>
                     <span class="tag">
@@ -35,5 +35,5 @@ call<Explanation[]>("compressExpl", quran, expl).then(
         </div>
     </div>
     <div class="skeleton-block" v-if="!initiated"></div>
-    <SearchResult :result v-for="result in searchResults" />
+    <SearchResultDetail :result v-for="result in searchResults" />
 </template>
