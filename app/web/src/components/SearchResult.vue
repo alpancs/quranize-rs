@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import type { EncodeResult } from "../utils/types";
 
 const props = defineProps<{ result: EncodeResult }>();
-const link = { name: "SearchResult", query: props.result };
+const link = computed(() => ({ name: "SearchResult", query: props.result }));
 </script>
 
 <template>
