@@ -3,7 +3,10 @@ import { computed } from "vue";
 import type { EncodeResult } from "../utils/types";
 
 const props = defineProps<{ result: EncodeResult }>();
-const link = computed(() => ({ name: "SearchResult", query: props.result }));
+const link = computed(() => ({
+    name: "SearchResult",
+    query: { quran: props.result.quran, explanation: props.result.explanation },
+}));
 </script>
 
 <template>
