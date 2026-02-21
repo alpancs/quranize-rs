@@ -17,11 +17,13 @@ call<Exp[]>("compressExpl", quran, expl).then((v) => (explanations.value = v));
 
 <template>
     <div class="block">
-        <p class="quran-text title is-4 has-text-centered">{{ quran }}</p>
+
+        <div class="block">
+            <p class="quran-text has-text-centered has-text-weight-bold is-size-4">{{ quran }}</p>
+        </div>
+
         <div class="skeleton-block" v-if="!initiated"></div>
-        <div
-            class="field is-grouped is-grouped-multiline is-justify-content-center"
-        >
+        <div class="field is-grouped is-grouped-multiline is-justify-content-center">
             <div class="control" v-for="e in explanations">
                 <div class="tags has-addons">
                     <span class="tag is-info">{{ e.alphabet }}</span>
@@ -31,7 +33,9 @@ call<Exp[]>("compressExpl", quran, expl).then((v) => (explanations.value = v));
                 </div>
             </div>
         </div>
+
     </div>
+
     <div class="skeleton-block" v-if="!initiated"></div>
     <SearchResultDetail :result v-for="result in results" />
 </template>

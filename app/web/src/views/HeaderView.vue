@@ -41,41 +41,24 @@ const lang = inject<Ref<string>>("lang");
                 <div class="level is-mobile">
                     <div class="level-left">
                         <div class="level-item">
-                            <button
-                                class="button is-rounded"
-                                @click="switchTheme"
-                            >
+                            <button class="button is-rounded" @click="switchTheme">
                                 <span class="icon" :class="themeColorClass">
-                                    <font-awesome-icon
-                                        :icon="['fas', themeIcon]"
-                                    />
+                                    <font-awesome-icon :icon="['fas', themeIcon]" />
                                 </span>
                             </button>
                         </div>
                     </div>
 
                     <div class="level-item">
-                        <RouterLink :to="{ name: 'Home' }" class="title"
-                            >Quranize</RouterLink
-                        >
+                        <RouterLink :to="{ name: 'Home' }" class="title">Quranize</RouterLink>
                     </div>
 
                     <div class="level-right">
                         <div class="level-item">
-                            <div
-                                class="tags has-addons"
-                                :class="{
-                                    'is-invisible': !(
-                                        $route.name === 'QuranPage'
-                                    ),
-                                }"
-                            >
-                                <button
-                                    v-for="l in ['ar', 'id']"
+                            <div class="tags has-addons" :class="{ 'is-invisible': !($route.name === 'QuranPage') }">
+                                <button v-for="l in ['ar', 'id']"
                                     class="tag is-rounded is-uppercase has-text-weight-semibold"
-                                    :class="{ 'is-primary': lang === l }"
-                                    @click="lang = l"
-                                >
+                                    :class="{ 'is-primary': lang === l }" @click="lang = l">
                                     {{ l }}
                                 </button>
                             </div>
