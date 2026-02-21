@@ -11,6 +11,9 @@ concurrency:
   group: deployment-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -18,14 +21,9 @@ jobs:
       contents: read
       deployments: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: wasm32-unknown-unknown
-          profile: minimal
+      - uses: actions/checkout@v6
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-      - uses: extractions/setup-just@v2
+      - uses: extractions/setup-just@v3
       - run: just prepare-deployment
       - uses: cloudflare/wrangler-action@v3
         with:
