@@ -22,7 +22,7 @@ jobs:
       deployments: write
     steps:
       - uses: actions/checkout@v6
-      - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - run: curl https://drager.github.io/wasm-pack/installer/init.sh -sSf | sh
       - uses: extractions/setup-just@v3
       - run: just prepare-deployment
       - uses: cloudflare/wrangler-action@v3
