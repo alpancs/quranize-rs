@@ -65,10 +65,10 @@ const needMark = (item: PageItem) =>
                 </p>
                 <p class="has-text-justified">
                     <span v-for="item in items">
-                        <span v-if="isAR" class="quran-text is-size-5">
-                            <component :is="needMark(item) ? 'mark' : 'span'">{{
-                                item.text
-                            }}</component>
+                        <span v-if="isAR" class="quran-text quran-paragraph is-size-5">
+                            <component :is="needMark(item) ? 'mark' : 'span'">
+                                {{ item.text }}
+                            </component>
                             <AyaNumber :aya="item.aya" />
                         </span>
                         <span v-else class="translation">
