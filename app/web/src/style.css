@@ -17,6 +17,10 @@
 
 .quran-text {
   font-family: hafs;
+  direction: rtl;
+}
+
+.quran-paragraph {
   line-height: 2.35em;
 }
 
