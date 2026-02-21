@@ -19,9 +19,7 @@ call<Exp[]>("compressExpl", quran, expl).then((v) => (explanations.value = v));
     <div class="block">
         <p class="quran-text title is-4 has-text-centered">{{ quran }}</p>
         <div class="skeleton-block" v-if="!initiated"></div>
-        <div
-            class="field is-grouped is-grouped-multiline is-justify-content-center"
-        >
+        <div class="field is-grouped is-grouped-multiline is-justify-content-center">
             <div class="control" v-for="e in explanations">
                 <div class="tags has-addons">
                     <span class="tag is-info">{{ e.alphabet }}</span>

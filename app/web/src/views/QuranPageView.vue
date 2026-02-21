@@ -59,16 +59,9 @@ const needMark = (item: PageItem) =>
     <div class="block" ref="quran-page">
         <div :dir="isAR ? 'rtl' : 'ltr'">
             <div v-for="items in pageItemGroups">
-                <p
-                    v-if="items[0]!.aya === 1"
-                    class="has-text-centered has-text-weight-semibold"
-                >
-                    <span v-if="isAR" class="quran-text is-size-5"
-                        >سورة {{ getSuraNameAR(items[0]!.sura) }}</span
-                    >
-                    <span v-else
-                        >Surah {{ getSuraNameID(items[0]!.sura) }}</span
-                    >
+                <p v-if="items[0]!.aya === 1" class="has-text-centered has-text-weight-semibold">
+                    <span v-if="isAR" class="quran-text is-size-5">سورة {{ getSuraNameAR(items[0]!.sura) }}</span>
+                    <span v-else>Surah {{ getSuraNameID(items[0]!.sura) }}</span>
                 </p>
                 <p class="has-text-justified">
                     <span v-for="item in items">
@@ -91,23 +84,15 @@ const needMark = (item: PageItem) =>
     </div>
 
     <nav class="tags has-addons is-centered" v-if="pageItemGroups.length">
-        <RouterLink
-            :to="{ params: { page: page + 1 }, query: route.query }"
-            v-if="page < 604"
-            class="tag is-rounded"
-        >
-            <span class="icon"
-                ><font-awesome-icon icon="fa-solid fa-caret-left"
-            /></span>
+        <RouterLink :to="{ params: { page: page + 1 }, query: route.query }" v-if="page < 604" class="tag is-rounded">
+            <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-left" /></span>
             <span v-if="isAR" class="quran-text">{{
                 toArabicNumber(page + 1)
             }}</span>
             <span v-else>{{ page + 1 }}</span>
         </RouterLink>
         <span v-else class="tag is-rounded" disabled>
-            <span class="icon"
-                ><font-awesome-icon icon="fa-solid fa-caret-left"
-            /></span>
+            <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-left" /></span>
         </span>
 
         <button class="tag is-primary has-text-weight-bold">
@@ -117,23 +102,15 @@ const needMark = (item: PageItem) =>
             <span v-else>{{ page }}</span>
         </button>
 
-        <RouterLink
-            :to="{ params: { page: page - 1 }, query: route.query }"
-            v-if="page > 1"
-            class="tag is-rounded"
-        >
+        <RouterLink :to="{ params: { page: page - 1 }, query: route.query }" v-if="page > 1" class="tag is-rounded">
             <span v-if="isAR" class="quran-text">{{
                 toArabicNumber(page - 1)
             }}</span>
             <span v-else>{{ page - 1 }}</span>
-            <span class="icon"
-                ><font-awesome-icon icon="fa-solid fa-caret-right"
-            /></span>
+            <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-right" /></span>
         </RouterLink>
         <span v-else class="tag is-rounded" disabled>
-            <span class="icon"
-                ><font-awesome-icon icon="fa-solid fa-caret-right"
-            /></span>
+            <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-right" /></span>
         </span>
     </nav>
 </template>
