@@ -105,6 +105,7 @@ impl Quranize {
         })
         .map(|(q, n, e)| (q.chars().rev().collect(), n, e.into_iter().rev().collect()))
         .collect();
+        results.sort_unstable_by(|x, y| x.0.cmp(&y.0));
         results.dedup_by(|x, y| x.0 == y.0);
         results
     }
