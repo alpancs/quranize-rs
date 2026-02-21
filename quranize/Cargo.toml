@@ -2,7 +2,7 @@
 name = "quranize"
 version = "1.0.0"
 authors = ["Alfan Nur Fauzan <alpancs@gmail.com>"]
-edition = "2021"
+edition = "2024"
 description = "Encoding transliterations into Quran forms."
 repository = "https://github.com/alpancs/quranize-rs"
 license = "Apache-2.0"
