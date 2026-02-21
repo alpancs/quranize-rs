@@ -2,15 +2,15 @@
 import { computed } from "vue";
 import type { EncodeResult } from "../utils/types";
 
-const props = defineProps<{ result: EncodeResult }>();
-const link = computed(() => ({
+const { result } = defineProps<{ result: EncodeResult }>();
+const searchResultLink = computed(() => ({
     name: "SearchResult",
-    query: { quran: props.result.quran, explanation: props.result.explanation },
+    query: { quran: result.quran, explanation: result.explanation },
 }));
 </script>
 
 <template>
-    <RouterLink :to="link" class="box" dir="rtl">
+    <RouterLink :to="searchResultLink" class="box" dir="rtl">
         <div class="is-flex is-justify-content-space-between is-align-items-center">
             <p class="quran-text has-text-weight-semibold">
                 {{ result.quran }}

@@ -5,7 +5,7 @@ import MarkedQuranText from "../components/MarkedQuranText.vue";
 import AyaNumber from "../components/AyaNumber.vue";
 
 const { result } = defineProps<{ result: SearchResult }>();
-const toQuranPage = {
+const quranPageLink = {
     name: "QuranPage",
     params: { page: result.page },
     query: { markedSura: result.sura, markedAya: result.aya },
@@ -13,7 +13,7 @@ const toQuranPage = {
 </script>
 
 <template>
-    <RouterLink :to="toQuranPage" class="box">
+    <RouterLink :to="quranPageLink" class="box">
         <p class="quran-text quran-paragraph is-size-5">
             <span class="tag is-large ml-2">
                 <span class="has-text-weight-extrabold">
