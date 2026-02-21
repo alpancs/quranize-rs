@@ -15,14 +15,14 @@ const quranPageLink = {
 <template>
     <RouterLink :to="quranPageLink" class="box">
         <p class="quran-text quran-paragraph is-size-5">
-            <span class="tag is-large ml-2">
-                <span class="has-text-weight-extrabold">
-                    {{ getSuraNameAR(result.sura) }}
-                </span>
-            </span>
             <MarkedQuranText :beforeMarked="result.before_text" :marked="result.text"
                 :afterMarked="result.after_text" />
             <AyaNumber :aya="result.aya" />
+            <span class="tag is-medium">
+                <span class="has-text-weight-bold">
+                    {{ getSuraNameAR(result.sura) }}
+                </span>
+            </span>
         </p>
     </RouterLink>
 </template>
