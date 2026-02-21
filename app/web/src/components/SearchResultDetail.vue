@@ -17,7 +17,7 @@ const quranPageLink = {
         <p class="quran-text quran-paragraph is-size-5">
             <MarkedQuranText :beforeMarked="result.before_text" :marked="result.text"
                 :afterMarked="result.after_text" />
-            <AyaNumber :aya="result.aya" />
+            <AyaNumber class="mx-2" :aya="result.aya" />
             <span class="tag is-medium">
                 <span class="has-text-weight-bold">
                     {{ getSuraNameAR(result.sura) }}

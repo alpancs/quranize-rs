@@ -71,7 +71,7 @@ const needMark = (item: PageItem) =>
                             <component :is="needMark(item) ? 'mark' : 'span'">
                                 {{ item.text }}
                             </component>
-                            <AyaNumber :aya="item.aya" />
+                            <AyaNumber class="ml-2 mr-1" :aya="item.aya" />
                         </span>
                         <span v-else class="translation">
                             ({{ item.aya }})
