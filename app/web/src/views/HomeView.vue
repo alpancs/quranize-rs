@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { initiated, call } from "../utils/quranize";
-import type { EncodeResult } from "../utils/types";
+import type { EncodeResult as ER } from "../utils/types";
 import SearchBar from "../components/SearchBar.vue";
-import SearchResult from "../components/SearchResult.vue";
+import EncodeResult from "../components/EncodeResult.vue";
 
 const keyword = ref("");
-const results = ref<EncodeResult[]>([]);
+const results = ref<ER[]>([]);
 
 watch(keyword, async (text) => (results.value = await call("encode", text)));
 </script>
@@ -17,5 +17,5 @@ watch(keyword, async (text) => (results.value = await call("encode", text)));
     </div>
 
     <div class="skeleton-block" v-if="!initiated && keyword"></div>
-    <SearchResult :result v-for="result in results" />
+    <EncodeResult :result v-for="result in results" />
 </template>
