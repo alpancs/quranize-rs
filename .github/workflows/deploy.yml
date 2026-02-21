@@ -22,7 +22,6 @@ jobs:
       deployments: write
     steps:
       - uses: actions/checkout@v6
-      - run: rustup target add wasm32-unknown-unknown
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - uses: extractions/setup-just@v3
       - run: just prepare-deployment
