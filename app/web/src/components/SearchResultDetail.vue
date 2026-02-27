@@ -14,7 +14,7 @@ const quranPageLink = {
 
 <template>
     <RouterLink :to="quranPageLink" class="box">
-        <p class="quran-text quran-paragraph is-size-5">
+        <p class="quran-text quran-paragraph is-size-5-touch is-size-4-desktop">
             <MarkedQuranText :beforeMarked="result.before_text" :marked="result.text"
                 :afterMarked="result.after_text" />
             <AyaNumber class="mx-2" :aya="result.aya" />
