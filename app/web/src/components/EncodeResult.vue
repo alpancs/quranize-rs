@@ -5,14 +5,13 @@ defineProps<{ result: EncodeResult }>();
 </script>
 
 <template>
-    <RouterLink :to="{ name: 'SearchResult', query: { quran: result.quran } }" class="box">
+    <RouterLink class="box" :to="{ name: 'SearchResult', query: { quran: result.quran } }">
         <div class="block is-flex is-justify-content-space-between is-align-items-center">
             <span class="tag is-rounded">{{ result.location_count }}</span>
             <p class="quran-text has-text-weight-semibold is-size-5-touch is-size-4-desktop">
                 {{ result.quran }}
             </p>
         </div>
-
         <ExplanationGroup :explanations="result.explanations" />
     </RouterLink>
 </template>

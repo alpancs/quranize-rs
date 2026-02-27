@@ -2,7 +2,7 @@
 import { inject, ref, watch, useTemplateRef, type Ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useSwipe } from "@vueuse/core";
-import { getSuraNameAR, getSuraNameID, getPageItemGroups, type PageItem } from "../utils/quranize";
+import { getSuraNameAR, getSuraNameID, getPageItemGroups, initiated, type PageItem } from "../utils/quranize";
 import AyaNumber from "../components/AyaNumber.vue";
 import QuranPageNav from "../components/QuranPageNav.vue";
 
@@ -50,6 +50,8 @@ const needMark = (item: PageItem) =>
 </script>
 
 <template>
+    <div class="skeleton-block" v-if="!initiated"></div>
+
     <div class="block" ref="quran-page">
         <div :dir="lang === 'ar' ? 'rtl' : 'ltr'">
             <div v-for="items in pageItemGroups">
@@ -80,5 +82,5 @@ const needMark = (item: PageItem) =>
         </div>
     </div>
 
-    <QuranPageNav v-if="pageItemGroups.length > 0" :page :lang></QuranPageNav>
+    <QuranPageNav :page :lang></QuranPageNav>
 </template>
