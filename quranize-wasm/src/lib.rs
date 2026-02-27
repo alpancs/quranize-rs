@@ -1,5 +1,5 @@
 use quranize::Quranize;
-use serde_wasm_bindgen::{to_value, Error};
+use serde_wasm_bindgen::{Error, to_value};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(js_name = Quranize)]
@@ -11,8 +11,14 @@ pub struct JsQuranize {
 #[derive(serde::Serialize)]
 struct JsEncodeResult {
     quran: String,
-    explanation: String,
     location_count: usize,
+    explanations: Vec<JsExplanation>,
+}
+
+#[derive(serde::Serialize)]
+struct JsExplanation {
+    alphabet: String,
+    quran: String,
 }
 
 #[derive(serde::Serialize)]
@@ -23,12 +29,6 @@ struct JsLocation<'a> {
     before_text: &'a str,
     text: &'a str,
     after_text: &'a str,
-}
-
-#[derive(serde::Serialize)]
-struct JsExplanation {
-    alphabet: String,
-    quran: String,
 }
 
 #[derive(serde::Serialize)]
@@ -56,8 +56,8 @@ impl JsQuranize {
             .encode(text)
             .into_iter()
             .map(|(quran, location_count, explanations)| JsEncodeResult {
+                explanations: self.compress_explanation(&quran, explanations),
                 quran,
-                explanation: explanations.join("-"),
                 location_count,
             })
             .collect()
@@ -103,14 +103,9 @@ impl JsQuranize {
             .collect()
     }
 
-    #[wasm_bindgen(js_name = compressExpl)]
-    pub fn js_compress_explanation(&self, quran: &str, expl: &str) -> Result<JsValue, Error> {
-        to_value(&self.compress_explanation(quran, expl))
-    }
-
-    fn compress_explanation(&self, quran: &str, explanation: &str) -> Vec<JsExplanation> {
-        { explanation.split('-').zip(quran.chars()) }
-            .fold(Vec::new(), |mut aqs: Vec<JsExplanation>, (e, q)| {
+    fn compress_explanation(&self, quran: &str, explanations: Vec<&str>) -> Vec<JsExplanation> {
+        { quran.chars().zip(explanations) }
+            .fold(Vec::new(), |mut aqs: Vec<JsExplanation>, (q, e)| {
                 match (aqs.last_mut(), q) {
                     (Some(laq), '\u{064B}'..='\u{0651}' | '\u{0670}') => {
                         laq.alphabet.push_str(e);
@@ -169,8 +164,10 @@ mod tests {
     #[test]
     fn test_compress_explanation() {
         let q = JsQuranize::new();
+        let quran = "بِرَبِّ النّاسِ";
+        let expl = "b-i-r-o-b-b-i----n-n-a-s-".split('-').collect();
         assert_eq!(
-            q.compress_explanation("بِرَبِّ النّاسِ", "b-i-r-o-b-b-i----n-n-a-s-")
+            q.compress_explanation(quran, expl)
                 .into_iter()
                 .map(|aq| (aq.alphabet, aq.quran))
                 .collect::<Vec<_>>(),
