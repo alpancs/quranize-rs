@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, ref, watch, useTemplateRef, type Ref } from "vue";
+import { inject, ref, watch, useTemplateRef, type Ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useSwipe } from "@vueuse/core";
 import { getSuraNameAR, getSuraNameID, getPageItemGroups, type PageItem } from "../utils/quranize";
@@ -15,8 +15,7 @@ const markedAya = parseInt(route.query.markedAya as string);
 const page = ref(0);
 const pageItemGroups = ref<PageItemExt[][]>([]);
 
-const lang = inject<Ref<string>>("lang");
-const isAR = computed(() => lang === undefined || lang.value === "ar");
+const lang = inject<Ref<string>>("lang", ref("ar"));
 const getTextID = inject<Function>("getTextID");
 
 watch(
@@ -52,17 +51,17 @@ const needMark = (item: PageItem) =>
 
 <template>
     <div class="block" ref="quran-page">
-        <div :dir="isAR ? 'rtl' : 'ltr'">
+        <div :dir="lang === 'ar' ? 'rtl' : 'ltr'">
             <div v-for="items in pageItemGroups">
                 <p v-if="items[0]!.aya === 1" class="has-text-centered is-size-5 has-text-weight-bold">
                     <span class="tag is-large is-rounded">
-                        <span v-if="isAR" class="quran-text">سورة {{ getSuraNameAR(items[0]!.sura) }}</span>
+                        <span v-if="lang === 'ar'" class="quran-text">سورة {{ getSuraNameAR(items[0]!.sura) }}</span>
                         <span v-else>Surah {{ getSuraNameID(items[0]!.sura) }}</span>
                     </span>
                 </p>
                 <p class="has-text-justified is-size-5">
                     <span v-for="item in items">
-                        <span v-if="isAR" class="quran-text quran-paragraph">
+                        <span v-if="lang === 'ar'" class="quran-text quran-paragraph">
                             <component :is="needMark(item) ? 'mark' : 'span'">
                                 {{ item.text }}
                             </component>
