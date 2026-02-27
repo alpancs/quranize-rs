@@ -1,15 +1,10 @@
 <script setup lang="ts">
-import { computed, inject, ref, watch, useTemplateRef, type Ref } from "vue";
+import { inject, ref, watch, useTemplateRef, type Ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useSwipe } from "@vueuse/core";
-import {
-    toArabicNumber,
-    getSuraNameAR,
-    getSuraNameID,
-    getPageItemGroups,
-    type PageItem,
-} from "../utils/quranize";
+import { getSuraNameAR, getSuraNameID, getPageItemGroups, type PageItem } from "../utils/quranize";
 import AyaNumber from "../components/AyaNumber.vue";
+import QuranPageNav from "../components/QuranPageNav.vue";
 
 type PageItemExt = PageItem & { textID?: string };
 
@@ -20,8 +15,7 @@ const markedAya = parseInt(route.query.markedAya as string);
 const page = ref(0);
 const pageItemGroups = ref<PageItemExt[][]>([]);
 
-const lang = inject<Ref<string>>("lang");
-const isAR = computed(() => lang?.value === "ar");
+const lang = inject<Ref<string>>("lang", ref("ar"));
 const getTextID = inject<Function>("getTextID");
 
 watch(
@@ -57,17 +51,18 @@ const needMark = (item: PageItem) =>
 
 <template>
     <div class="block" ref="quran-page">
-        <div :dir="isAR ? 'rtl' : 'ltr'">
+        <div :dir="lang === 'ar' ? 'rtl' : 'ltr'">
             <div v-for="items in pageItemGroups">
-                <p v-if="items[0]!.aya === 1" class="has-text-centered has-text-weight-bold">
-                    <span class="tag is-large">
-                        <span v-if="isAR" class="quran-text is-size-5">سورة {{ getSuraNameAR(items[0]!.sura) }}</span>
+                <p class="has-text-centered is-size-5-touch is-size-4-desktop has-text-weight-bold"
+                    v-if="items[0]!.aya === 1">
+                    <span class="tag is-large is-rounded">
+                        <span v-if="lang === 'ar'" class="quran-text">سورة {{ getSuraNameAR(items[0]!.sura) }}</span>
                         <span v-else>Surah {{ getSuraNameID(items[0]!.sura) }}</span>
                     </span>
                 </p>
-                <p class="has-text-justified">
+                <p class="has-text-justified is-size-5-touch is-size-4-desktop">
                     <span v-for="item in items">
-                        <span v-if="isAR" class="quran-text quran-paragraph is-size-5">
+                        <span v-if="lang === 'ar'" class="quran-text quran-paragraph">
                             <component :is="needMark(item) ? 'mark' : 'span'">
                                 {{ item.text }}
                             </component>
@@ -85,28 +80,5 @@ const needMark = (item: PageItem) =>
         </div>
     </div>
 
-    <nav class="tags has-addons is-centered" v-if="pageItemGroups.length">
-        <RouterLink :to="{ params: { page: page + 1 }, query: route.query }" v-if="page < 604" class="tag is-rounded">
-            <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-left" /></span>
-            <span v-if="isAR" class="quran-text">{{ toArabicNumber(page + 1) }}</span>
-            <span v-else>{{ page + 1 }}</span>
-        </RouterLink>
-        <span v-else class="tag is-rounded" disabled>
-            <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-left" /></span>
-        </span>
-
-        <button class="tag is-primary has-text-weight-bold">
-            <span v-if="isAR" class="quran-text">{{ toArabicNumber(page) }}</span>
-            <span v-else>{{ page }}</span>
-        </button>
-
-        <RouterLink :to="{ params: { page: page - 1 }, query: route.query }" v-if="page > 1" class="tag is-rounded">
-            <span v-if="isAR" class="quran-text">{{ toArabicNumber(page - 1) }}</span>
-            <span v-else>{{ page - 1 }}</span>
-            <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-right" /></span>
-        </RouterLink>
-        <span v-else class="tag is-rounded" disabled>
-            <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-right" /></span>
-        </span>
-    </nav>
+    <QuranPageNav v-if="pageItemGroups.length > 0" :page :lang></QuranPageNav>
 </template>
