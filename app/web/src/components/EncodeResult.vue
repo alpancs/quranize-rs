@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ExplanationGroup from "../components/ExplanationGroup.vue";
 import type { EncodeResult } from "../utils/types";
 
 defineProps<{ result: EncodeResult }>();
@@ -13,16 +14,8 @@ defineProps<{ result: EncodeResult }>();
                     {{ result.quran }}
                 </p>
             </div>
-            <div class="field is-grouped is-grouped-multiline is-justify-content-center">
-                <div class="control" v-for="expl in result.explanations">
-                    <div class="tags has-addons">
-                        <span class="tag is-info">{{ expl.alphabet }}</span>
-                        <span class="tag">
-                            <span class="quran-text">{{ expl.quran }}</span>
-                        </span>
-                    </div>
-                </div>
-            </div>
+
+            <ExplanationGroup :explanations="result.explanations" />
         </div>
     </RouterLink>
 </template>
