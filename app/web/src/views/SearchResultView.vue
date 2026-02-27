@@ -19,7 +19,9 @@ call<Exp[]>("compressExpl", quran, expl).then((v) => (explanations.value = v));
     <div class="block">
 
         <div class="block">
-            <p class="quran-text has-text-centered has-text-weight-bold is-size-4">{{ quran }}</p>
+            <p class="quran-text has-text-centered has-text-weight-semibold is-size-4-touch is-size-3-desktop">
+                {{ quran }}
+            </p>
         </div>
 
         <div class="skeleton-block" v-if="!initiated"></div>
