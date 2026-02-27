@@ -1,7 +1,7 @@
 export type EncodeResult = {
   quran: string;
-  explanation: string;
   location_count: number;
+  explanations: Explanation[];
 };
 
 export type SearchResult = {
