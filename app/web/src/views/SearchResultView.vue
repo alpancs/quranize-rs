@@ -18,5 +18,6 @@ call<SearchResult[]>("getLocations", route.query.quran).then((res) => (results.v
     </div>
 
     <div class="skeleton-block" v-if="!initiated"></div>
-    <SearchResultDetail :result v-for="result in results" />
+    <SearchResultDetail v-for="result in results"
+        :key="`${result.sura}:${result.aya}:${result.before_text}:${result.text}:${result.after_text}`" :result />
 </template>

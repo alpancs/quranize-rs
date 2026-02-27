@@ -56,7 +56,7 @@ const lang = inject<Ref<string>>("lang", ref("ar"));
                     <div class="level-right">
                         <div class="level-item">
                             <div class="tags has-addons" :class="{ 'is-invisible': !($route.name === 'QuranPage') }">
-                                <button v-for="l in ['ar', 'id']"
+                                <button v-for="l in ['ar', 'id']" :key="l"
                                     class="tag is-rounded is-uppercase has-text-weight-semibold"
                                     :class="{ 'is-primary': lang === l }" @click="lang = l">
                                     {{ l }}
