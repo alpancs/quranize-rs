@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { toArabicNumber } from "../utils/quranize";
-
 defineProps<{ page: number; lang: string; }>();
 </script>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { useRoute } from "vue-router";
 import { initiated, call } from "../utils/quranize";
 import type { SearchResult } from "../utils/types";
@@ -7,14 +7,7 @@ import SearchResultDetail from "../components/SearchResultDetail.vue";
 
 const route = useRoute();
 const results = ref<SearchResult[]>([]);
-
-watch(
-    () => route.query.quran,
-    async (quran) => {
-        results.value = await call<SearchResult[]>("getLocations", quran);
-    },
-    { immediate: true },
-);
+call<SearchResult[]>("getLocations", route.query.quran).then((res) => (results.value = res));
 </script>
 
 <template>

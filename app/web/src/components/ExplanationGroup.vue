@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Explanation } from "../utils/types";
-
 defineProps<{ explanations: Explanation[] }>();
 </script>
 

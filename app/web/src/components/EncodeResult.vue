@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import ExplanationGroup from "../components/ExplanationGroup.vue";
 import type { EncodeResult } from "../utils/types";
-
 defineProps<{ result: EncodeResult }>();
 </script>
 

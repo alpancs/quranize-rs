@@ -3,17 +3,12 @@ import { getSuraNameAR } from "../utils/quranize";
 import type { SearchResult } from "../utils/types";
 import MarkedQuranText from "../components/MarkedQuranText.vue";
 import AyaNumber from "../components/AyaNumber.vue";
-
-const { result } = defineProps<{ result: SearchResult }>();
-const quranPageLink = {
-    name: "QuranPage",
-    params: { page: result.page },
-    query: { markedSura: result.sura, markedAya: result.aya },
-};
+defineProps<{ result: SearchResult }>();
 </script>
 
 <template>
-    <RouterLink :to="quranPageLink" class="box">
+    <RouterLink class="box"
+        :to="{ name: 'QuranPage', params: { page: result.page }, query: { markedSura: result.sura, markedAya: result.aya } }">
         <p class="quran-text quran-paragraph is-size-5-touch is-size-4-desktop">
             <MarkedQuranText :beforeMarked="result.before_text" :marked="result.text"
                 :afterMarked="result.after_text" />
