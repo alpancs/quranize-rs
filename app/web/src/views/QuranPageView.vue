@@ -55,16 +55,17 @@ const needMark = (item: PageItem) =>
     <div class="block" ref="quran-page">
         <div :dir="lang === 'ar' ? 'rtl' : 'ltr'">
             <div v-for="items in pageItemGroups">
-                <p class="has-text-centered is-size-5-touch is-size-4-desktop has-text-weight-bold"
-                    v-if="items[0]!.aya === 1">
-                    <span class="tag is-large is-rounded">
-                        <span v-if="lang === 'ar'" class="quran-text">سورة {{ getSuraNameAR(items[0]!.sura) }}</span>
+                <p class="has-text-centered has-text-weight-semibold" v-if="items[0]!.aya === 1">
+                    <span class="tag is-medium is-rounded">
+                        <span v-if="lang === 'ar'" class="quran-text is-size-5-touch is-size-4-desktop">
+                            سورة {{ getSuraNameAR(items[0]!.sura) }}
+                        </span>
                         <span v-else>Surah {{ getSuraNameID(items[0]!.sura) }}</span>
                     </span>
                 </p>
-                <p class="has-text-justified is-size-5-touch is-size-4-desktop">
+                <p class="has-text-justified">
                     <span v-for="item in items">
-                        <span v-if="lang === 'ar'" class="quran-text quran-paragraph">
+                        <span v-if="lang === 'ar'" class="quran-text quran-paragraph is-size-5-touch is-size-4-desktop">
                             <component :is="needMark(item) ? 'mark' : 'span'">
                                 {{ item.text }}
                             </component>
@@ -82,5 +83,5 @@ const needMark = (item: PageItem) =>
         </div>
     </div>
 
-    <QuranPageNav :page :lang></QuranPageNav>
+    <QuranPageNav :page :lang />
 </template>
