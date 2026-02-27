@@ -31,7 +31,7 @@ function setTheme(newTheme: Theme) {
 
 setTheme((localStorage.getItem("theme") as Theme) ?? "light");
 
-const lang = inject<Ref<string>>("lang");
+const lang = inject<Ref<string>>("lang", ref("ar"));
 </script>
 
 <template>
