@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { inject, ref, watch, useTemplateRef, type Ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
 import { useSwipe } from "@vueuse/core";
-import { getSuraNameAR, getSuraNameID, getPageItemGroups, initiated, type PageItem } from "../utils/quranize";
+import { computed, inject, ref, useTemplateRef, watch, type Ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import AyaNumber from "../components/AyaNumber.vue";
 import QuranPageNav from "../components/QuranPageNav.vue";
+import { getPageItemGroups, getSuraNameAR, getSuraNameID, initiated, type PageItem } from "../utils/quranize";
 
 type PageItemExt = PageItem & { textID?: string };
 
 const route = useRoute();
-const markedSura = parseInt(route.query.markedSura as string);
-const markedAya = parseInt(route.query.markedAya as string);
+const markedSura = computed(() => parseInt(route.query.markedSura as string));
+const markedAya = computed(() => parseInt(route.query.markedAya as string));
 
 const page = ref(0);
 const pageItemGroups = ref<PageItemExt[][]>([]);
@@ -39,14 +39,11 @@ watch(pageItemGroups, (newValue) =>
 const router = useRouter();
 const { direction } = useSwipe(useTemplateRef("quran-page"));
 watch(direction, (d) => {
-    if (d === "right" && page.value < 604)
-        router.push({ params: { page: page.value + 1 }, query: route.query });
-    if (d === "left" && page.value > 1)
-        router.push({ params: { page: page.value - 1 }, query: route.query });
+    if (d === "right" && page.value < 604) router.push({ params: { page: page.value + 1 }, query: route.query });
+    else if (d === "left" && page.value > 1) router.push({ params: { page: page.value - 1 }, query: route.query });
 });
 
-const needMark = (item: PageItem) =>
-    item.sura === markedSura && item.aya === markedAya;
+const needMark = (item: PageItem) => item.sura === markedSura.value && item.aya === markedAya.value;
 </script>
 
 <template>
