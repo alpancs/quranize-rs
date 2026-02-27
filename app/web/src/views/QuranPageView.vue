@@ -53,13 +53,14 @@ const needMark = (item: PageItem) =>
     <div class="block" ref="quran-page">
         <div :dir="lang === 'ar' ? 'rtl' : 'ltr'">
             <div v-for="items in pageItemGroups">
-                <p v-if="items[0]!.aya === 1" class="has-text-centered is-size-5 has-text-weight-bold">
+                <p class="has-text-centered is-size-5-touch is-size-4-desktop has-text-weight-bold"
+                    v-if="items[0]!.aya === 1">
                     <span class="tag is-large is-rounded">
                         <span v-if="lang === 'ar'" class="quran-text">سورة {{ getSuraNameAR(items[0]!.sura) }}</span>
                         <span v-else>Surah {{ getSuraNameID(items[0]!.sura) }}</span>
                     </span>
                 </p>
-                <p class="has-text-justified is-size-5">
+                <p class="has-text-justified is-size-5-touch is-size-4-desktop">
                     <span v-for="item in items">
                         <span v-if="lang === 'ar'" class="quran-text quran-paragraph">
                             <component :is="needMark(item) ? 'mark' : 'span'">
