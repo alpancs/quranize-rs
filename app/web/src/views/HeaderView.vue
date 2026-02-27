@@ -50,7 +50,7 @@ const lang = inject<Ref<string>>("lang", ref("ar"));
                     </div>
 
                     <div class="level-item">
-                        <RouterLink :to="{ name: 'Home' }" class="title">Quranize</RouterLink>
+                        <RouterLink :to="{ name: 'Home' }" class="title is-size-2-desktop">Quranize</RouterLink>
                     </div>
 
                     <div class="level-right">
