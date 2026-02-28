@@ -69,7 +69,10 @@ impl JsQuranize {
     }
 
     fn get_locations(&self, query: &str) -> Vec<JsLocation<'_>> {
-        { self.quranize.find(query).into_iter() }
+        let mut indexes = self.quranize.find(query);
+        indexes.sort_unstable();
+        indexes
+            .into_iter()
             .map(|(i, j)| {
                 let (p, s, a, q) = self.quranize.get_data(i).copied().unwrap_or_default();
                 let offset = q
