@@ -11,8 +11,8 @@ defineProps<{ result: SearchResult }>();
         <p class="quran-text quran-paragraph is-size-5-touch is-size-4-desktop">
             <component v-for="span in result.spans" :is="span.marked ? 'mark' : 'span'">{{ span.text }}</component>
             <AyaNumber class="mx-2" :aya="result.aya" />
-            <span class="tag is-medium">
-                <span class="has-text-weight-bold">
+            <span class="tag is-medium is-rounded">
+                <span class="has-text-weight-semibold is-size-5-touch is-size-4-desktop">
                     {{ getSuraNameAR(result.sura) }}
                 </span>
             </span>
