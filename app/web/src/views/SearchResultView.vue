@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRoute } from "vue-router";
-import { initiated, call } from "../utils/quranize";
-import type { SearchResult } from "../utils/types";
 import SearchResultDetail from "../components/SearchResultDetail.vue";
+import { call, initiated } from "../utils/quranize";
+import type { SearchResult } from "../utils/types";
 
 const route = useRoute();
 const results = ref<SearchResult[]>([]);
@@ -19,5 +19,6 @@ call<SearchResult[]>("getLocations", route.query.quran).then((res) => (results.v
 
     <div class="skeleton-block" v-if="!initiated"></div>
     <SearchResultDetail v-for="result in results"
-        :key="`${result.sura}:${result.aya}:${result.before_text}:${result.text}:${result.after_text}`" :result />
+        :key="`${result.sura}:${result.aya}:${result.spans[0]?.text}:${result.spans[1]?.text}:${result.spans[2]?.text}`"
+        :result />
 </template>

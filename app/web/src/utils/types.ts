@@ -4,16 +4,19 @@ export type EncodeResult = {
   explanations: Explanation[];
 };
 
+export type Explanation = {
+  alphabet: string;
+  quran: string;
+};
+
 export type SearchResult = {
   page: number;
   sura: number;
   aya: number;
-  before_text: string;
-  text: string;
-  after_text: string;
+  spans: Span[];
 };
 
-export type Explanation = {
-  alphabet: string;
-  quran: string;
+type Span = {
+  text: string;
+  marked: boolean;
 };

@@ -26,9 +26,13 @@ struct JsLocation<'a> {
     page: u16,
     sura: u8,
     aya: u16,
-    before_text: &'a str,
+    spans: Vec<JsLocationSpan<'a>>,
+}
+
+#[derive(serde::Serialize)]
+struct JsLocationSpan<'a> {
     text: &'a str,
-    after_text: &'a str,
+    marked: bool,
 }
 
 #[derive(serde::Serialize)]
@@ -84,9 +88,20 @@ impl JsQuranize {
                     page: p,
                     sura: s,
                     aya: a,
-                    before_text: q.get(..j).unwrap_or_default(),
-                    text: q.get(j..k).unwrap_or_default(),
-                    after_text: q.get(k..).unwrap_or_default(),
+                    spans: vec![
+                        JsLocationSpan {
+                            text: q.get(..j).unwrap_or_default(),
+                            marked: false,
+                        },
+                        JsLocationSpan {
+                            text: q.get(j..k).unwrap_or_default(),
+                            marked: true,
+                        },
+                        JsLocationSpan {
+                            text: q.get(k..).unwrap_or_default(),
+                            marked: false,
+                        },
+                    ],
                 }
             })
             .collect()
@@ -147,21 +162,21 @@ mod tests {
         let l = locs.iter().find(|l| l.sura == 1).unwrap();
         assert_eq!(1, l.sura);
         assert_eq!(1, l.aya);
-        assert_eq!("", l.before_text);
-        assert_eq!("بِسمِ اللَّهِ", l.text);
-        assert_eq!(" الرَّحمـٰنِ الرَّحيمِ", l.after_text);
+        assert_eq!("", l.spans[0].text);
+        assert_eq!("بِسمِ اللَّهِ", l.spans[1].text);
+        assert_eq!(" الرَّحمـٰنِ الرَّحيمِ", l.spans[2].text);
 
         let l = &q.get_locations(&q.encode("bismillahirrohmanirrohim")[0].quran)[0];
-        assert_eq!("", l.before_text);
-        assert_eq!("بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيمِ", l.text);
-        assert_eq!("", l.after_text);
+        assert_eq!("", l.spans[0].text);
+        assert_eq!("بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيمِ", l.spans[1].text);
+        assert_eq!("", l.spans[2].text);
 
         let l = &q.get_locations(&q.encode("arrohmanirrohim")[0].quran)[0];
         assert_eq!(1, l.sura);
         assert_eq!(1, l.aya);
-        assert_eq!("بِسمِ اللَّهِ ", l.before_text);
-        assert_eq!("الرَّحمـٰنِ الرَّحيمِ", l.text);
-        assert_eq!("", l.after_text);
+        assert_eq!("بِسمِ اللَّهِ ", l.spans[0].text);
+        assert_eq!("الرَّحمـٰنِ الرَّحيمِ", l.spans[1].text);
+        assert_eq!("", l.spans[2].text);
     }
 
     #[test]
