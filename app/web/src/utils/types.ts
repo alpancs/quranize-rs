@@ -13,10 +13,10 @@ export type SearchResult = {
   page: number;
   sura: number;
   aya: number;
-  spans: Span[];
+  spans: SearchResultSpan[];
 };
 
-type Span = {
+type SearchResultSpan = {
   text: string;
   marked: boolean;
 };
