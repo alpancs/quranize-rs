@@ -8,7 +8,7 @@ import EncodeResult from "../components/EncodeResult.vue";
 const keyword = ref("");
 const results = ref<ER[]>([]);
 
-watch(keyword, async (text) => (results.value = await call("encode", text)));
+watch(keyword, async (text) => results.value = await call("encode", text));
 </script>
 
 <template>
@@ -17,5 +17,5 @@ watch(keyword, async (text) => (results.value = await call("encode", text)));
     </div>
 
     <div class="skeleton-block" v-if="!initiated && keyword"></div>
-    <EncodeResult :result v-for="result in results" />
+    <EncodeResult v-for="result in results" :key="result.quran" :result />
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, inject, type Ref } from "vue";
+import { computed, ref } from "vue";
+import { lang } from "../utils/quranize";
 
 const themes = {
     system: { icon: "desktop", colorClass: "" },
@@ -30,8 +31,6 @@ function setTheme(newTheme: Theme) {
 }
 
 setTheme((localStorage.getItem("theme") as Theme) ?? "light");
-
-const lang = inject<Ref<string>>("lang", ref("ar"));
 </script>
 
 <template>
@@ -56,7 +55,7 @@ const lang = inject<Ref<string>>("lang", ref("ar"));
                     <div class="level-right">
                         <div class="level-item">
                             <div class="tags has-addons" :class="{ 'is-invisible': !($route.name === 'QuranPage') }">
-                                <button v-for="l in ['ar', 'id']"
+                                <button v-for="l in ['ar', 'id']" :key="l"
                                     class="tag is-rounded is-uppercase has-text-weight-semibold"
                                     :class="{ 'is-primary': lang === l }" @click="lang = l">
                                     {{ l }}

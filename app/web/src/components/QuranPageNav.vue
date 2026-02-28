@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { toArabicNumber } from "../utils/quranize";
-
 defineProps<{ page: number; lang: string; }>();
 </script>
 
 <template>
-  <nav class="tags are-medium has-addons is-centered">
+  <nav class="tags has-addons is-centered">
     <RouterLink :to="{ params: { page: page + 1 }, query: $route.query }" v-if="page < 604" class="tag is-rounded">
       <span class="icon"><font-awesome-icon icon="fa-solid fa-caret-left" /></span>
       <span v-if="lang === 'ar'" class="quran-text">{{ toArabicNumber(page + 1) }}</span>

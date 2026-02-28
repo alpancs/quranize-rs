@@ -1,21 +1,17 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import ExplanationGroup from "../components/ExplanationGroup.vue";
 import type { EncodeResult } from "../utils/types";
-
-const { result } = defineProps<{ result: EncodeResult }>();
-const searchResultLink = computed(() => ({
-    name: "SearchResult",
-    query: { quran: result.quran, explanation: result.explanation },
-}));
+defineProps<{ result: EncodeResult }>();
 </script>
 
 <template>
-    <RouterLink :to="searchResultLink" class="box" dir="rtl">
-        <div class="is-flex is-justify-content-space-between is-align-items-center">
+    <RouterLink class="box" :to="{ name: 'SearchResult', query: { quran: result.quran } }">
+        <div class="block is-flex is-justify-content-space-between is-align-items-center">
+            <span class="tag is-rounded">{{ result.location_count }}</span>
             <p class="quran-text has-text-weight-semibold is-size-5-touch is-size-4-desktop">
                 {{ result.quran }}
             </p>
-            <span class="tag is-rounded">{{ result.location_count }}</span>
         </div>
+        <ExplanationGroup :explanations="result.explanations" />
     </RouterLink>
 </template>
