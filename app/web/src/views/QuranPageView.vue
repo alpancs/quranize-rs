@@ -23,17 +23,9 @@ watch(
     async (newValue) => {
         page.value = parseInt(newValue as string);
         pageItemGroups.value = await getPageItemGroups(page.value);
+        pageItemGroups.value.flat().forEach(async (item) => item.textID = await getTextID?.(item.sura, item.aya));
     },
     { immediate: true },
-);
-
-watch(pageItemGroups, (newValue) =>
-    newValue.forEach((items) =>
-        items.forEach(
-            async (item) =>
-                (item.textID = await getTextID?.(item.sura, item.aya)),
-        ),
-    ),
 );
 
 const router = useRouter();
