@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { useSwipe } from "@vueuse/core";
-import { computed, inject, ref, useTemplateRef, watch } from "vue";
+import { computed, ref, useTemplateRef, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import AyaNumber from "../components/AyaNumber.vue";
 import QuranPageNav from "../components/QuranPageNav.vue";
 import { getPageItemGroups, getSuraNameAR, getSuraNameID, initiated, lang, type PageItem } from "../utils/quranize";
+import { getTextID } from "../utils/translation";
 
 type PageItemExt = PageItem & { textID?: string };
 
@@ -14,8 +15,6 @@ const markedAya = computed(() => parseInt(route.query.markedAya as string));
 
 const page = ref(0);
 const pageItemGroups = ref<PageItemExt[][]>([]);
-
-const getTextID = inject<Function>("getTextID");
 
 watch(
     () => route.params.page,
