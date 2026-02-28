@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, inject, type Ref } from "vue";
+import { computed, ref } from "vue";
+import { lang } from "../utils/quranize";
 
 const themes = {
     system: { icon: "desktop", colorClass: "" },
@@ -30,8 +31,6 @@ function setTheme(newTheme: Theme) {
 }
 
 setTheme((localStorage.getItem("theme") as Theme) ?? "light");
-
-const lang = inject<Ref<string>>("lang", ref("ar"));
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { provide, ref } from "vue";
+import { provide } from "vue";
 import HeaderView from "./views/HeaderView.vue";
 
 const textIDMap = (async function () {
@@ -16,10 +16,7 @@ const textIDMap = (async function () {
     return map;
 })();
 
-provide("lang", ref("ar"));
-provide("getTextID", async (sura: number, aya: number) =>
-    (await textIDMap).get(`${sura}.${aya}`),
-);
+provide("getTextID", async (sura: number, aya: number) => (await textIDMap).get(`${sura}.${aya}`));
 </script>
 
 <template>

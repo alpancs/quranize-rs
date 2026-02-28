@@ -9,6 +9,7 @@ export type PageItem = {
 };
 
 export const initiated = ref(false);
+export const lang = ref('ar');
 
 const worker = new Worker();
 const resolves = new Map<number, Function>();
