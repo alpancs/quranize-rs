@@ -44,7 +44,7 @@ const needMark = (item: PageItem) => item.sura === markedSura.value && item.aya 
     <div class="block" ref="quran-page">
         <div :dir="lang === 'ar' ? 'rtl' : 'ltr'">
             <div v-for="items in pageItemGroups">
-                <p class="has-text-centered has-text-weight-semibold" v-if="items[0]!.aya === 1">
+                <p class="has-text-centered has-text-weight-semibold mt-4 mb-2" v-if="items[0]!.aya === 1">
                     <span class="tag is-medium is-rounded">
                         <span v-if="lang === 'ar'" class="quran-text is-size-5-touch is-size-4-desktop">
                             سورة {{ getSuraNameAR(items[0]!.sura) }}
