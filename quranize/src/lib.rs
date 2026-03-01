@@ -316,7 +316,7 @@ mod tests {
         let q = Quranize::new();
         assert_eq!(q.e("alif lam mim"), ["الم"]);
         assert_eq!(q.e("alif laaam miiim"), &["الم"]);
-        assert_eq!(q.e("nuun"), &["ن"]);
+        assert_eq!(q.e("nuuuun"), &["ن"]);
         assert_eq!(q.e("kaaaf haa yaa aiiin shoood"), &["كهيعص"]);
         assert_eq!(q.e("kaf ha ya 'ain shod"), &["كهيعص"]);
         assert_eq!(q.e("alif lam ro"), &["الر"]);
