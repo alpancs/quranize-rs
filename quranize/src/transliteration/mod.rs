@@ -77,8 +77,11 @@ pub(super) fn contextual_map(context: Option<char>, c: char) -> &'static [&'stat
         (Some(ARABIC_FATHATAN), ARABIC_LETTER_ALEF_MAKSURA) => &[""],
         (Some(ARABIC_KASRA), ARABIC_LETTER_LAM) => &[""],
         (Some(ARABIC_LETTER_ALEF_MAKSURA), ARABIC_LETTER_SUPERSCRIPT_ALEF) => &[""],
+        (Some(ARABIC_FATHA), ARABIC_LETTER_SUPERSCRIPT_ALEF) => &[""],
+        (Some(ARABIC_KASRA), ARABIC_LETTER_YEH) => &[""],
+        (Some(ARABIC_LETTER_MEEM), ARABIC_SHADDA) => &[""],
         (Some(ARABIC_LETTER_ALEF), ARABIC_LETTER_LAM) => &[""],
-        (Some(ARABIC_LETTER_JEEM), ARABIC_LETTER_REH) => &["re", "ree"],
+        (Some(ARABIC_LETTER_REH), ARABIC_FATHA) => &["e", "ee"],
 
         (Some(c), ARABIC_SHADDA) => map(c),
 
