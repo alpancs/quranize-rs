@@ -1,3 +1,5 @@
+use std::iter::once;
+
 use quranize::Quranize;
 use serde_wasm_bindgen::{Error, to_value};
 use wasm_bindgen::prelude::*;
@@ -76,32 +78,37 @@ impl JsQuranize {
         let mut indexes = self.quranize.find(query);
         indexes.sort_unstable();
         indexes
-            .into_iter()
-            .map(|(i, j)| {
+            .chunk_by(|a, b| a.0 == b.0)
+            .map(|ixs| {
+                let (i, j) = ixs.first().copied().unwrap_or_default();
                 let (p, s, a, q) = self.quranize.get_data(i).copied().unwrap_or_default();
-                let offset = q
-                    .get(j + query.len()..)
-                    .and_then(|s| Some(s.split(' ').next()?.len()))
-                    .unwrap_or_default();
-                let k = j + query.len() + offset;
+                let qlen = query.len()
+                    + q.get(j + query.len()..)
+                        .and_then(|s| s.find(' '))
+                        .unwrap_or_default();
+                let span0 = JsLocationSpan {
+                    text: q.get(..j).unwrap_or_default(),
+                    marked: false,
+                };
+                let js = ixs.iter().map(|&(_, j)| j);
+                let next_js = ixs.iter().skip(1).map(|&(_, j)| j).chain(once(q.len()));
+                let spans = js.zip(next_js).flat_map(|(j, next_j)| {
+                    [
+                        JsLocationSpan {
+                            text: q.get(j..j + qlen).unwrap_or_default(),
+                            marked: true,
+                        },
+                        JsLocationSpan {
+                            text: q.get(j + qlen..next_j).unwrap_or_default(),
+                            marked: false,
+                        },
+                    ]
+                });
                 JsLocation {
                     page: p,
                     sura: s,
                     aya: a,
-                    spans: vec![
-                        JsLocationSpan {
-                            text: q.get(..j).unwrap_or_default(),
-                            marked: false,
-                        },
-                        JsLocationSpan {
-                            text: q.get(j..k).unwrap_or_default(),
-                            marked: true,
-                        },
-                        JsLocationSpan {
-                            text: q.get(k..).unwrap_or_default(),
-                            marked: false,
-                        },
-                    ],
+                    spans: once(span0).chain(spans).collect(),
                 }
             })
             .collect()
