@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import ExplanationGroup from "../components/ExplanationGroup.vue";
+import { encode } from "../utils/chars";
 import type { EncodeResult } from "../utils/types";
 defineProps<{ result: EncodeResult }>();
 </script>
 
 <template>
-    <RouterLink class="box" :to="{ name: 'SearchResult', query: { quran: result.quran } }">
+    <RouterLink class="box" :to="{ name: 'SearchResult', query: { code: encode(result.quran) } }">
         <div class="block is-flex is-justify-content-space-between is-align-items-center">
             <span class="tag is-rounded">{{ result.location_count }}</span>
             <p class="quran-text has-text-weight-semibold is-size-5-touch is-size-4-desktop">
