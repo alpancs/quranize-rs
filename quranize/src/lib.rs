@@ -44,7 +44,7 @@ pub struct Quranize {
 }
 
 impl Quranize {
-    const EXPECTED_VERTEX_COUNT: usize = 126_307;
+    const EXPECTED_VERTEX_COUNT: usize = 127_793;
 
     /// Create a new [`Quranize`] instance.
     pub fn new() -> Self {
