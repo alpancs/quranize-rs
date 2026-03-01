@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import ExplanationGroup from "../components/ExplanationGroup.vue";
+import { encode } from "../utils/chars";
 import type { EncodeResult } from "../utils/types";
-
-function encode(str: string): string {
-    const bytes = new TextEncoder().encode(str);
-    const binString = String.fromCodePoint(...bytes);
-    return btoa(binString);
-}
-
 defineProps<{ result: EncodeResult }>();
 </script>
 

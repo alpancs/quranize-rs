@@ -2,18 +2,14 @@
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 import SearchResultDetail from "../components/SearchResultDetail.vue";
+import { decode } from "../utils/chars";
 import { call, initiated } from "../utils/quranize";
 import type { SearchResult } from "../utils/types";
-
-function decode(str: string): string {
-    const binString = atob(str);
-    const bytes = Uint8Array.from(binString, (m) => m.codePointAt(0)!);
-    return new TextDecoder().decode(bytes);
-}
 
 const route = useRoute();
 const quran = decode(route.query.code as string);
 const results = ref<SearchResult[]>([]);
+
 call<SearchResult[]>("getLocations", quran).then((res) => results.value = res);
 </script>
 
