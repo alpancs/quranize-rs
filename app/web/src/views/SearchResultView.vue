@@ -7,7 +7,7 @@ import { call, initiated } from "../utils/quranize";
 import type { SearchResult } from "../utils/types";
 
 const route = useRoute();
-const quran = decode(route.query.code as string);
+const quran = route.query.quran || decode(route.query.code as string);
 const results = ref<SearchResult[]>([]);
 
 call<SearchResult[]>("getLocations", quran).then((res) => results.value = res);
