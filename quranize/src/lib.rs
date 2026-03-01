@@ -259,7 +259,7 @@ mod tests {
         assert_eq!(q.e("lirrohman"), ["لِلرَّحْمَٰن"]);
         assert_eq!(q.e("waantum muslimun"), ["وَأَنتُم مُّسْلِمُون"]);
         assert_eq!(q.e("laa yukallifullah"), ["لَا يُكَلِّفُ اللَّه"]);
-        assert_eq!(q.e("robbil alamin"), ["رَبِّ الْعَالَمِين"]);
+        assert_eq!(q.e("robbil alamin"), ["رَبِّ الْعَالَمِين", "رَّبِّ الْعَالَمِين"]);
         assert_eq!(q.e("husnul maab"), ["حُسْنُ الْمَآب"]);
         assert_eq!(q.e("khusnul ma'ab"), ["حُسْنُ الْمَآب"]);
         assert_eq!(q.e("kufuwan"), ["كُفُوً"]);
@@ -345,17 +345,17 @@ mod tests {
     #[test]
     fn test_tree_find() {
         let q = Quranize::new();
-        assert!(q.find("بِسمِ").contains(&(0, 0)));
-        assert_eq!(q.find("وَالنّاسِ").last(), Some(&(6235, 28)));
+        assert!(q.find("بِسْمِ").contains(&(0, 0)));
+        assert_eq!(q.find("وَالنَّاسِ").last(), Some(&(6235, 30)));
         assert!(q.find("الم").contains(&(7, 0)));
-        assert_eq!(q.find("بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيمِ").len(), 2);
+        assert_eq!(q.find("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيم").len(), 2);
         assert!(q.find("").is_empty());
         assert!(q.find("نن").is_empty());
         assert!(q.find("ننن").is_empty());
         assert!(q.find("نننن").is_empty());
         assert!(q.find("2+3+4=9").is_empty());
-        assert_eq!(q.find("بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيمِ").first(), Some(&(0, 0)));
-        assert_eq!(q.find("الرَّحمـٰنِ الرَّحيمِ").first(), Some(&(0, 26)));
+        assert_eq!(q.find("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيم").first(), Some(&(0, 0)));
+        assert_eq!(q.find("الرَّحْمَٰنِ الرَّحِيم").first(), Some(&(0, 28)));
         assert_eq!(q.find("").first(), None);
         assert_eq!(q.find("abc").first(), None);
     }
@@ -386,7 +386,7 @@ mod tests {
         assert_eq!(page1_data.len(), 7);
         assert_eq!(page1_data[0].1, 1);
         assert_eq!(page1_data[0].2, 1);
-        assert_eq!(page1_data[0].3, "بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ");
+        assert_eq!(page1_data[0].3, "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ");
         let page2_data = q.get_data_from_page(2).unwrap();
         assert_eq!(page2_data.len(), 5);
         let page3_data = q.get_data_from_page(3).unwrap();
