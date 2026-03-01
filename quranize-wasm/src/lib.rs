@@ -1,3 +1,5 @@
+use std::iter::once;
+
 use quranize::Quranize;
 use serde_wasm_bindgen::{Error, to_value};
 use wasm_bindgen::prelude::*;
@@ -76,32 +78,38 @@ impl JsQuranize {
         let mut indexes = self.quranize.find(query);
         indexes.sort_unstable();
         indexes
-            .into_iter()
-            .map(|(i, j)| {
+            .chunk_by(|(i, _), (next_i, _)| i == next_i)
+            .map(|ijs| {
+                let (i, first_j) = ijs.first().copied().unwrap_or_default();
                 let (p, s, a, q) = self.quranize.get_data(i).copied().unwrap_or_default();
-                let offset = q
-                    .get(j + query.len()..)
-                    .and_then(|s| Some(s.split(' ').next()?.len()))
-                    .unwrap_or_default();
-                let k = j + query.len() + offset;
-                JsLocation {
-                    page: p,
-                    sura: s,
-                    aya: a,
-                    spans: vec![
-                        JsLocationSpan {
-                            text: q.get(..j).unwrap_or_default(),
-                            marked: false,
-                        },
+                let first_span = JsLocationSpan {
+                    text: q.get(..first_j).unwrap_or_default(),
+                    marked: false,
+                };
+                let js = ijs.iter().map(|&(_, j)| j);
+                let next_js = ijs.iter().skip(1).map(|&(_, j)| j).chain(once(q.len()));
+                let spans = js.zip(next_js).flat_map(|(j, next_j)| {
+                    let k = j
+                        + query.len()
+                        + q.get(j + query.len()..)
+                            .and_then(|s| Some(s.split(' ').next()?.len()))
+                            .unwrap_or_default();
+                    [
                         JsLocationSpan {
                             text: q.get(j..k).unwrap_or_default(),
                             marked: true,
                         },
                         JsLocationSpan {
-                            text: q.get(k..).unwrap_or_default(),
+                            text: q.get(k..next_j).unwrap_or_default(),
                             marked: false,
                         },
-                    ],
+                    ]
+                });
+                JsLocation {
+                    page: p,
+                    sura: s,
+                    aya: a,
+                    spans: once(first_span).chain(spans).collect(),
                 }
             })
             .collect()
@@ -177,6 +185,17 @@ mod tests {
         assert_eq!("بِسمِ اللَّهِ ", l.spans[0].text);
         assert_eq!("الرَّحمـٰنِ الرَّحيمِ", l.spans[1].text);
         assert_eq!("", l.spans[2].text);
+
+        let albaqara_183 = &q.get_locations(&q.encode("kutiba ala")[0].quran)[2];
+        assert_eq!(2, albaqara_183.sura);
+        assert_eq!(183, albaqara_183.aya);
+        let mut spans = albaqara_183.spans.iter();
+        assert_eq!("يا أَيُّهَا الَّذينَ آمَنوا ", spans.next().unwrap().text);
+        assert_eq!("كُتِبَ عَلَيكُمُ", spans.next().unwrap().text);
+        assert_eq!(" الصِّيامُ كَما ", spans.next().unwrap().text);
+        assert_eq!("كُتِبَ عَلَى", spans.next().unwrap().text);
+        assert_eq!(" الَّذينَ مِن قَبلِكُم لَعَلَّكُم تَتَّقونَ", spans.next().unwrap().text);
+        assert!(spans.next().is_none());
     }
 
     #[test]
