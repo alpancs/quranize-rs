@@ -35,7 +35,7 @@ type EncodeResults = Vec<(String, usize, Vec<&'static str>)>;
 type PrevMap = (char, &'static str);
 
 use quran_metadata::*;
-const QURAN_TXT: &str = include_str!("quran-simple-min.txt");
+const QURAN_TXT: &str = include_str!("quran-simple.txt");
 
 /// Quranize model, for doing transliteration, finding string, and getting aya.
 pub struct Quranize {
