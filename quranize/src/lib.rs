@@ -44,7 +44,7 @@ pub struct Quranize {
 }
 
 impl Quranize {
-    const EXPECTED_VERTEX_COUNT: usize = 127_793;
+    const EXPECTED_VERTEX_COUNT: usize = 128_099;
 
     /// Create a new [`Quranize`] instance.
     pub fn new() -> Self {
@@ -281,24 +281,21 @@ mod tests {
     #[test]
     fn test_alfatihah() {
         let q = Quranize::new();
-        assert_eq!(
-            q.e("bismillahirrohmanirrohiim"),
-            ["بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيم"]
-        );
+        assert_eq!(q.e("bismillahirrohmanirrohiim"), ["بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيم"]);
         assert_eq!(
             q.e("alhamdulilla hirobbil 'alamiin"),
-            ["الحَمدُ لِلَّهِ رَبِّ العالَمين"]
+            ["الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِين"]
         );
-        assert_eq!(q.e("arrohma nirrohim"), ["الرَّحمـٰنِ الرَّحيم"]);
-        assert_eq!(q.e("maliki yau middin"), ["مالِكِ يَومِ الدّين"]);
+        assert_eq!(q.e("arrohma nirrohim"), ["الرَّحْمَٰنِ الرَّحِيم"]);
+        assert_eq!(q.e("maliki yau middin"), ["مَالِكِ يَوْمِ الدِّين"]);
         assert_eq!(
             q.e("iyyakanakbudu waiyyakanastain"),
-            ["إِيّاكَ نَعبُدُ وَإِيّاكَ نَستَعين"]
+            ["إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِين"]
         );
-        assert_eq!(q.e("ihdinassirotol mustaqim"), ["اهدِنَا الصِّراطَ المُستَقيم"]);
+        assert_eq!(q.e("ihdinassirotol mustaqim"), ["اهْدِنَا الصِّرَاطَ الْمُسْتَقِيم"]);
         assert_eq!(
             q.e("shirotolladzina an'amta 'alaihim ghoiril maghdzubi 'alaihim waladdoolliin"),
-            ["صِراطَ الَّذينَ أَنعَمتَ عَلَيهِم غَيرِ المَغضوبِ عَلَيهِم وَلَا الضّالّين"]
+            ["صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّين"]
         );
     }
 
