@@ -82,10 +82,6 @@ impl JsQuranize {
             .map(|ixs| {
                 let (i, j) = ixs.first().copied().unwrap_or_default();
                 let (p, s, a, q) = self.quranize.get_data(i).copied().unwrap_or_default();
-                let qlen = query.len()
-                    + q.get(j + query.len()..)
-                        .map(|s| s.find(' ').unwrap_or(s.len()))
-                        .unwrap_or_default();
                 let span0 = JsLocationSpan {
                     text: q.get(..j).unwrap_or_default(),
                     marked: false,
@@ -93,13 +89,17 @@ impl JsQuranize {
                 let js = ixs.iter().map(|&(_, j)| j);
                 let next_js = ixs.iter().skip(1).map(|&(_, j)| j).chain(once(q.len()));
                 let spans = js.zip(next_js).flat_map(|(j, next_j)| {
+                    let marked_len = query.len()
+                        + q.get(j + query.len()..)
+                            .and_then(|s| Some(s.split(' ').next()?.len()))
+                            .unwrap_or_default();
                     [
                         JsLocationSpan {
-                            text: q.get(j..j + qlen).unwrap_or_default(),
+                            text: q.get(j..j + marked_len).unwrap_or_default(),
                             marked: true,
                         },
                         JsLocationSpan {
-                            text: q.get(j + qlen..next_j).unwrap_or_default(),
+                            text: q.get(j + marked_len..next_j).unwrap_or_default(),
                             marked: false,
                         },
                     ]
@@ -185,18 +185,15 @@ mod tests {
         assert_eq!("الرَّحمـٰنِ الرَّحيمِ", l.spans[1].text);
         assert_eq!("", l.spans[2].text);
 
-        let albaqara_183 = &q.get_locations(&q.encode("kutiba")[0].quran)[2];
+        let albaqara_183 = &q.get_locations(&q.encode("kutiba ala")[0].quran)[2];
         assert_eq!(2, albaqara_183.sura);
         assert_eq!(183, albaqara_183.aya);
         let mut spans = albaqara_183.spans.iter();
         assert_eq!("يا أَيُّهَا الَّذينَ آمَنوا ", spans.next().unwrap().text);
-        assert_eq!("كُتِبَ", spans.next().unwrap().text);
-        assert_eq!(" عَلَيكُمُ الصِّيامُ كَما ", spans.next().unwrap().text);
-        assert_eq!("كُتِبَ", spans.next().unwrap().text);
-        assert_eq!(
-            " عَلَى الَّذينَ مِن قَبلِكُم لَعَلَّكُم تَتَّقونَ",
-            spans.next().unwrap().text
-        );
+        assert_eq!("كُتِبَ عَلَيكُمُ", spans.next().unwrap().text);
+        assert_eq!(" الصِّيامُ كَما ", spans.next().unwrap().text);
+        assert_eq!("كُتِبَ عَلَى", spans.next().unwrap().text);
+        assert_eq!(" الَّذينَ مِن قَبلِكُم لَعَلَّكُم تَتَّقونَ", spans.next().unwrap().text);
         assert!(spans.next().is_none());
     }
 
