@@ -184,6 +184,20 @@ mod tests {
         assert_eq!("بِسمِ اللَّهِ ", l.spans[0].text);
         assert_eq!("الرَّحمـٰنِ الرَّحيمِ", l.spans[1].text);
         assert_eq!("", l.spans[2].text);
+
+        let albaqara_183 = &q.get_locations(&q.encode("kutiba")[0].quran)[2];
+        assert_eq!(2, albaqara_183.sura);
+        assert_eq!(183, albaqara_183.aya);
+        let mut spans = albaqara_183.spans.iter();
+        assert_eq!("يا أَيُّهَا الَّذينَ آمَنوا ", spans.next().unwrap().text);
+        assert_eq!("كُتِبَ", spans.next().unwrap().text);
+        assert_eq!(" عَلَيكُمُ الصِّيامُ كَما ", spans.next().unwrap().text);
+        assert_eq!("كُتِبَ", spans.next().unwrap().text);
+        assert_eq!(
+            " عَلَى الَّذينَ مِن قَبلِكُم لَعَلَّكُم تَتَّقونَ",
+            spans.next().unwrap().text
+        );
+        assert!(spans.next().is_none());
     }
 
     #[test]
