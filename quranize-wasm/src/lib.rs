@@ -78,16 +78,16 @@ impl JsQuranize {
         let mut indexes = self.quranize.find(query);
         indexes.sort_unstable();
         indexes
-            .chunk_by(|a, b| a.0 == b.0)
-            .map(|ixs| {
-                let (i, j) = ixs.first().copied().unwrap_or_default();
+            .chunk_by(|(i, _), (next_i, _)| i == next_i)
+            .map(|ijs| {
+                let (i, first_j) = ijs.first().copied().unwrap_or_default();
                 let (p, s, a, q) = self.quranize.get_data(i).copied().unwrap_or_default();
                 let span0 = JsLocationSpan {
-                    text: q.get(..j).unwrap_or_default(),
+                    text: q.get(..first_j).unwrap_or_default(),
                     marked: false,
                 };
-                let js = ixs.iter().map(|&(_, j)| j);
-                let next_js = ixs.iter().skip(1).map(|&(_, j)| j).chain(once(q.len()));
+                let js = ijs.iter().map(|&(_, j)| j);
+                let next_js = ijs.iter().skip(1).map(|&(_, j)| j).chain(once(q.len()));
                 let spans = js.zip(next_js).flat_map(|(j, next_j)| {
                     let marked_len = query.len()
                         + q.get(j + query.len()..)
