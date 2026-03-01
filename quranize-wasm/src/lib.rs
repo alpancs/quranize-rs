@@ -89,17 +89,18 @@ impl JsQuranize {
                 let js = ijs.iter().map(|&(_, j)| j);
                 let next_js = ijs.iter().skip(1).map(|&(_, j)| j).chain(once(q.len()));
                 let spans = js.zip(next_js).flat_map(|(j, next_j)| {
-                    let marked_len = query.len()
+                    let k = j
+                        + query.len()
                         + q.get(j + query.len()..)
                             .and_then(|s| Some(s.split(' ').next()?.len()))
                             .unwrap_or_default();
                     [
                         JsLocationSpan {
-                            text: q.get(j..j + marked_len).unwrap_or_default(),
+                            text: q.get(j..k).unwrap_or_default(),
                             marked: true,
                         },
                         JsLocationSpan {
-                            text: q.get(j + marked_len..next_j).unwrap_or_default(),
+                            text: q.get(k..next_j).unwrap_or_default(),
                             marked: false,
                         },
                     ]
