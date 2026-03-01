@@ -51,7 +51,7 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
         ARABIC_FATHA => &["a", "o"],
         ARABIC_DAMMA => &["u"],
         ARABIC_KASRA => &["i"],
-        ARABIC_SHADDA => &[],
+        ARABIC_SHADDA => &[""],
         ARABIC_SUKUN => &[""],
 
         ARABIC_LETTER_SUPERSCRIPT_ALEF => &["a", "aa", "o", "oo"],
