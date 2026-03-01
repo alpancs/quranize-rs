@@ -54,9 +54,11 @@ const ArabicUnicodeMapping: Record<string, string> = {
  * their corresponding A-Z/a-z mapping.
  */
 export function encode(str: string): string {
-  return Array.from(str)
-    .map((char) => ArabicUnicodeMapping[char] || char)
-    .join('');
+  let result = '';
+  for (let i = 0; i < str.length; i++) {
+    result += ArabicUnicodeMapping[str[i]!] || str[i];
+  }
+  return result;
 }
 
 const ReverseArabicMapping: Record<string, string> = Object.fromEntries(
@@ -68,7 +70,9 @@ const ReverseArabicMapping: Record<string, string> = Object.fromEntries(
  * original Arabic Unicode characters.
  */
 export function decode(encodedStr: string): string {
-  return Array.from(encodedStr)
-    .map((char) => ReverseArabicMapping[char] || char)
-    .join('');
+  let result = '';
+  for (let i = 0; i < encodedStr.length; i++) {
+    result += ReverseArabicMapping[encodedStr[i]!] || encodedStr[i];
+  }
+  return result;
 }
