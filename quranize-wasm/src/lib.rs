@@ -82,7 +82,7 @@ impl JsQuranize {
             .map(|ijs| {
                 let (i, first_j) = ijs.first().copied().unwrap_or_default();
                 let (p, s, a, q) = self.quranize.get_data(i).copied().unwrap_or_default();
-                let span0 = JsLocationSpan {
+                let first_span = JsLocationSpan {
                     text: q.get(..first_j).unwrap_or_default(),
                     marked: false,
                 };
@@ -108,7 +108,7 @@ impl JsQuranize {
                     page: p,
                     sura: s,
                     aya: a,
-                    spans: once(span0).chain(spans).collect(),
+                    spans: once(first_span).chain(spans).collect(),
                 }
             })
             .collect()
