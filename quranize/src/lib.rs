@@ -374,6 +374,15 @@ mod tests {
     }
 
     #[test]
+    fn test_quran_stats() {
+        let mut set = std::collections::BTreeSet::new();
+        for c in QURAN_TXT.chars().take_while(|&c| c != '#') {
+            set.insert(c);
+        }
+        assert_eq!(set.len(), 56);
+    }
+
+    #[test]
     fn test_get_data_from_page() {
         let q = Quranize::new();
         let page1_data = q.get_data_from_page(1).unwrap();
