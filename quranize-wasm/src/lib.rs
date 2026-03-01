@@ -84,7 +84,7 @@ impl JsQuranize {
                 let (p, s, a, q) = self.quranize.get_data(i).copied().unwrap_or_default();
                 let qlen = query.len()
                     + q.get(j + query.len()..)
-                        .and_then(|s| s.find(' '))
+                        .map(|s| s.find(' ').unwrap_or(s.len()))
                         .unwrap_or_default();
                 let span0 = JsLocationSpan {
                     text: q.get(..j).unwrap_or_default(),
