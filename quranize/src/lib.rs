@@ -15,10 +15,10 @@
 //! ```
 //! let q = quranize::Quranize::new();
 //!
-//! assert_eq!(q.encode("bismillahirrohmanirrohim")[0].0, "بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيم");
-//! assert_eq!(q.encode("amma yatasa alun")[0].0, "عَمَّ يَتَساءَلون");
+//! assert_eq!(q.encode("bismillahirrohmanirrohim")[0].0, "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيم");
+//! assert_eq!(q.encode("amma yatasa alun")[0].0, "عَمَّ يَتَسَاءَلُون");
 //!
-//! let (i, _) = q.find("عَمَّ يَتَساءَلون")[0];
+//! let (i, _) = q.find("عَمَّ يَتَسَاءَلُونَ")[0];
 //! let &(page, sura, aya, _) = q.get_data(i).unwrap();
 //! assert_eq!((page, sura, aya), (582, 78, 1));
 //! ```
@@ -86,8 +86,8 @@ impl Quranize {
     ///
     /// ```
     /// let q = quranize::Quranize::new();
-    /// assert_eq!(q.encode("alif lam mim"), [("الم".to_string(), 912, vec!["alif", "lam", "mim"])]);
-    /// assert_eq!(q.encode("minal jinnati wannas")[0].0, "مِنَ الجِنَّةِ وَالنّاس");
+    /// assert_eq!(q.encode("alif lam mim"), [("الم".to_string(), 8, vec!["alif", "lam", "mim"])]);
+    /// assert_eq!(q.encode("minal jinnati wannas")[0].0, "مِنَ الْجِنَّةِ وَالنَّاس");
     /// ```
     pub fn encode(&self, s: &str) -> EncodeResults {
         let mut results: EncodeResults = match normalization::normalize(s).as_str() {
@@ -173,7 +173,7 @@ impl Quranize {
     /// # Examples
     /// ```
     /// let q = quranize::Quranize::new();
-    /// let index = q.find("عَمَّ يَتَساءَلون")[0];
+    /// let index = q.find("عَمَّ يَتَسَاءَلُونَ")[0];
     /// assert_eq!(index, (5672, 0));
     /// ```
     pub fn find(&self, s: &str) -> Vec<Index> {
@@ -190,7 +190,7 @@ impl Quranize {
     /// # Examples
     /// ```
     /// let q = quranize::Quranize::new();
-    /// assert_eq!(q.get_data(5672), Some(&(582, 78, 1, "عَمَّ يَتَساءَلونَ")));
+    /// assert_eq!(q.get_data(5672), Some(&(582, 78, 1, "عَمَّ يَتَسَاءَلُونَ")));
     /// ```
     pub fn get_data(&self, i: usize) -> Option<&(u16, u8, u16, &str)> {
         self.data.get(i)
@@ -207,7 +207,7 @@ impl Quranize {
     /// let q = quranize::Quranize::new();
     /// let page_data = q.get_data_from_page(582).unwrap();
     /// assert_eq!(page_data.len(), 30);
-    /// assert_eq!(page_data[0], &(582, 78, 1, "عَمَّ يَتَساءَلونَ"));
+    /// assert_eq!(page_data[0], &(582, 78, 1, "عَمَّ يَتَسَاءَلُونَ"));
     /// ```
     pub fn get_data_from_page(&self, page: u16) -> Option<Vec<&(u16, u8, u16, &str)>> {
         let same_page = |&&(p, _, _, _): &&(u16, u8, u16, &str)| p == page;
