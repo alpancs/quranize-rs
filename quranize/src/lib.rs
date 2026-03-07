@@ -15,10 +15,10 @@
 //! ```
 //! let q = quranize::Quranize::new();
 //!
-//! assert_eq!(q.encode("bismillahirrohmanirrohim")[0].0, "بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيم");
-//! assert_eq!(q.encode("amma yatasa alun")[0].0, "عَمَّ يَتَساءَلون");
+//! assert_eq!(q.encode("bismillahirrohmanirrohim")[0].0, "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيم");
+//! assert_eq!(q.encode("amma yatasa alun")[0].0, "عَمَّ يَتَسَاءَلُون");
 //!
-//! let (i, _) = q.find("عَمَّ يَتَساءَلون")[0];
+//! let (i, _) = q.find("عَمَّ يَتَسَاءَلُونَ")[0];
 //! let &(page, sura, aya, _) = q.get_data(i).unwrap();
 //! assert_eq!((page, sura, aya), (582, 78, 1));
 //! ```
@@ -35,7 +35,7 @@ type EncodeResults = Vec<(String, usize, Vec<&'static str>)>;
 type PrevMap = (char, &'static str);
 
 use quran_metadata::*;
-const QURAN_TXT: &str = include_str!("quran-simple-min.txt");
+const QURAN_TXT: &str = include_str!("quran-simple.txt");
 
 /// Quranize model, for doing transliteration, finding string, and getting aya.
 pub struct Quranize {
@@ -44,7 +44,7 @@ pub struct Quranize {
 }
 
 impl Quranize {
-    const EXPECTED_VERTEX_COUNT: usize = 126_307;
+    const EXPECTED_VERTEX_COUNT: usize = 128_099;
 
     /// Create a new [`Quranize`] instance.
     pub fn new() -> Self {
@@ -86,8 +86,8 @@ impl Quranize {
     ///
     /// ```
     /// let q = quranize::Quranize::new();
-    /// assert_eq!(q.encode("alif lam mim"), [("الم".to_string(), 912, vec!["alif", "lam", "mim"])]);
-    /// assert_eq!(q.encode("minal jinnati wannas")[0].0, "مِنَ الجِنَّةِ وَالنّاس");
+    /// assert_eq!(q.encode("alif lam mim"), [("الم".to_string(), 8, vec!["alif", "lam", "mim"])]);
+    /// assert_eq!(q.encode("minal jinnati wannas")[0].0, "مِنَ الْجِنَّةِ وَالنَّاس");
     /// ```
     pub fn encode(&self, s: &str) -> EncodeResults {
         let mut results: EncodeResults = match normalization::normalize(s).as_str() {
@@ -173,7 +173,7 @@ impl Quranize {
     /// # Examples
     /// ```
     /// let q = quranize::Quranize::new();
-    /// let index = q.find("عَمَّ يَتَساءَلون")[0];
+    /// let index = q.find("عَمَّ يَتَسَاءَلُونَ")[0];
     /// assert_eq!(index, (5672, 0));
     /// ```
     pub fn find(&self, s: &str) -> Vec<Index> {
@@ -190,7 +190,7 @@ impl Quranize {
     /// # Examples
     /// ```
     /// let q = quranize::Quranize::new();
-    /// assert_eq!(q.get_data(5672), Some(&(582, 78, 1, "عَمَّ يَتَساءَلونَ")));
+    /// assert_eq!(q.get_data(5672), Some(&(582, 78, 1, "عَمَّ يَتَسَاءَلُونَ")));
     /// ```
     pub fn get_data(&self, i: usize) -> Option<&(u16, u8, u16, &str)> {
         self.data.get(i)
@@ -207,7 +207,7 @@ impl Quranize {
     /// let q = quranize::Quranize::new();
     /// let page_data = q.get_data_from_page(582).unwrap();
     /// assert_eq!(page_data.len(), 30);
-    /// assert_eq!(page_data[0], &(582, 78, 1, "عَمَّ يَتَساءَلونَ"));
+    /// assert_eq!(page_data[0], &(582, 78, 1, "عَمَّ يَتَسَاءَلُونَ"));
     /// ```
     pub fn get_data_from_page(&self, page: u16) -> Option<Vec<&(u16, u8, u16, &str)>> {
         let same_page = |&&(p, _, _, _): &&(u16, u8, u16, &str)| p == page;
@@ -239,78 +239,75 @@ mod tests {
     #[test]
     fn test_quranize_default() {
         let q: Quranize = Default::default();
-        assert_eq!(q.e("illa billah"), ["إِلّا بِاللَّه"]);
-        assert_eq!(q.e("alqur'an"), ["القُرآن"]);
-        assert_eq!(q.e("bismillah"), ["بِسمِ اللَّه"]);
-        assert_eq!(q.e("birobbinnas"), ["بِرَبِّ النّاس"]);
-        assert_eq!(q.e("inna anzalnahu"), ["إِنّا أَنزَلناهُ"]);
-        assert_eq!(q.e("wa'tasimu"), ["وَاعتَصِمو"]);
-        assert_eq!(q.e("wa'tasimu bihablillah"), ["وَاعتَصِموا بِحَبلِ اللَّه"]);
-        assert_eq!(q.e("idza qodho"), ["إِذا قَضَ"]);
-        assert_eq!(q.e("masyaallah"), ["ما شاءَ اللَّه"]);
-        assert_eq!(q.e("illa man taba"), ["إِلّا مَن تابَ"]);
-        assert_eq!(q.e("alla tahzani"), ["أَلّا تَحزَني"]);
-        assert_eq!(q.e("innasya niaka"), ["إِنَّ شانِئَكَ"]);
-        assert_eq!(q.e("innasya ni'aka"), ["إِنَّ شانِئَكَ"]);
-        assert_eq!(q.e("wasalamun alaihi"), ["وَسَلامٌ عَلَيهِ"]);
-        assert_eq!(q.e("ulaika hum"), ["أُولـٰئِكَ هُم"]);
-        assert_eq!(q.e("waladdoollin"), ["وَلَا الضّالّين"]);
-        assert_eq!(q.e("undur kaifa"), ["انظُر كَيفَ"]);
-        assert_eq!(q.e("lirrohman"), ["لِلرَّحمـٰن"]);
-        assert_eq!(q.e("waantum muslimun"), ["وَأَنتُم مُسلِمون"]);
-        assert_eq!(q.e("laa yukallifullah"), ["لا يُكَلِّفُ اللَّه"]);
-        assert_eq!(q.e("robbil alamin"), ["رَبِّ العالَمين"]);
-        assert_eq!(q.e("husnul maab"), ["حُسنُ المَآب"]);
-        assert_eq!(q.e("khusnul ma'ab"), ["حُسنُ المَآب"]);
+        assert_eq!(q.e("illa billah"), ["إِلَّا بِاللَّه"]);
+        assert_eq!(q.e("alqur'an"), ["الْقُرْآن"]);
+        assert_eq!(q.e("bismillah"), ["بِسْمِ اللَّه"]);
+        assert_eq!(q.e("birobbinnas"), ["بِرَبِّ النَّاس"]);
+        assert_eq!(q.e("inna anzalnahu"), ["إِنَّا أَنزَلْنَاهُ"]);
+        assert_eq!(q.e("wa'tasimu"), ["وَاعْتَصِمُ"]);
+        assert_eq!(q.e("wa'tasimu bihablillah"), ["وَاعْتَصِمُوا بِحَبْلِ اللَّه"]);
+        assert_eq!(q.e("idza qodho"), ["إِذَا قَضَ"]);
+        assert_eq!(q.e("masyaallah"), ["مَا شَاءَ اللَّه"]);
+        assert_eq!(q.e("illa man taba"), ["إِلَّا مَن تَابَ"]);
+        assert_eq!(q.e("alla tahzani"), ["أَلَّا تَحْزَنِ"]);
+        assert_eq!(q.e("innasya niaka"), ["إِنَّ شَانِئَكَ"]);
+        assert_eq!(q.e("innasya ni'aka"), ["إِنَّ شَانِئَكَ"]);
+        assert_eq!(q.e("wasalamun alaihi"), ["وَسَلَامٌ عَلَيْهِ"]);
+        assert_eq!(q.e("ulaika hum"), ["أُولَٰئِكَ هُم"]);
+        assert_eq!(q.e("waladdoollin"), ["وَلَا الضَّالِّين"]);
+        assert_eq!(q.e("undur kaifa"), ["انظُرْ كَيْفَ"]);
+        assert_eq!(q.e("lirrohman"), ["لِلرَّحْمَٰن"]);
+        assert_eq!(q.e("waantum muslimun"), ["وَأَنتُم مُّسْلِمُون"]);
+        assert_eq!(q.e("laa yukallifullah"), ["لَا يُكَلِّفُ اللَّه"]);
+        assert_eq!(q.e("robbil alamin"), ["رَبِّ الْعَالَمِين", "رَّبِّ الْعَالَمِين"]);
+        assert_eq!(q.e("husnul maab"), ["حُسْنُ الْمَآب"]);
+        assert_eq!(q.e("khusnul ma'ab"), ["حُسْنُ الْمَآب"]);
         assert_eq!(q.e("kufuwan"), ["كُفُوً"]);
-        assert_eq!(q.e("yukhodiun"), ["يُخادِعون"]);
+        assert_eq!(q.e("yukhodiun"), ["يُخَادِعُون"]);
         assert_eq!(q.e("indallah"), ["عِندَ اللَّه"]);
-        assert_eq!(q.e("alimul ghoibi"), ["عالِمُ الغَيبِ"]);
-        assert_eq!(q.e("kaana dhoifa"), ["كانَ ضَعيفًا"]);
-        assert_eq!(q.e("waantum muslimuna"), ["وَأَنتُم مُسلِمونَ"]);
-        assert_eq!(q.e("kitabi la roiba"), ["الكِتابِ لا رَيبَ"]);
-        assert_eq!(q.e("takwili"), ["تَأويلِ"]);
-        assert_eq!(q.e("yu'minun"), ["يُؤمِنون"]);
-        assert_eq!(q.e("hudan lil muttaqin"), ["هُدًى لِلمُتَّقين"]);
-        assert_eq!(q.e("majreeha wamursaha"), ["مَجراها وَمُرساها"]);
-        assert_eq!(q.e("fabiayyi alai"), ["فَبِأَيِّ آلاءِ"]);
-        assert_eq!(q.e("wayuallimukumma"), ["وَيُعَلِّمُكُم ما"]);
-        assert_eq!(q.e("wassolat"), ["وَالصَّلاة"]);
+        assert_eq!(q.e("alimul ghoibi"), ["عَالِمُ الْغَيْبِ"]);
+        assert_eq!(q.e("kaana dhoifa"), ["كَانَ ضَعِيفًا"]);
+        assert_eq!(q.e("waantum muslimuna"), ["وَأَنتُم مُّسْلِمُونَ"]);
+        assert_eq!(q.e("kitabi la roiba"), ["الْكِتَابِ لَا رَيْبَ"]);
+        assert_eq!(q.e("takwili"), ["تَأْوِيلِ"]);
+        assert_eq!(q.e("yu'minun"), ["يُؤْمِنُون"]);
+        assert_eq!(q.e("hudal lil muttaqin"), ["هُدًى لِّلْمُتَّقِين"]);
+        assert_eq!(q.e("majreeha wamursaha"), ["مَجْرَاهَا وَمُرْسَاهَ"]);
+        assert_eq!(q.e("fabiayyi alai"), ["فَبِأَيِّ آلَاءِ"]);
+        assert_eq!(q.e("wayuallimukummaa"), ["وَيُعَلِّمُكُم مَّا"]);
+        assert_eq!(q.e("wassolat"), ["وَالصَّلَاة"]);
     }
 
     #[test]
     fn test_alfatihah() {
         let q = Quranize::new();
-        assert_eq!(
-            q.e("bismillahirrohmanirrohiim"),
-            ["بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيم"]
-        );
+        assert_eq!(q.e("bismillahirrohmanirrohiim"), ["بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيم"]);
         assert_eq!(
             q.e("alhamdulilla hirobbil 'alamiin"),
-            ["الحَمدُ لِلَّهِ رَبِّ العالَمين"]
+            ["الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِين"]
         );
-        assert_eq!(q.e("arrohma nirrohim"), ["الرَّحمـٰنِ الرَّحيم"]);
-        assert_eq!(q.e("maliki yau middin"), ["مالِكِ يَومِ الدّين"]);
+        assert_eq!(q.e("arrohma nirrohim"), ["الرَّحْمَٰنِ الرَّحِيم"]);
+        assert_eq!(q.e("maliki yau middin"), ["مَالِكِ يَوْمِ الدِّين"]);
         assert_eq!(
             q.e("iyyakanakbudu waiyyakanastain"),
-            ["إِيّاكَ نَعبُدُ وَإِيّاكَ نَستَعين"]
+            ["إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِين"]
         );
-        assert_eq!(q.e("ihdinassirotol mustaqim"), ["اهدِنَا الصِّراطَ المُستَقيم"]);
+        assert_eq!(q.e("ihdinassirotol mustaqim"), ["اهْدِنَا الصِّرَاطَ الْمُسْتَقِيم"]);
         assert_eq!(
             q.e("shirotolladzina an'amta 'alaihim ghoiril maghdzubi 'alaihim waladdoolliin"),
-            ["صِراطَ الَّذينَ أَنعَمتَ عَلَيهِم غَيرِ المَغضوبِ عَلَيهِم وَلَا الضّالّين"]
+            ["صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّين"]
         );
     }
 
     #[test]
     fn test_al_ikhlas() {
         let q = Quranize::new();
-        assert_eq!(q.e("qulhuwallahuahad"), ["قُل هُوَ اللَّهُ أَحَد"]);
+        assert_eq!(q.e("qulhuwallahuahad"), ["قُلْ هُوَ اللَّهُ أَحَد"]);
         assert_eq!(q.e("allahussomad"), ["اللَّهُ الصَّمَد"]);
-        assert_eq!(q.e("lam yalid walam yulad"), ["لَم يَلِد وَلَم يولَد"]);
+        assert_eq!(q.e("lam yalid walam yulad"), ["لَمْ يَلِدْ وَلَمْ يُولَد"]);
         assert_eq!(
             q.e("walam yakun lahu kufuwan ahad"),
-            ["وَلَم يَكُن لَهُ كُفُوًا أَحَد"]
+            ["وَلَمْ يَكُن لَّهُ كُفُوًا أَحَد"]
         );
     }
 
@@ -319,7 +316,7 @@ mod tests {
         let q = Quranize::new();
         assert_eq!(q.e("alif lam mim"), ["الم"]);
         assert_eq!(q.e("alif laaam miiim"), &["الم"]);
-        assert_eq!(q.e("nuun"), &["ن"]);
+        assert_eq!(q.e("nuuuun"), &["ن"]);
         assert_eq!(q.e("kaaaf haa yaa aiiin shoood"), &["كهيعص"]);
         assert_eq!(q.e("kaf ha ya 'ain shod"), &["كهيعص"]);
         assert_eq!(q.e("alif lam ro"), &["الر"]);
@@ -348,17 +345,17 @@ mod tests {
     #[test]
     fn test_tree_find() {
         let q = Quranize::new();
-        assert!(q.find("بِسمِ").contains(&(0, 0)));
-        assert_eq!(q.find("وَالنّاسِ").last(), Some(&(6235, 28)));
+        assert!(q.find("بِسْمِ").contains(&(0, 0)));
+        assert_eq!(q.find("وَالنَّاسِ").last(), Some(&(6235, 30)));
         assert!(q.find("الم").contains(&(7, 0)));
-        assert_eq!(q.find("بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيمِ").len(), 2);
+        assert_eq!(q.find("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيم").len(), 2);
         assert!(q.find("").is_empty());
         assert!(q.find("نن").is_empty());
         assert!(q.find("ننن").is_empty());
         assert!(q.find("نننن").is_empty());
         assert!(q.find("2+3+4=9").is_empty());
-        assert_eq!(q.find("بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيمِ").first(), Some(&(0, 0)));
-        assert_eq!(q.find("الرَّحمـٰنِ الرَّحيمِ").first(), Some(&(0, 26)));
+        assert_eq!(q.find("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيم").first(), Some(&(0, 0)));
+        assert_eq!(q.find("الرَّحْمَٰنِ الرَّحِيم").first(), Some(&(0, 28)));
         assert_eq!(q.find("").first(), None);
         assert_eq!(q.find("abc").first(), None);
     }
@@ -374,19 +371,28 @@ mod tests {
     }
 
     #[test]
+    fn test_quran_stats() {
+        let mut set = std::collections::BTreeSet::new();
+        for c in QURAN_TXT.chars().take_while(|&c| c != '#') {
+            set.insert(c);
+        }
+        assert_eq!(set.len(), 56);
+    }
+
+    #[test]
     fn test_get_data_from_page() {
         let q = Quranize::new();
         let page1_data = q.get_data_from_page(1).unwrap();
         assert_eq!(page1_data.len(), 7);
         assert_eq!(page1_data[0].1, 1);
         assert_eq!(page1_data[0].2, 1);
-        assert_eq!(page1_data[0].3, "بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيمِ");
+        assert_eq!(page1_data[0].3, "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ");
         let page2_data = q.get_data_from_page(2).unwrap();
         assert_eq!(page2_data.len(), 5);
         let page3_data = q.get_data_from_page(3).unwrap();
         assert_eq!(page3_data.len(), 11);
         let page604_data = q.get_data_from_page(604).unwrap();
         assert_eq!(page604_data.len(), 15);
-        assert_eq!(page604_data[0].3, "قُل هُوَ اللَّهُ أَحَدٌ");
+        assert_eq!(page604_data[0].3, "قُلْ هُوَ اللَّهُ أَحَدٌ");
     }
 }

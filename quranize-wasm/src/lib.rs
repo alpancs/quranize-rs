@@ -171,30 +171,30 @@ mod tests {
         assert_eq!(1, l.sura);
         assert_eq!(1, l.aya);
         assert_eq!("", l.spans[0].text);
-        assert_eq!("بِسمِ اللَّهِ", l.spans[1].text);
-        assert_eq!(" الرَّحمـٰنِ الرَّحيمِ", l.spans[2].text);
+        assert_eq!("بِسْمِ اللَّهِ", l.spans[1].text);
+        assert_eq!(" الرَّحْمَٰنِ الرَّحِيمِ", l.spans[2].text);
 
         let l = &q.get_locations(&q.encode("bismillahirrohmanirrohim")[0].quran)[0];
         assert_eq!("", l.spans[0].text);
-        assert_eq!("بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيمِ", l.spans[1].text);
+        assert_eq!("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", l.spans[1].text);
         assert_eq!("", l.spans[2].text);
 
         let l = &q.get_locations(&q.encode("arrohmanirrohim")[0].quran)[0];
         assert_eq!(1, l.sura);
         assert_eq!(1, l.aya);
-        assert_eq!("بِسمِ اللَّهِ ", l.spans[0].text);
-        assert_eq!("الرَّحمـٰنِ الرَّحيمِ", l.spans[1].text);
+        assert_eq!("بِسْمِ اللَّهِ ", l.spans[0].text);
+        assert_eq!("الرَّحْمَٰنِ الرَّحِيمِ", l.spans[1].text);
         assert_eq!("", l.spans[2].text);
 
         let albaqara_183 = &q.get_locations(&q.encode("kutiba ala")[0].quran)[2];
         assert_eq!(2, albaqara_183.sura);
         assert_eq!(183, albaqara_183.aya);
         let mut spans = albaqara_183.spans.iter();
-        assert_eq!("يا أَيُّهَا الَّذينَ آمَنوا ", spans.next().unwrap().text);
-        assert_eq!("كُتِبَ عَلَيكُمُ", spans.next().unwrap().text);
-        assert_eq!(" الصِّيامُ كَما ", spans.next().unwrap().text);
+        assert_eq!("يَا أَيُّهَا الَّذِينَ آمَنُوا ", spans.next().unwrap().text);
+        assert_eq!("كُتِبَ عَلَيْكُمُ", spans.next().unwrap().text);
+        assert_eq!(" الصِّيَامُ كَمَا ", spans.next().unwrap().text);
         assert_eq!("كُتِبَ عَلَى", spans.next().unwrap().text);
-        assert_eq!(" الَّذينَ مِن قَبلِكُم لَعَلَّكُم تَتَّقونَ", spans.next().unwrap().text);
+        assert_eq!(" الَّذِينَ مِن قَبْلِكُمْ لَعَلَّكُمْ تَتَّقُونَ", spans.next().unwrap().text);
         assert!(spans.next().is_none());
     }
 
