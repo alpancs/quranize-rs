@@ -133,7 +133,7 @@ impl JsQuranize {
         { quran.chars().zip(explanations) }
             .fold(Vec::new(), |mut aqs: Vec<JsExplanation>, (q, e)| {
                 match (aqs.last_mut(), q) {
-                    (Some(laq), '\u{064B}'..='\u{0651}' | '\u{0670}') => {
+                    (Some(laq), '\u{064B}'..='\u{0653}' | '\u{0670}') => {
                         laq.alphabet.push_str(e);
                         laq.quran.push(q);
                     }
