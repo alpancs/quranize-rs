@@ -110,18 +110,18 @@ impl Quranize {
         results
     }
 
-    fn rev_encode(&self, s: &str, (v, w, l): Edge, context: &str) -> EncodeResults {
+    fn rev_encode(&self, s: &str, (v, w, l): Edge, ctx: &str) -> EncodeResults {
         let results_iter = l.chars().next().into_iter().flat_map(|c| -> EncodeResults {
-            let next_context = &format!("{}{}", context, c);
-            let tsls = map(c).iter().chain(contextual_map(context, c));
+            let tsls = map(c).iter().chain(contextual_map(ctx, c));
+            let ctx = &format!("{}{}", ctx, c);
             let tsl_results_iter = tsls.filter_map(|&tsl| -> Option<EncodeResults> {
                 s.strip_prefix(tsl).map(|s| match s {
                     "" => vec![(c.to_string(), self.tree.count_data(w), vec![tsl])],
                     s => match &l[c.len_utf8()..] {
                         "" => { self.tree.edges_from(w) }
-                            .flat_map(|&e| self.rev_encode(s, e, next_context))
+                            .flat_map(|&e| self.rev_encode(s, e, ctx))
                             .collect(),
-                        l => self.rev_encode(s, (v, w, l), next_context),
+                        l => self.rev_encode(s, (v, w, l), ctx),
                     }
                     .into_iter()
                     .map(|(mut q, n, mut e)| {
