@@ -70,19 +70,19 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
     }
 }
 
-pub(super) fn contextual_map(context: Option<char>, c: char) -> &'static [&'static str] {
-    match (context, c) {
-        (None, ARABIC_LETTER_ALEF) => &["u", "i"],
-        (Some(ARABIC_DAMMA), ARABIC_LETTER_WAW) => &[""],
-        (Some(ARABIC_FATHATAN), ARABIC_LETTER_ALEF_MAKSURA) => &[""],
-        (Some(ARABIC_KASRA), ARABIC_LETTER_LAM) => &[""],
-        (Some(ARABIC_LETTER_ALEF_MAKSURA), ARABIC_LETTER_SUPERSCRIPT_ALEF) => &[""],
-        (Some(ARABIC_FATHA), ARABIC_LETTER_SUPERSCRIPT_ALEF) => &[""],
-        (Some(ARABIC_KASRA), ARABIC_LETTER_YEH) => &[""],
-        (Some(ARABIC_LETTER_ALEF), ARABIC_LETTER_LAM) => &[""],
-        (Some(ARABIC_LETTER_REH), ARABIC_FATHA) => &["e", "ee"],
+pub(super) fn contextual_map(context: &str, c: char) -> &'static [&'static str] {
+    match c {
+        ARABIC_LETTER_ALEF if context.is_empty() => &["u", "i"],
+        ARABIC_LETTER_WAW if context.ends_with(ARABIC_DAMMA) => &[""],
+        ARABIC_LETTER_ALEF_MAKSURA if context.ends_with(ARABIC_FATHATAN) => &[""],
+        ARABIC_LETTER_LAM if context.ends_with(ARABIC_KASRA) => &[""],
+        ARABIC_LETTER_SUPERSCRIPT_ALEF if context.ends_with(ARABIC_LETTER_ALEF_MAKSURA) => &[""],
+        ARABIC_LETTER_SUPERSCRIPT_ALEF if context.ends_with(ARABIC_FATHA) => &[""],
+        ARABIC_LETTER_YEH if context.ends_with(ARABIC_KASRA) => &[""],
+        ARABIC_LETTER_LAM if context.ends_with(ARABIC_LETTER_ALEF) => &[""],
+        ARABIC_FATHA if context.ends_with(ARABIC_LETTER_REH) => &["e", "ee"],
 
-        (Some(cc), ARABIC_SHADDA) => map(cc),
+        ARABIC_SHADDA => map(context.chars().last().unwrap_or_default()),
 
         _ => &[],
     }
