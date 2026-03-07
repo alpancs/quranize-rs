@@ -32,7 +32,6 @@ use suffix_tree::{Edge, Index, SuffixTree};
 use transliteration::{contextual_map, harf_muqottoah_map, map};
 
 type EncodeResults = Vec<(String, usize, Vec<&'static str>)>;
-type PrevMap = (char, &'static str);
 
 use quran_metadata::*;
 const QURAN_TXT: &str = include_str!("quran-simple.txt");
