@@ -366,6 +366,7 @@ mod tests {
         assert_eq!(t.vertices.len(), t.edges.len() + 1);
         assert_eq!(t.count_data(0), t.collect_data(0).len());
         assert_eq!(t.vertices.len(), Quranize::EXPECTED_VERTEX_COUNT);
+        assert_eq!(t.vertices.capacity(), Quranize::EXPECTED_VERTEX_COUNT);
         assert!(t.vertices[0].2);
         assert!(!t.vertices[Quranize::EXPECTED_VERTEX_COUNT - 1].2);
     }
