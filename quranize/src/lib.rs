@@ -32,7 +32,6 @@ use suffix_tree::{Edge, Index, SuffixTree};
 use transliteration::{contextual_map, harf_muqottoah_map, map};
 
 type EncodeResults = Vec<(String, usize, Vec<&'static str>)>;
-type PrevMap = (char, &'static str);
 
 use quran_metadata::*;
 const QURAN_TXT: &str = include_str!("quran-simple.txt");
@@ -93,7 +92,7 @@ impl Quranize {
         let mut results: EncodeResults = match normalization::normalize(s).as_str() {
             "" => vec![],
             s => { self.tree.edges_from(0) }
-                .flat_map(|&e| self.rev_encode(s, e, None))
+                .flat_map(|&e| self.rev_encode(s, e, ""))
                 .collect(),
         }
         .into_iter()
@@ -110,17 +109,18 @@ impl Quranize {
         results
     }
 
-    fn rev_encode(&self, s: &str, (v, w, l): Edge, pm: Option<PrevMap>) -> EncodeResults {
+    fn rev_encode(&self, s: &str, (v, w, l): Edge, ctx: &str) -> EncodeResults {
         let results_iter = l.chars().next().into_iter().flat_map(|c| -> EncodeResults {
-            let tsls = map(c).iter().chain(contextual_map(pm.unzip().0, c));
+            let tsls = map(c).iter().chain(contextual_map(ctx, c));
+            let ctx = &format!("{}{}", ctx, c);
             let tsl_results_iter = tsls.filter_map(|&tsl| -> Option<EncodeResults> {
                 s.strip_prefix(tsl).map(|s| match s {
                     "" => vec![(c.to_string(), self.tree.count_data(w), vec![tsl])],
                     s => match &l[c.len_utf8()..] {
                         "" => { self.tree.edges_from(w) }
-                            .flat_map(|&e| self.rev_encode(s, e, Some((c, tsl))))
+                            .flat_map(|&e| self.rev_encode(s, e, ctx))
                             .collect(),
-                        l => self.rev_encode(s, (v, w, l), Some((c, tsl))),
+                        l => self.rev_encode(s, (v, w, l), ctx),
                     }
                     .into_iter()
                     .map(|(mut q, n, mut e)| {
