@@ -52,5 +52,4 @@ pub(super) const ARABIC_SMALL_HIGH_LAM_ALEF: char = '\u{06D9}';
 pub(super) const ARABIC_SMALL_HIGH_JEEM: char = '\u{06DA}';
 pub(super) const ARABIC_SMALL_HIGH_THREE_DOTS: char = '\u{06DB}';
 pub(super) const ARABIC_SMALL_HIGH_SEEN: char = '\u{06DC}';
-pub(super) const ARABIC_START_OF_RUB_EL_HIZB: char = '\u{06DE}';
 pub(super) const ARABIC_PLACE_OF_SAJDAH: char = '\u{06E9}';

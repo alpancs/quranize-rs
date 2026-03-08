@@ -53,8 +53,7 @@ const ArabicUnicodeMapping: Record<string, string> = {
   '\u{06DA}': 'z', // ARABIC_SMALL_HIGH_JEEM
   '\u{06DB}': '0', // ARABIC_SMALL_HIGH_THREE_DOTS
   '\u{06DC}': '1', // ARABIC_SMALL_HIGH_SEEN
-  '\u{06DE}': '2', // ARABIC_START_OF_RUB_EL_HIZB
-  '\u{06E9}': '3', // ARABIC_PLACE_OF_SAJDAH
+  '\u{06E9}': '2', // ARABIC_PLACE_OF_SAJDAH
 };
 
 /**
