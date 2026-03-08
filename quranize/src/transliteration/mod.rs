@@ -63,7 +63,6 @@ pub(super) fn map(c: char) -> &'static [&'static str] {
         | ARABIC_SMALL_HIGH_JEEM
         | ARABIC_SMALL_HIGH_THREE_DOTS
         | ARABIC_SMALL_HIGH_SEEN
-        | ARABIC_START_OF_RUB_EL_HIZB
         | ARABIC_PLACE_OF_SAJDAH => &[""],
 
         _ => &[""],

@@ -43,7 +43,7 @@ pub struct Quranize {
 }
 
 impl Quranize {
-    const EXPECTED_VERTEX_COUNT: usize = 128_099;
+    const EXPECTED_VERTEX_COUNT: usize = 127_793;
 
     /// Create a new [`Quranize`] instance.
     pub fn new() -> Self {
@@ -366,6 +366,7 @@ mod tests {
         assert_eq!(t.vertices.len(), t.edges.len() + 1);
         assert_eq!(t.count_data(0), t.collect_data(0).len());
         assert_eq!(t.vertices.len(), Quranize::EXPECTED_VERTEX_COUNT);
+        assert_eq!(t.vertices.capacity(), Quranize::EXPECTED_VERTEX_COUNT);
         assert!(t.vertices[0].2);
         assert!(!t.vertices[Quranize::EXPECTED_VERTEX_COUNT - 1].2);
     }
@@ -376,7 +377,7 @@ mod tests {
         for c in QURAN_TXT.chars().take_while(|&c| c != '#') {
             set.insert(c);
         }
-        assert_eq!(set.len(), 56);
+        assert_eq!(set.len(), 55);
     }
 
     #[test]
