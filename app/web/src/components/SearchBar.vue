@@ -10,8 +10,8 @@ const placeholder = "yaa ayyuhannasuttaquu robbakum";
 
 <template>
     <div class="control has-icons-left has-icons-right" :class="{ 'is-loading': isLoading }">
-        <input class="input is-rounded" type="search" :value="keyword" @input="keyword = $event.target.value"
-            :placeholder="placeholder" autocorrect="off" autocomplete="off" spellcheck="false" />
+        <input type="search" autocomplete="off" autocorrect="off" spellcheck="false" class="input is-rounded"
+            :placeholder="placeholder" :value="keyword" @input="keyword = ($event.target as HTMLInputElement).value" />
         <span class="icon is-left">
             <font-awesome-icon icon="fa-solid fa-search" />
         </span>
