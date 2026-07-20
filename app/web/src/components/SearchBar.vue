@@ -5,7 +5,7 @@ import { initiated } from "../utils/quranize";
 const keyword = defineModel();
 const isLoading = computed(() => !initiated.value);
 const showDeleteButton = computed(() => !isLoading.value && keyword.value);
-const placeholder = "waltandur nafsun maa qoddamat lighod";
+const placeholder = "yaa ayyuhannasuttaquu robbakum";
 </script>
 
 <template>
