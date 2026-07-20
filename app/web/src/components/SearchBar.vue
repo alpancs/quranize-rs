@@ -11,7 +11,7 @@ const placeholder = "waltandur nafsun maa qoddamat lighod";
 <template>
     <div class="control has-icons-left has-icons-right" :class="{ 'is-loading': isLoading }">
         <input class="input is-rounded" type="search" v-model.trim="keyword" :placeholder="placeholder"
-            spellcheck="false" autofocus />
+            autocorrect="off" autocomplete="off" spellcheck="false" />
         <span class="icon is-left">
             <font-awesome-icon icon="fa-solid fa-search" />
         </span>
