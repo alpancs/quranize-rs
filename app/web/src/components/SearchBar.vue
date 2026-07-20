@@ -5,13 +5,13 @@ import { initiated } from "../utils/quranize";
 const keyword = defineModel();
 const isLoading = computed(() => !initiated.value);
 const showDeleteButton = computed(() => !isLoading.value && keyword.value);
-const placeholder = "waltandur nafsun maa qoddamat lighod";
+const placeholder = "yaa ayyuhannasuttaquu robbakum";
 </script>
 
 <template>
     <div class="control has-icons-left has-icons-right" :class="{ 'is-loading': isLoading }">
-        <input class="input is-rounded" type="search" v-model.trim="keyword" :placeholder="placeholder"
-            spellcheck="false" autofocus />
+        <input type="search" autocomplete="off" autocorrect="off" spellcheck="false" class="input is-rounded"
+            :placeholder="placeholder" :value="keyword" @input="keyword = ($event.target as HTMLInputElement).value" />
         <span class="icon is-left">
             <font-awesome-icon icon="fa-solid fa-search" />
         </span>
