@@ -25,7 +25,7 @@ jobs:
       - run: curl https://drager.github.io/wasm-pack/installer/init.sh -sSf | bash
       - uses: extractions/setup-just@v3
       - run: just prepare-deployment
-      - uses: cloudflare/wrangler-action@v3
+      - uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
