@@ -25,9 +25,13 @@ jobs:
       - run: curl https://drager.github.io/wasm-pack/installer/init.sh -sSf | bash
       - uses: extractions/setup-just@v4
       - run: just prepare-deployment
+      - name: Check git status
+        run: git status
       - uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy app/web/dist --project-name=quranize
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check git status
+        run: git status
