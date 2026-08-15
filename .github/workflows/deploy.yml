@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: curl https://drager.github.io/wasm-pack/installer/init.sh -sSf | bash
-      - uses: extractions/setup-just@v3
+      - uses: extractions/setup-just@v4
       - run: just prepare-deployment
       - uses: cloudflare/wrangler-action@v4
         with:
