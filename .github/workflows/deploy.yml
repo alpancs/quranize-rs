@@ -34,4 +34,6 @@ jobs:
           command: pages deploy dist --project-name=quranize
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
       - name: Check git status
-        run: git status
+        run: |
+            git status
+            git diff
