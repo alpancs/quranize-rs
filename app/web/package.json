@@ -4,12 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build-wasm": "wasm-pack build --target=web --release ../../quranize-wasm",
-    "replace-wasm": "rm -rf src/utils/quranize-wasm && mv ../../quranize-wasm/pkg src/utils/quranize-wasm",
-    "prepare-wasm": "npm run build-wasm && npm run replace-wasm",
     "dev": "vite --host",
-    "build": "vue-tsc -b && vite build",
-    "preview": "vite preview --host"
+    "build": "npm run prepare-wasm && vue-tsc -b && vite build",
+    "preview": "vite preview --host",
+    "prepare-wasm": "npm run build-wasm && npm run replace-wasm",
+    "build-wasm": "wasm-pack build --target=web --release ../../quranize-wasm",
+    "replace-wasm": "rm -rf src/utils/quranize-wasm && mv ../../quranize-wasm/pkg src/utils/quranize-wasm"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
