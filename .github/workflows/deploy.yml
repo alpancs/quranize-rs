@@ -29,5 +29,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: app/web
-          command: pages deploy dist --project-name=quranize --commit-dirty=true
+          command: pages deploy dist --project-name=quranize
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
